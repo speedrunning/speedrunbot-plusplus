@@ -3,13 +3,17 @@ CFLAGS := -O3 -std=c99 -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-pro
 INC    := -I../../include/srcom
 
 cprogs  := bin/wrs bin/games bin/modcount
-pyprogs := bin/leaderboard bin/runs bin/worldrecord bin/utils
+pyprogs := bin/leaderboard bin/runs bin/worldrecord bin/utils.py
 
 all: $(cprogs) $(pyprogs)
 $(shell mkdir -p bin/ objs/)
 
 # Python programs
 bin/%: %.py
+	chmod +x $< && cp $< $@
+
+# This needs to retain the file extension for importability
+bin/utils.py: utils.py
 	chmod +x $< && cp $< $@
 
 # C programs
