@@ -24,24 +24,21 @@ unsigned int substr(const char *const sub, const char *const str,
 
 int main(int UNUSED(argc), char **argv)
 {
-	/* Init strings */
+	char *uid = get_uid(argv[1]);
+
 	string_t runs;
 	init_string(&runs);
-
-	/* Get players UID */
-	char *uid = get_uid(argv[1]);
 
 	/* Get players PRs */
 	static char uri[URIBUF];
 	snprintf(uri, URIBUF, API "/users/%s/personal-bests?top=1", uid);
 	get_req(uri, &runs);
 
-	/* Get counts */
 	const unsigned int total = substr("\"level\":", runs.ptr, runs.len);
 	const unsigned int fullgame = substr("\"level\":null", runs.ptr,
 	                                     runs.len);
 
 	printf("%u %u %u\n", fullgame, total - fullgame, total);
 
-	return 0;
+	return EXIT_SUCCESS;
 }
