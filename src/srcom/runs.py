@@ -17,7 +17,9 @@ UID: str = uid(argv[1])
 offset: int = 0
 lastpage: bool = False
 while not lastpage:
-    r: dict = requests.get(f"{API}/runs?user={UID}&max=200&offset={offset}").json()
+    r: dict = requests.get(
+        f"{API}/runs?user={UID}&max=200&offset={offset}"
+    ).json()
     for run in r["data"]:
         if run["level"] is None:
             fullgame += 1

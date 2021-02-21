@@ -66,9 +66,12 @@ class Src(commands.Cog):
             await ctx.send("Usage: `!leaderboard [GAME] [CATEGORY (Optional)]`")
             return
 
-        RET = self.bot.run_prog(f"{PREFIX}/leaderboard", f"{GAME} {CAT}").split("\n")
+        RET = self.bot.run_prog(f"{PREFIX}/leaderboard", f"{GAME} {CAT}").split(
+            "\n"
+        )
         embed = discord.Embed(
-            title=f"Top 10: {RET[0]}", description="```" + "\n".join(RET[1:]) + "```"
+            title=f"Top 10: {RET[0]}",
+            description="```" + "\n".join(RET[1:]) + "```",
         )
         await ctx.send(embed=embed)
 
