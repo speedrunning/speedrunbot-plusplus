@@ -33,7 +33,7 @@ class SRBpp(commands.Bot):
 
     def run_prog(self, prog, args=None):
         ret = subprocess.check_output(f"{prog} {args}", shell=True)
-        return ret.decode("utf-8").replace("\\\n", "").strip()
+        return ret.decode("utf-8").replace("\\\n", "").rstrip()
 
     async def on_ready(self):
         self.uptime = datetime.datetime.utcnow()
