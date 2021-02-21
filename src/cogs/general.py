@@ -7,7 +7,7 @@ class General(commands.Cog):
 
     @commands.command(name="source")
     async def source(self, ctx):
-        SRC = "https://www.github.com/Mango0x45/speedrunbot++"
+        SRC = "https://www.github.com/Mango0x45/speedrunbot-plusplus"
         await ctx.send(SRC)
 
     @commands.command(name="ping")
