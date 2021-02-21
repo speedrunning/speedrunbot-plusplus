@@ -1,8 +1,8 @@
-CC		:= gcc
-CFLAGS	:= -O3 -std=c99 -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wno-unused-result
-INC		:= -I../../include/srcom
+CC     := gcc
+CFLAGS := -O3 -std=c99 -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wno-unused-result
+INC    := -I../../include/srcom
 
-progs  := wrs
+progs := wrs
 
 all: $(progs)
 
