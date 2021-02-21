@@ -60,6 +60,28 @@ class Src(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    @commands.command(name="leaderboard")
+    async def leaderboard(self, ctx, GAME=None):
+        if not GAME:
+            await ctx.send("Usage: `!leaderboard [GAME]`")
+            return
+
+        ROWS = self.bot.run_prog(f"{PREFIX}/leaderboard", GAME).split("\n")
+        DATA = [row.split() for row in ROWS]
+        MAXLEN = len(DATA[-1][2])
+        embed = discord.Embed(
+            title=f"Top 10: {GAME}",
+            description="```"
+            + "\n".join(
+                [
+                    f"{row[0].rjust(2).ljust(3)} {row[2].ljust(MAXLEN + 1)} {row[1]}"
+                    for row in DATA
+                ]
+            )
+            + "```",
+        )
+        await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Src(bot))
