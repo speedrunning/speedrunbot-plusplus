@@ -3,8 +3,6 @@
  * (argv[1]) is a moderator of.
  */
 
-/* TODO: Calculate games and series concurrently */
-
 #include <stdio.h>
 
 #include "utils.h"
