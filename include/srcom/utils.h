@@ -31,6 +31,14 @@ typedef struct {
 void init_string(string_t *str);
 
 /**
+ * @brief Get a players user ID.
+ * 
+ * @param username The players speedrun.com username.
+ * @return char* The players user ID.
+ */
+char *get_uid(const char *const username);
+
+/**
  * @brief Perform a GET request to the speedrun.com API and store the result.
  * 
  * @param uri The URI to make a request to.

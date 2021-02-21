@@ -27,19 +27,14 @@ unsigned int substr(const char *const sub, const char *const str,
 int main(int UNUSED(argc), char **argv)
 {
 	/* Init strings */
-	string_t user, runs;
-	init_string(&user);
+	string_t runs;
 	init_string(&runs);
 
 	/* Get players UID */
-	static char uri[URIBUF];
-	char uid[UIDBUF];
-
-	snprintf(uri, URIBUF, API "/users?lookup=%s", argv[1]);
-	get_req(uri, &user);
-	sscanf(user.ptr, "{\"data\":[{\"id\":\"%[^\"]", uid);
+	char *uid = get_uid(argv[1]);
 
 	/* Get players PRs */
+	static char uri[URIBUF];
 	snprintf(uri, URIBUF, API "/users/%s/personal-bests?top=1", uid);
 	get_req(uri, &runs);
 

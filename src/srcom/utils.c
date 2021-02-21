@@ -21,6 +21,21 @@ void init_string(string_t *json)
 	return;
 }
 
+char *get_uid(const char *const username)
+{
+	char uri[URIBUF];
+	string_t user;
+	init_string(&user);
+
+	snprintf(uri, URIBUF, API "/users?lookup=%s", username);
+	get_req(uri, &user);
+
+	static char uid[UIDBUF];
+	sscanf(user.ptr, "{\"data\":[{\"id\":\"%[^\"]", uid);
+
+	return uid;
+}
+
 size_t write_callback(const void *ptr, const size_t size, const size_t nmemb,
                       string_t *json)
 {
