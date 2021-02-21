@@ -1,26 +1,8 @@
 /* This program gets the number of WRs that a given player (argv[1]) has set. */
 
 #include <stdio.h>
-#include <string.h>
 
 #include "utils.h"
-#include "wrs.h"
-
-unsigned int substr(const char *const sub, const char *const str,
-                    const size_t strl)
-{
-	unsigned int c = 0;
-	const size_t subl = strlen(sub);
-
-	for (size_t i = 0; i < strl - subl; i++) {
-		if (strstr(str + i, sub) == str + i) {
-			c++;
-			i += subl - 1;
-		}
-	}
-
-	return c;
-}
 
 int main(int UNUSED(argc), char **argv)
 {

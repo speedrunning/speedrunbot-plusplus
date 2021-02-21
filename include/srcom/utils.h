@@ -65,4 +65,15 @@ void get_req(const char *uri, string_t *json);
 size_t write_callback(const void *ptr, const size_t size, const size_t nmemb,
                       string_t *json);
 
+/**
+ * @brief Find the number of occurances of a substring in a string.
+ * 
+ * @param sub The substring to search for.
+ * @param str The string to seach through.
+ * @param strl The length of the string to search through.
+ * @return unsigned int The number of occurances.
+ */
+unsigned int substr(const char *const sub, const char *const str,
+                    const size_t strl);
+
 #endif /* !__UTILS_H_ */
