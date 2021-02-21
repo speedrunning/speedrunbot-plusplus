@@ -8,9 +8,10 @@
 #include "utils.h"
 #include "wrs.h"
 
-int substr(const char *const sub, const char *const str, const size_t strl)
+unsigned int substr(const char *const sub, const char *const str,
+                    const size_t strl)
 {
-	int c = 0;
+	unsigned int c = 0;
 	const size_t subl = strlen(sub);
 
 	for (size_t i = 0; i < strl - subl; i++) {
@@ -43,10 +44,11 @@ int main(int UNUSED(argc), char **argv)
 	get_req(uri, &runs);
 
 	/* Get counts */
-	const int total = substr("\"level\":", runs.ptr, runs.len);
-	const int fullgame = substr("\"level\":null", runs.ptr, runs.len);
+	const unsigned int total = substr("\"level\":", runs.ptr, runs.len);
+	const unsigned int fullgame = substr("\"level\":null", runs.ptr,
+	                                     runs.len);
 
-	printf("%d %d %d\n", fullgame, total - fullgame, total);
+	printf("%u %u %u\n", fullgame, total - fullgame, total);
 
 	return 0;
 }
