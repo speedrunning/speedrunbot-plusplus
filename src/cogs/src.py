@@ -66,19 +66,9 @@ class Src(commands.Cog):
             await ctx.send("Usage: `!leaderboard [GAME] [CATEGORY (Optional)]`")
             return
 
-        ROWS = self.bot.run_prog(f"{PREFIX}/leaderboard", f"{GAME} {CAT}").split("\n")
-        DATA = [row.split() for row in ROWS]
-        MAXLEN = len(DATA[-1][2])
+        RET = self.bot.run_prog(f"{PREFIX}/leaderboard", f"{GAME} {CAT}").split("\n")
         embed = discord.Embed(
-            title=f"Top 10: {GAME}",
-            description="```"
-            + "\n".join(
-                [
-                    f"{row[0].rjust(2).ljust(3)} {row[2].ljust(MAXLEN + 1)} {row[1]}"
-                    for row in DATA
-                ]
-            )
-            + "```",
+            title=f"Top 10: {RET[0]}", description="```" + "\n".join(RET[1:]) + "```"
         )
         await ctx.send(embed=embed)
 
