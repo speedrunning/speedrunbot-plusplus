@@ -2,22 +2,31 @@ CC     := gcc
 CFLAGS := -O3 -std=c99 -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wno-unused-result
 INC    := -I../../include/srcom
 
-progs := wrs games
+cprogs  := bin/wrs bin/games
+pyprogs := bin/leaderboard bin/modcount bin/runs bin/worldrecord bin/utils
 
-all: $(progs)
+all: $(cprogs) $(pyprogs)
+$(shell mkdir -p bin/ objs/)
 
-wrs: objs/wrs.o objs/utils.o
-	@mkdir -p bin/
-	$(CC) $(CFLAGS) -o bin/$@ $^ -lcurl
+# Python programs
+bin/%: %.py
+	chmod +x $< && cp $< $@
 
-games: objs/games.o objs/utils.o
-	@mkdir -p bin/
-	$(CC) $(CFLAGS) -o bin/$@ $^ -lcurl -ljansson
+# C programs
+
+# It would be nice if I didn't need to make a new rule for each program, but I
+# am not sure how to do so without linking unnessesary libraries in programs
+# that don't need them.
+bin/wrs: objs/wrs.o objs/utils.o
+	$(CC) $(CFLAGS) -o $@ $^ -lcurl
+
+bin/games: objs/games.o objs/utils.o
+	$(CC) $(CFLAGS) -o $@ $^ -lcurl -ljansson
 
 objs/%.o: %.c
-	@mkdir -p objs/
 	$(CC) $(CFLAGS) $(INC) -o $@ -c $<
 
+# Phony targets
 .PHONY: clean
 clean:
 	rm -rf objs/ bin/
