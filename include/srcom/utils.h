@@ -14,6 +14,12 @@
 #	define UNUSED(x) UNUSED_##x
 #endif
 
+/* For when I haven't included <stdlib.h> */
+#ifndef EXIT_SUCCESS
+#	define EXIT_SUCCESS 0
+#	define EXIT_FAILURE 1
+#endif
+
 /**
  * @brief A struct representing a string. This makes working with libcurl a bit
  * easier.
