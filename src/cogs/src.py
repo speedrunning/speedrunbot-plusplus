@@ -27,7 +27,7 @@ class Src(commands.Cog):
             await ctx.send("Usage: `!runs [PLAYER NAME]`")
             return
 
-        COUNTS = self.bot.run_prog(f"{PREFIX}/runs.py", PLAYER).split(" ")
+        COUNTS = self.bot.run_prog(f"{PREFIX}/runs", PLAYER).split(" ")
         embed = discord.Embed(
             title=f"Run Count: {PLAYER}",
             description=f"**Full Game**: {COUNTS[0]}\n**Individual Level**: {COUNTS[1]}\n**Total**: {COUNTS[2]}",
@@ -53,7 +53,7 @@ class Src(commands.Cog):
             await ctx.send("Usage: `!modcount [PLAYER NAME]`")
             return
 
-        COUNTS = self.bot.run_prog(f"{PREFIX}/modcount.py", PLAYER).split(" ")
+        COUNTS = self.bot.run_prog(f"{PREFIX}/modcount", PLAYER).split(" ")
         embed = discord.Embed(
             title=f"Leaderboards Moderated: {PLAYER}",
             description=f"**Games**: {COUNTS[0]}\n**Series**: {COUNTS[1]}\n**Total**: {COUNTS[2]}",
