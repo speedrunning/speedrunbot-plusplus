@@ -47,7 +47,7 @@ class Src(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command(name="modcount")
+    @commands.command(name="modcount", aliases=["mc"])
     async def modcount(self, ctx, PLAYER=None):
         if not PLAYER:
             await ctx.send("Usage: `!modcount [PLAYER NAME]`")
@@ -60,13 +60,13 @@ class Src(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command(name="leaderboard")
-    async def leaderboard(self, ctx, GAME=None):
+    @commands.command(name="leaderboard", aliases=["lb"])
+    async def leaderboard(self, ctx, GAME=None, CAT=None):
         if not GAME:
-            await ctx.send("Usage: `!leaderboard [GAME]`")
+            await ctx.send("Usage: `!leaderboard [GAME] [CATEGORY (Optional)]`")
             return
 
-        ROWS = self.bot.run_prog(f"{PREFIX}/leaderboard", GAME).split("\n")
+        ROWS = self.bot.run_prog(f"{PREFIX}/leaderboard", f"{GAME} {CAT}").split("\n")
         DATA = [row.split() for row in ROWS]
         MAXLEN = len(DATA[-1][2])
         embed = discord.Embed(
