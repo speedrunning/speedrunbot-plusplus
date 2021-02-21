@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <curl/curl.h>
-
 #include "utils.h"
 #include "wrs.h"
 
