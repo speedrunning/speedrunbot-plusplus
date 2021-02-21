@@ -29,6 +29,11 @@ int main(int UNUSED(argc), char **argv)
 	snprintf(uri, URIBUF, API "/series?moderator=%s&max=200", uid);
 	get_req(uri, &series);
 
+	/*
+	 * Each game/series will have an id, so counting the number of IDs is a
+	 * quick and easy way to get the number of games/series without the need
+	 * of parsing the JSON.
+	 */
 	const unsigned int gcount = substr("\"id\":", games.ptr, games.len);
 	const unsigned int scount = substr("\"id\":", series.ptr, series.len);
 

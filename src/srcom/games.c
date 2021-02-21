@@ -55,7 +55,7 @@ int main(int UNUSED(argc), char **argv)
 		run = json_object_get(obj, "run");
 		gid = json_object_get(run, "game");
 
-		/* Typecast to discard 'const' qualifier */
+		/* Typecast to discard 'const' quantifier */
 		char *gid_str = (char *) json_string_value(gid);
 		if (!in_games(gid_str))
 			c++;
