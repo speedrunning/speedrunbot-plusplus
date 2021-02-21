@@ -48,7 +48,7 @@ class Src(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(name="modcount")
-    async def runs(self, ctx, PLAYER=None):
+    async def modcount(self, ctx, PLAYER=None):
         if not PLAYER:
             await ctx.send("Usage: `!modcount [PLAYER NAME]`")
             return
