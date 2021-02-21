@@ -10,23 +10,36 @@ from sys import argv, exit
 import requests
 from utils import *
 
+# Get the game ID and name
 r: dict = requests.get(f"{API}/games?abbreviation={argv[1]}").json()
 GID: str = r["data"][0]["id"]
 GAME: str = r["data"][0]["names"]["international"]
 
-# Get default category if none supplied
+# Get the games categories
 r = requests.get(f"{API}/games/{GID}/categories").json()
-cat: str = ""
-for c in r["data"]:
-    if c["type"] == "per-game":
-        cat = c["id"]
-        break
+CAT: str
+cid: str = None
+
+try:
+    CAT = argv[2]
+    for c in r["data"]:
+        if c["name"] == CAT:
+            cid = c["id"]
+            break
+# Get default category if none supplied
+except IndexError:
+    for c in r["data"]:
+        if c["type"] == "per-game":
+            CAT = c["name"]
+            cid = c["id"]
+            break
 
 # TODO: Support levels
-if not cat:
+if not cid:
     exit(0)
 
-r = requests.get(f"{API}/leaderboards/{GID}/category/{cat}?top=10").json()
+# Get top 10
+r = requests.get(f"{API}/leaderboards/{GID}/category/{cid}?top=10").json()
 
 rows: list[list[str]] = [
     [
@@ -37,10 +50,15 @@ rows: list[list[str]] = [
     for run in r["data"]["runs"]
 ]
 
+# Length of the longest run time, used for output padding
 MAXLEN: int = max([len(i[1]) for i in rows])
 
+# TODO: Align run times like so:
+#   59:03.364
+#   59:24
+# 1:00:21.349
 print(
-    GAME
+    f"{GAME} - {CAT}"
     + "\n"
     + "\n".join(
         [
