@@ -40,7 +40,7 @@ class Src(commands.Cog):
             await ctx.send("Usage: `!games [PLAYER NAME]`")
             return
 
-        COUNT = self.bot.run_prog(f"{PREFIX}/games.py", PLAYER)
+        COUNT = self.bot.run_prog(f"{PREFIX}/games", PLAYER)
         embed = discord.Embed(
             title=f"Games Played: {PLAYER}",
             description=f"Games: {COUNT}",
