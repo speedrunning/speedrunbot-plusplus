@@ -8,7 +8,7 @@
 #include "utils.h"
 #include "wrs.h"
 
-int substr(const char *sub, const char *str, const size_t strl)
+int substr(const char *const sub, const char *const str, const size_t strl)
 {
 	int c = 0;
 	const size_t subl = strlen(sub);

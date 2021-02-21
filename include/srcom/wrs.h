@@ -11,6 +11,6 @@
  * @param strl The length of the string to search through.
  * @return int The number of occurances.
  */
-int substr(const char *sub, const char *str, const size_t strl);
+int substr(const char *const sub, const char *const str, const size_t strl);
 
 #endif /* !__WRS_H_ */
