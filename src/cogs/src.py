@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-PREFIX = "./srcom"
+PREFIX = "./srcom/bin"
 
 
 class Src(commands.Cog):
@@ -14,7 +14,7 @@ class Src(commands.Cog):
             await ctx.send("Usage: `!wrs [PLAYER NAME]`")
             return
 
-        COUNTS = self.bot.run_prog(f"{PREFIX}/wrs.py", PLAYER).split(" ")
+        COUNTS = self.bot.run_prog(f"{PREFIX}/wrs", PLAYER).split(" ")
         embed = discord.Embed(
             title=f"World Record Count: {PLAYER}",
             description=f"**Full Game**: {COUNTS[0]}\n**Individual Level**: {COUNTS[1]}\n**Total**: {COUNTS[2]}",

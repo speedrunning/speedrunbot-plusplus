@@ -1,7 +1,9 @@
 .vscode/
 __pycache__/
 build/
+bin/
 dist/
+objs/
 
 config.json
 *.spec
