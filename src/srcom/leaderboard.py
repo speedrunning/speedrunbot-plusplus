@@ -5,7 +5,7 @@ This program returns the top 10 for a given gave (argv[1]) as well as an
 optional category (argv[2]) and optional subcategory (argv[3]).
 """
 
-from sys import argv
+from sys import argv, exit
 
 import requests
 from utils import *
@@ -16,9 +16,17 @@ GAME: str = r["data"][0]["names"]["international"]
 
 # Get default category if none supplied
 r = requests.get(f"{API}/games/{GID}/categories").json()
-CAT: str = r["data"][0]["id"]
+cat: str = ""
+for c in r["data"]:
+    if c["type"] == "per-game":
+        cat = c["id"]
+        break
 
-r = requests.get(f"{API}/leaderboards/{GID}/category/{CAT}?top=10").json()
+# TODO: Support levels
+if not cat:
+    exit(0)
+
+r = requests.get(f"{API}/leaderboards/{GID}/category/{cat}?top=10").json()
 
 rows: list[list[str]] = [
     [
