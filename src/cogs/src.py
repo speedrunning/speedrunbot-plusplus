@@ -67,8 +67,23 @@ class Src(commands.Cog):
             f"{PREFIX}/leaderboard", f"{GAME} {CAT}"
         ).split("\n")
         embed = discord.Embed(
-            title=f"Top 10: {RET[0]}",
-            description="```" + "\n".join(RET[1:]) + "```",
+            title=RET[0],
+            description="\n".join(RET[1:]),
+        )
+        await ctx.send(embed=embed)
+
+    @commands.command(name="worldrecord", aliases=["wr"])
+    async def worldrecord(self, ctx, GAME: str = None, CAT: str = None):
+        if not GAME:
+            await ctx.send("Usage: `!worldrecord [GAME] [CATEGORY (Optional)]`")
+            return
+
+        RET: str = self.bot.run_prog(
+            f"{PREFIX}/worldrecord", f"{GAME} {CAT}"
+        ).split("\n")
+        embed = discord.Embed(
+            title=RET[0],
+            description=RET[1],
         )
         await ctx.send(embed=embed)
 
