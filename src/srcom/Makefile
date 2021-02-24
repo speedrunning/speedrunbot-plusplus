@@ -5,7 +5,7 @@ INC    := -I../../include/srcom
 cprogs  := bin/wrs bin/games bin/modcount
 pyprogs := bin/leaderboard bin/runs bin/worldrecord bin/utils.py
 
-all: $(cprogs) $(pyprogs)
+all: $(pyprogs) $(cprogs)
 $(shell mkdir -p bin/ objs/)
 
 # Python programs
