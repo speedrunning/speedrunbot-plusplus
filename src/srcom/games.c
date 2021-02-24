@@ -18,11 +18,9 @@ char games[8196][UIDBUF];
 bool in_games(char *gid)
 {
 	int i = 0;
-	while (games[i][0] != '\0') {
+	for (; games[i][0] != '\0'; i++)
 		if (strcmp(games[i], gid) == 0)
 			return true;
-		i++;
-	}
 
 	strncpy(games[i], gid, UIDBUF);
 	return false;
@@ -62,6 +60,6 @@ int main(int UNUSED(argc), char **argv)
 	}
 
 	json_decref(root);
-	printf("%u\n", c);
+	printf("Games: %u\n", c);
 	return EXIT_SUCCESS;
 }

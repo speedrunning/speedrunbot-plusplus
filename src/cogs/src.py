@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-PREFIX = "./srcom/bin"
+PREFIX: str = "./srcom/bin"
 
 
 class Src(commands.Cog):
@@ -9,66 +9,63 @@ class Src(commands.Cog):
         self.bot = bot
 
     @commands.command(name="wrs")
-    async def wrs(self, ctx, PLAYER=None):
+    async def wrs(self, ctx, PLAYER: str = None):
         if not PLAYER:
             await ctx.send("Usage: `!wrs [PLAYER NAME]`")
             return
 
-        COUNTS = self.bot.run_prog(f"{PREFIX}/wrs", PLAYER).split(" ")
+        RET: str = self.bot.run_prog(f"{PREFIX}/wrs", PLAYER)
         embed = discord.Embed(
             title=f"World Record Count: {PLAYER}",
-            description=f"**Full Game**: {COUNTS[0]}\n**Individual Level**: {COUNTS[1]}\n**Total**: {COUNTS[2]}",
+            description=RET,
         )
         await ctx.send(embed=embed)
 
     @commands.command(name="runs")
-    async def runs(self, ctx, PLAYER=None):
+    async def runs(self, ctx, PLAYER: str = None):
         if not PLAYER:
             await ctx.send("Usage: `!runs [PLAYER NAME]`")
             return
 
-        COUNTS = self.bot.run_prog(f"{PREFIX}/runs", PLAYER).split(" ")
-        embed = discord.Embed(
-            title=f"Run Count: {PLAYER}",
-            description=f"**Full Game**: {COUNTS[0]}\n**Individual Level**: {COUNTS[1]}\n**Total**: {COUNTS[2]}",
-        )
+        RET: str = self.bot.run_prog(f"{PREFIX}/runs", PLAYER)
+        embed = discord.Embed(title=f"Run Count: {PLAYER}", description=RET)
         await ctx.send(embed=embed)
 
     @commands.command(name="games")
-    async def games(self, ctx, PLAYER=None):
+    async def games(self, ctx, PLAYER: str = None):
         if not PLAYER:
             await ctx.send("Usage: `!games [PLAYER NAME]`")
             return
 
-        COUNT = self.bot.run_prog(f"{PREFIX}/games", PLAYER)
+        RET: str = self.bot.run_prog(f"{PREFIX}/games", PLAYER)
         embed = discord.Embed(
             title=f"Games Played: {PLAYER}",
-            description=f"Games: {COUNT}",
+            description=RET,
         )
         await ctx.send(embed=embed)
 
     @commands.command(name="modcount", aliases=["mc"])
-    async def modcount(self, ctx, PLAYER=None):
+    async def modcount(self, ctx, PLAYER: str = None):
         if not PLAYER:
             await ctx.send("Usage: `!modcount [PLAYER NAME]`")
             return
 
-        COUNTS = self.bot.run_prog(f"{PREFIX}/modcount", PLAYER).split(" ")
+        RET: str = self.bot.run_prog(f"{PREFIX}/modcount", PLAYER)
         embed = discord.Embed(
             title=f"Leaderboards Moderated: {PLAYER}",
-            description=f"**Games**: {COUNTS[0]}\n**Series**: {COUNTS[1]}\n**Total**: {COUNTS[2]}",
+            description=RET,
         )
         await ctx.send(embed=embed)
 
     @commands.command(name="leaderboard", aliases=["lb"])
-    async def leaderboard(self, ctx, GAME=None, CAT=None):
+    async def leaderboard(self, ctx, GAME: str = None, CAT: str = None):
         if not GAME:
             await ctx.send("Usage: `!leaderboard [GAME] [CATEGORY (Optional)]`")
             return
 
-        RET = self.bot.run_prog(f"{PREFIX}/leaderboard", f"{GAME} {CAT}").split(
-            "\n"
-        )
+        RET: str = self.bot.run_prog(
+            f"{PREFIX}/leaderboard", f"{GAME} {CAT}"
+        ).split("\n")
         embed = discord.Embed(
             title=f"Top 10: {RET[0]}",
             description="```" + "\n".join(RET[1:]) + "```",

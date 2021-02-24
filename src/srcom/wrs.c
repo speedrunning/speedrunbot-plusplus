@@ -25,7 +25,7 @@ int main(int UNUSED(argc), char **argv)
 	const unsigned int fullgame = substr("\"level\":null", runs.ptr,
 	                                     runs.len);
 
-	printf("%u %u %u\n", fullgame, total - fullgame, total);
-
+	printf("Full Game: %u\nIndividual Level: %u\nTotal: %u\n", fullgame,
+	       total - fullgame, total);
 	return EXIT_SUCCESS;
 }

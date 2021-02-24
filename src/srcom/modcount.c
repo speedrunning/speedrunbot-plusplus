@@ -35,6 +35,7 @@ int main(int UNUSED(argc), char **argv)
 	const unsigned int gcount = substr("\"id\":", games.ptr, games.len);
 	const unsigned int scount = substr("\"id\":", series.ptr, series.len);
 
-	printf("%u %u %u\n", gcount, scount, gcount + scount);
+	printf("Games: %u\nSeries: %u\nTotal: %u\n", gcount, scount,
+	       gcount + scount);
 	return EXIT_SUCCESS;
 }
