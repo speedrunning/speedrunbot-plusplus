@@ -1,21 +1,24 @@
 #!/usr/bin/env python3.9
 
 import json
+from typing import IO
 
 from bot import DATA, SRBpp
 
 
-def check_jsons():
-    CONFIG = f"{DATA}/config.json"
+def check_jsons() -> None:
+    """Make sure all JSON configuration files are present"""
+    CONFIG: str = f"{DATA}/config.json"
     try:
-        f = open(CONFIG, "r")
+        f: IO = open(CONFIG, "r")
     except FileNotFoundError:
-        token = input("BOT SETUP - Enter bot token: ")
+        TOKEN: str = input("BOT SETUP - Enter bot token: ")
         with open(CONFIG, "w+") as f:
-            json.dump({"token": token}, f, indent=4)
+            json.dump({"token": TOKEN}, f, indent=4)
 
 
-def run_bot():
+def run_bot() -> None:
+    """Run the bot"""
     bot = SRBpp()
     bot.run()
 

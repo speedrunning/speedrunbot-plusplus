@@ -5,8 +5,8 @@ import subprocess
 import discord
 from discord.ext import commands
 
-DATA = "../data"
-EXTENSIONS = ("cogs.general", "cogs.src")
+DATA: str = "../data"
+EXTENSIONS: tuple[str] = ("cogs.general", "cogs.src")
 
 
 def get_prefix(bot, message):
@@ -15,7 +15,7 @@ def get_prefix(bot, message):
 
 
 class SRBpp(commands.Bot):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             command_prefix=get_prefix,
             case_insensitive=True,
@@ -31,16 +31,17 @@ class SRBpp(commands.Bot):
             self.config = json.load(f)
             config = self.config
 
-    def run_prog(self, prog, args=None):
+    def run_prog(self, prog: str, args: str = None) -> str:
+        """Run a program as a subprocess and return its output"""
         ret = subprocess.check_output(f"{prog} {args}", shell=True)
         return ret.decode("utf-8").replace("\\\n", "").rstrip()
 
-    async def on_ready(self):
+    async def on_ready(self) -> None:
         self.uptime = datetime.datetime.utcnow()
         game = discord.Game("!help / ;help")
         await self.change_presence(activity=game)
 
-    async def close(self):
+    async def close(self) -> None:
         for extension in EXTENSIONS:
             try:
                 self.unload_extension(extension)
@@ -49,5 +50,6 @@ class SRBpp(commands.Bot):
 
         await super().close()
 
-    def run(self):
+    def run(self) -> None:
+        """Run the bot"""
         super().run(self.config["token"], reconnect=True)
