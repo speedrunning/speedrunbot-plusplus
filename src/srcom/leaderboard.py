@@ -50,6 +50,7 @@ if not cid:
 # Get top 10
 r = requests.get(f"{API}/leaderboards/{GID}/category/{cid}?top=10").json()
 
+# TODO: Support coop runs
 rows: list[list[str]] = [
     [
         str(run["place"]),
@@ -63,12 +64,13 @@ rows: list[list[str]] = [
 MAXLEN: int = max([len(i[1]) for i in rows])
 
 print(
-    f"{GAME} - {CAT}"
-    + "\n"
+    f"Top 10: {GAME} - {CAT}\n"
+    + "```"
     + "\n".join(
         [
             f"{row[0].rjust(2).ljust(3)} {row[1].rjust(MAXLEN).ljust(MAXLEN + 1)} {row[2]}"
             for row in rows
         ]
     )
+    + "```"
 )
