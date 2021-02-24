@@ -34,4 +34,8 @@ while not lastpage:
         lastpage = True
 
 
-print(f"Full Game: {fullgame}\nIndividual Level: {il}\nTotal: {fullgame + il}")
+print(
+    f"Full Game: {fullgame}\n"
+    + f"Individual Level: {il}\n"
+    + f"Total: {fullgame + il}"
+)
