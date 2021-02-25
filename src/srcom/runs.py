@@ -27,7 +27,7 @@ while True:
 
     offset += 200
     p: list[dict[str, str]] = r["pagination"]["links"]
-    if not p or "next" not in p[0].values():
+    if not p or "next" not in p[-1].values():
         break
 
 
