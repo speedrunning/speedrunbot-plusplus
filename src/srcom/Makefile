@@ -1,6 +1,7 @@
-CC     := gcc
-CFLAGS := -O3 -std=c99 -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wno-unused-result
+CC     := cc
+CFLAGS := -O3 -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wno-unused-result
 INC    := -I../../include/srcom
+PY     := python3.9
 
 cprogs  := bin/wrs bin/games bin/modcount
 pyprogs := bin/leaderboard bin/runs bin/worldrecord bin/categories bin/utils.py
@@ -34,6 +35,11 @@ objs/%.o: %.c
 	$(CC) $(CFLAGS) $(INC) -o $@ -c $<
 
 # Phony targets
-.PHONY: clean
+.PHONY: clean test
 clean:
 	rm -rf objs/ bin/
+
+# TODO: Less garbage testing
+test:
+	$(PY) -m doctest utils.py
+	$(PY) -m doctest leaderboard.py
