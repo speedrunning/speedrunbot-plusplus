@@ -1,3 +1,5 @@
+from subprocess import CompletedProcess
+
 import discord
 from discord.ext import commands
 
@@ -14,10 +16,9 @@ class Src(commands.Cog):
             await ctx.send("Usage: `!wrs [PLAYER NAME]`")
             return
 
-        RET: str = self.bot.run_prog(f"{PREFIX}/wrs", PLAYER)
+        RET: CompletedProcess = self.bot.execv(f"{PREFIX}/wrs", PLAYER)
         embed = discord.Embed(
-            title=f"World Record Count: {PLAYER}",
-            description=RET,
+            title=f"World Record Count: {PLAYER}", description=RET.stdout
         )
         await ctx.send(embed=embed)
 
@@ -27,8 +28,10 @@ class Src(commands.Cog):
             await ctx.send("Usage: `!runs [PLAYER NAME]`")
             return
 
-        RET: str = self.bot.run_prog(f"{PREFIX}/runs", PLAYER)
-        embed = discord.Embed(title=f"Run Count: {PLAYER}", description=RET)
+        RET: CompletedProcess = self.bot.execv(f"{PREFIX}/runs", PLAYER)
+        embed = discord.Embed(
+            title=f"Run Count: {PLAYER}", description=RET.stdout
+        )
         await ctx.send(embed=embed)
 
     @commands.command(name="games")
@@ -37,10 +40,9 @@ class Src(commands.Cog):
             await ctx.send("Usage: `!games [PLAYER NAME]`")
             return
 
-        RET: str = self.bot.run_prog(f"{PREFIX}/games", PLAYER)
+        RET: CompletedProcess = self.bot.execv(f"{PREFIX}/games", PLAYER)
         embed = discord.Embed(
-            title=f"Games Played: {PLAYER}",
-            description=RET,
+            title=f"Games Played: {PLAYER}", description=RET.stdout
         )
         await ctx.send(embed=embed)
 
@@ -50,10 +52,9 @@ class Src(commands.Cog):
             await ctx.send("Usage: `!modcount [PLAYER NAME]`")
             return
 
-        RET: str = self.bot.run_prog(f"{PREFIX}/modcount", PLAYER)
+        RET: CompletedProcess = self.bot.execv(f"{PREFIX}/modcount", PLAYER)
         embed = discord.Embed(
-            title=f"Leaderboards Moderated: {PLAYER}",
-            description=RET,
+            title=f"Leaderboards Moderated: {PLAYER}", description=RET.stdout
         )
         await ctx.send(embed=embed)
 
@@ -63,13 +64,9 @@ class Src(commands.Cog):
             await ctx.send("Usage: `!categories [GAME]`")
             return
 
-        RET: str = self.bot.run_prog(f"{PREFIX}/leaderboard", f"{GAME}").split(
-            "\n"
-        )
-        embed = discord.Embed(
-            title=RET[0],
-            description="\n".join(RET[1:]),
-        )
+        RET: CompletedProcess = self.bot.execv(f"{PREFIX}/categories", GAME)
+        TITLE, CATS = RET.stdout.split("\n", 1)
+        embed = discord.Embed(title=TITLE, description=CATS)
         await ctx.send(embed=embed)
 
     @commands.command(name="leaderboard", aliases=["lb"])
@@ -78,28 +75,24 @@ class Src(commands.Cog):
             await ctx.send("Usage: `!leaderboard [GAME] [CATEGORY (Optional)]`")
             return
 
-        RET: str = self.bot.run_prog(
-            f"{PREFIX}/leaderboard", f"{GAME} {CAT}"
-        ).split("\n")
-        embed = discord.Embed(
-            title=RET[0],
-            description="\n".join(RET[1:]),
+        RET: CompletedProcess = self.bot.execv(
+            f"{PREFIX}/leaderboard", GAME, CAT
         )
+        TITLE, LB = RET.stdout.split("\n", 1)
+        embed = discord.Embed(title=TITLE, description=LB)
         await ctx.send(embed=embed)
 
-    @commands.command(name="worldrecord", aliases=["wr"])
+    @commands.command(name="worldrecord", aliases=("wr",))
     async def worldrecord(self, ctx, GAME: str = None, CAT: str = None):
         if not GAME:
             await ctx.send("Usage: `!worldrecord [GAME] [CATEGORY (Optional)]`")
             return
 
-        RET: str = self.bot.run_prog(
-            f"{PREFIX}/worldrecord", f"{GAME} {CAT}"
-        ).split("\n")
-        embed = discord.Embed(
-            title=RET[0],
-            description=RET[1],
+        RET: CompletedProcess = self.bot.execv(
+            f"{PREFIX}/worldrecord", GAME, CAT
         )
+        TITLE, WR = RET.stdout.split("\n", 1)
+        embed = discord.Embed(title=TITLE, description=WR)
         await ctx.send(embed=embed)
 
 

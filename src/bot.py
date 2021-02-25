@@ -1,6 +1,6 @@
 import datetime
 import json
-import subprocess
+from subprocess import CompletedProcess, run
 
 import discord
 from discord.ext import commands
@@ -31,10 +31,13 @@ class SRBpp(commands.Bot):
             self.config = json.load(f)
             config = self.config
 
-    def run_prog(self, prog: str, args: str = None) -> str:
-        """Run a program as a subprocess and return its output"""
-        ret = subprocess.check_output(f"{prog} {args}", shell=True)
-        return ret.decode("utf-8").replace("\\\n", "").rstrip()
+    def execv(self, PROG: str, *ARGS: tuple[str]) -> CompletedProcess:
+        """Run a program as a subprocess and return its output + return code"""
+        return run(
+            (PROG,) + tuple(filter(lambda x: x, ARGS)),
+            capture_output=True,
+            text=True,
+        )
 
     async def on_ready(self) -> None:
         self.uptime = datetime.datetime.utcnow()
