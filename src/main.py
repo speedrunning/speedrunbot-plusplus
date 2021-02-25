@@ -7,7 +7,9 @@ from bot import DATA, SRBpp
 
 
 def check_jsons() -> None:
-    """Make sure all JSON configuration files are present"""
+    """
+    Make sure all JSON configuration files are present
+    """
     CONFIG: str = f"{DATA}/config.json"
     try:
         f: IO = open(CONFIG, "r")
@@ -17,12 +19,7 @@ def check_jsons() -> None:
             json.dump({"token": TOKEN}, f, indent=4)
 
 
-def run_bot() -> None:
-    """Run the bot"""
-    bot = SRBpp()
-    bot.run()
-
-
 if __name__ == "__main__":
     check_jsons()
-    run_bot()
+    bot = SRBpp()
+    bot.run()
