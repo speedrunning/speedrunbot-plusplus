@@ -5,15 +5,20 @@ This file contains all sorts of variables and utilities used in the sr.c
 related programs.
 """
 
+from typing import Union
+
 import requests
 
 API: str = "https://www.speedrun.com/api/v1"
 
 
-def uid(USER: str) -> str:
-    """Get a users user ID from their username."""
+def uid(USER: str) -> Union[str, None]:
+    """Get a users user ID from their username. Returns None on error."""
     r: dict = requests.get(f"{API}/users/{USER}").json()
-    return r["data"]["id"]
+    try:
+        return r["data"]["id"]
+    except KeyError:
+        return None
 
 
 def username(UID: str) -> str:

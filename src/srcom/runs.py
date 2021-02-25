@@ -4,7 +4,8 @@
 This program gets the number of runs that a given player (argv[1]) has set.
 """
 
-from sys import argv
+from itertools import count
+from sys import argv, exit
 
 import requests
 from utils import *
@@ -12,10 +13,10 @@ from utils import *
 fullgame: int = 0
 il: int = 0
 
-UID: str = uid(argv[1])
+if (UID := uid(argv[1])) == None:
+    exit(0)
 
-offset: int = 0
-while True:
+for offset in count(0, 200):
     r: dict = requests.get(
         f"{API}/runs?user={UID}&max=200&offset={offset}"
     ).json()
@@ -25,7 +26,6 @@ while True:
         else:
             il += 1
 
-    offset += 200
     p: list[dict[str, str]] = r["pagination"]["links"]
     if not p or "next" not in p[-1].values():
         break
