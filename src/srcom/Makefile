@@ -3,7 +3,7 @@ CFLAGS := -O3 -std=c99 -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-pro
 INC    := -I../../include/srcom
 
 cprogs  := bin/wrs bin/games bin/modcount
-pyprogs := bin/leaderboard bin/runs bin/worldrecord bin/utils.py
+pyprogs := bin/leaderboard bin/runs bin/worldrecord bin/categories bin/utils.py
 
 all: $(pyprogs) $(cprogs)
 $(shell mkdir -p bin/ objs/)

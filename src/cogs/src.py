@@ -57,6 +57,21 @@ class Src(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    @commands.command(name="categories", aliases=["cats"])
+    async def categories(self, ctx, GAME: str = None):
+        if not GAME:
+            await ctx.send("Usage: `!categories [GAME]`")
+            return
+
+        RET: str = self.bot.run_prog(f"{PREFIX}/leaderboard", f"{GAME}").split(
+            "\n"
+        )
+        embed = discord.Embed(
+            title=RET[0],
+            description="\n".join(RET[1:]),
+        )
+        await ctx.send(embed=embed)
+
     @commands.command(name="leaderboard", aliases=["lb"])
     async def leaderboard(self, ctx, GAME: str = None, CAT: str = None):
         if not GAME:
