@@ -19,13 +19,9 @@ def pad(time: str) -> str:
     return f"{time}    " if "." not in time else time
 
 
-# Get the game ID and name
-r: dict = requests.get(f"{API}/games?abbreviation={argv[1]}").json()
-GID: str = r["data"][0]["id"]
-GAME: str = r["data"][0]["names"]["international"]
-
 # Get the games categories
-r = requests.get(f"{API}/games/{GID}/categories").json()
+GAME, GID = game(argv[1])
+r: dict = requests.get(f"{API}/games/{GID}/categories").json()
 CAT: str
 cid: str = None
 

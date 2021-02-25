@@ -22,6 +22,14 @@ def username(UID: str) -> str:
     return r["data"]["names"]["international"]
 
 
+def game(ABR: str) -> tuple[str, str]:
+    """Get a games name and game ID from their abbreviation."""
+    r: dict = requests.get(f"{API}/games?abbreviation={ABR}").json()
+    GID: str = r["data"][0]["id"]
+    GAME: str = r["data"][0]["names"]["international"]
+    return (GAME, GID)
+
+
 def ptime(s: float) -> str:
     """
     Pretty print a time in the format H:M:S.ms. Empty leading fields are
