@@ -13,7 +13,9 @@ from utils import *
 fullgame: int = 0
 il: int = 0
 
-if (UID := uid(argv[1])) == None:
+try:
+    UID = uid(argv[1])
+except UserError:
     exit(0)
 
 for offset in count(0, 200):

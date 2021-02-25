@@ -5,26 +5,33 @@ This file contains all sorts of variables and utilities used in the sr.c
 related programs.
 """
 
-from typing import Union
-
 import requests
 
 API: str = "https://www.speedrun.com/api/v1"
 
 
-def uid(USER: str) -> Union[str, None]:
+class UserError(Exception):
+    """Raised when trying to access a user that does not exist"""
+
+    pass
+
+
+def uid(USER: str) -> str:
     """Get a users user ID from their username. Returns None on error."""
     r: dict = requests.get(f"{API}/users/{USER}").json()
     try:
         return r["data"]["id"]
     except KeyError:
-        return None
+        raise UserError(f"User with username {USER} not found.")
 
 
 def username(UID: str) -> str:
     """Get a users username from their user ID."""
     r: dict = requests.get(f"{API}/users/{UID}").json()
-    return r["data"]["names"]["international"]
+    try:
+        return r["data"]["names"]["international"]
+    except KeyError:
+        raise UserError(f"User with uid {UID} not found.")
 
 
 def game(ABR: str) -> tuple[str, str]:
