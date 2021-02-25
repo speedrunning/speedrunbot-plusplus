@@ -1,5 +1,5 @@
-import datetime
 import json
+from datetime import datetime
 from pathlib import Path
 from subprocess import CompletedProcess, run
 
@@ -31,11 +31,10 @@ class SRBpp(commands.Bot):
 
         with open(f"{DATA}/config.json", "r") as f:
             self.config = json.load(f)
-            config = self.config
 
-    def execv(self, PROG: str, *ARGS: tuple[str]) -> CompletedProcess:
+    def execv(_, PROG: str, *ARGS: tuple[str]) -> CompletedProcess:
         """
-        Run a program as a subprocess and return its output + return code
+        Run a program as a subprocess and return its output + return code.
         """
         return run(
             (f"{PREFIX}/{PROG}",) + tuple(filter(lambda x: x, ARGS)),
@@ -44,19 +43,27 @@ class SRBpp(commands.Bot):
         )
 
     async def on_ready(self) -> None:
-        self.uptime = datetime.datetime.utcnow()
-        game = discord.Game("!help / ;help")
+        """
+        Code to run when the bot starts up.
+        """
+        self.uptime = datetime.utcnow()
+        game: discord.Game = discord.Game("!help / ;help")
         await self.change_presence(activity=game)
 
     async def close(self) -> None:
+        """
+        Cleanup before the bot exits.
+        """
         for extension in EXTENSIONS:
             try:
                 self.unload_extension(extension)
-            except Exception:
-                pass
+            except Exception as e:
+                print(e)
 
         await super().close()
 
     def run(self) -> None:
-        """Run the bot."""
+        """
+        Run the bot.
+        """
         super().run(self.config["token"], reconnect=True)
