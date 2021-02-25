@@ -15,8 +15,7 @@ il: int = 0
 UID: str = uid(argv[1])
 
 offset: int = 0
-lastpage: bool = False
-while not lastpage:
+while True:
     r: dict = requests.get(
         f"{API}/runs?user={UID}&max=200&offset={offset}"
     ).json()
@@ -27,11 +26,9 @@ while not lastpage:
             il += 1
 
     offset += 200
-    try:
-        if r["pagination"]["links"][-1]["rel"] == "prev":
-            lastpage = True
-    except IndexError:
-        lastpage = True
+    p: list[dict[str, str]] = r["pagination"]["links"]
+    if not p or "next" not in p[0].values():
+        break
 
 
 print(
