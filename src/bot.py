@@ -1,11 +1,12 @@
 import datetime
 import json
+from pathlib import Path
 from subprocess import CompletedProcess, run
 
 import discord
 from discord.ext import commands
 
-DATA: str = "../data"
+DATA: str = f"{Path(__file__).parent}/../data"
 EXTENSIONS: tuple[str] = ("cogs.general", "cogs.src")
 
 
@@ -32,7 +33,14 @@ class SRBpp(commands.Bot):
             config = self.config
 
     def execv(self, PROG: str, *ARGS: tuple[str]) -> CompletedProcess:
-        """Run a program as a subprocess and return its output + return code"""
+        """
+        Run a program as a subprocess and return its output + return code
+
+        >>> SRBpp.execv("echo", "-n", "testy test")
+        CompletedProcess(args=('echo', '-n', 'testy test'), returncode=0, stdout='testy test', stderr='')
+        >>> SRBpp.execv("echo", "yet", "another", None, "testy test")
+        CompletedProcess(args=('echo', 'yet', 'another', 'testy test'), returncode=0, stdout='yet another testy test\\n', stderr='')
+        """
         return run(
             (PROG,) + tuple(filter(lambda x: x, ARGS)),
             capture_output=True,
@@ -54,5 +62,5 @@ class SRBpp(commands.Bot):
         await super().close()
 
     def run(self) -> None:
-        """Run the bot"""
+        """Run the bot."""
         super().run(self.config["token"], reconnect=True)

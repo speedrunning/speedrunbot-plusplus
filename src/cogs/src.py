@@ -1,9 +1,11 @@
+from pathlib import Path
 from subprocess import CompletedProcess
 
 import discord
 from discord.ext import commands
 
-PREFIX: str = "./srcom/bin"
+FPATH: Path = Path(__file__).parent.absolute()
+PREFIX: str = f"{FPATH}/../srcom/bin"
 
 
 class Src(commands.Cog):
@@ -46,7 +48,7 @@ class Src(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command(name="modcount", aliases=["mc"])
+    @commands.command(name="modcount", aliases=("mc",))
     async def modcount(self, ctx, PLAYER: str = None):
         if not PLAYER:
             await ctx.send("Usage: `!modcount [PLAYER NAME]`")
@@ -58,7 +60,7 @@ class Src(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command(name="categories", aliases=["cats"])
+    @commands.command(name="categories", aliases=("cats",))
     async def categories(self, ctx, GAME: str = None):
         if not GAME:
             await ctx.send("Usage: `!categories [GAME]`")
@@ -69,7 +71,7 @@ class Src(commands.Cog):
         embed = discord.Embed(title=TITLE, description=CATS)
         await ctx.send(embed=embed)
 
-    @commands.command(name="leaderboard", aliases=["lb"])
+    @commands.command(name="leaderboard", aliases=("lb",))
     async def leaderboard(self, ctx, GAME: str = None, CAT: str = None):
         if not GAME:
             await ctx.send("Usage: `!leaderboard [GAME] [CATEGORY (Optional)]`")
