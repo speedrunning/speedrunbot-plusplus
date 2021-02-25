@@ -44,11 +44,16 @@ def main() -> int:
     r = requests.get(f"{API}/leaderboards/{GID}/category/{cid}?top=1").json()
 
     # TODO: Coop support
-    TIME: str = r["run"]["times"]["primary_t"]
-    PLAYER: str = username(r["run"]["players"][0]["id"])
+    WR: dict = r["data"]["runs"][0]["run"]
+    TIME: str = ptime(WR["times"]["primary_t"])
+    PLAYER: str = username(WR["players"][0]["id"])
+    VIDEOS: list[dict[str, str]] = WR["videos"]["links"]
 
-    # TODO: Get the video link
-    print(f"World Record: {GAME} - {CAT}\n" + f"```{TIME}  {PLAYER}```")
+    print(
+        f"World Record: {GAME} - {CAT}\n"
+        + f"{TIME}  {PLAYER}\n"
+        + "\n".join([f"<{R['uri']}>" for R in VIDEOS])
+    )
     return EXIT_SUCCESS
 
 
