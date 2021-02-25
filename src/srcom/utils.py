@@ -9,9 +9,18 @@ import requests
 
 API: str = "https://www.speedrun.com/api/v1"
 
+EXIT_SUCCESS: int = 0
+EXIT_FAILURE: int = 1
+
 
 class UserError(Exception):
     """Raised when trying to access a user that does not exist"""
+
+    pass
+
+
+class GameError(Exception):
+    """Raised when trying to access a game that does not exist"""
 
     pass
 
@@ -27,35 +36,56 @@ def uid(USER: str) -> str:
     >>> uid("abc")
     Traceback (most recent call last):
         ...
-    utils.UserError: User with username abc not found.
+    utils.UserError: User with username 'abc' not found.
     """
 
     r: dict = requests.get(f"{API}/users/{USER}").json()
     try:
         return r["data"]["id"]
     except KeyError:
-        raise UserError(f"User with username {USER} not found.")
+        raise UserError(f"User with username '{USER}' not found.")
 
 
 def username(UID: str) -> str:
     """
     Get a users username from their user ID.
+
+    >>> username("zx7gd1yx")
+    '1'
+    >>> username('7j477kvj')
+    'AnInternetTroll'
+    >>> username('Sesame Street')
+    Traceback (most recent call last):
+        ...
+    utils.UserError: User with uid 'Sesame Street' not found.
     """
     r: dict = requests.get(f"{API}/users/{UID}").json()
     try:
         return r["data"]["names"]["international"]
     except KeyError:
-        raise UserError(f"User with uid {UID} not found.")
+        raise UserError(f"User with uid '{UID}' not found.")
 
 
 def game(ABR: str) -> tuple[str, str]:
     """
     Get a games name and game ID from their abbreviation.
+
+    >>> game("mkw")
+    ('Mario Kart Wii', 'l3dxogdy')
+    >>> game("celestep8")
+    ('CELESTE Classic', '4d7e7z67')
+    >>> game("Fake Game")
+    Traceback (most recent call last):
+        ...
+    utils.GameError: Game with abbreviation 'Fake Game' not found.
     """
     r: dict = requests.get(f"{API}/games?abbreviation={ABR}").json()
-    GID: str = r["data"][0]["id"]
-    GAME: str = r["data"][0]["names"]["international"]
-    return (GAME, GID)
+    try:
+        GID: str = r["data"][0]["id"]
+        GAME: str = r["data"][0]["names"]["international"]
+        return (GAME, GID)
+    except IndexError:
+        raise GameError(f"Game with abbreviation '{ABR}' not found.")
 
 
 def ptime(s: float) -> str:

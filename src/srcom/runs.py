@@ -10,31 +10,38 @@ from sys import argv, exit
 import requests
 from utils import *
 
-fullgame: int = 0
-il: int = 0
 
-try:
-    UID = uid(argv[1])
-except UserError:
-    exit(0)
+def main() -> int:
+    fullgame: int = 0
+    il: int = 0
 
-for offset in count(0, 200):
-    r: dict = requests.get(
-        f"{API}/runs?user={UID}&max=200&offset={offset}"
-    ).json()
-    for run in r["data"]:
-        if run["level"] is None:
-            fullgame += 1
-        else:
-            il += 1
+    try:
+        UID = uid(argv[1])
+    except UserError:
+        return EXIT_FAILURE
 
-    p: list[dict[str, str]] = r["pagination"]["links"]
-    if not p or "next" not in p[-1].values():
-        break
+    for offset in count(0, 200):
+        r: dict = requests.get(
+            f"{API}/runs?user={UID}&max=200&offset={offset}"
+        ).json()
+        for run in r["data"]:
+            if run["level"] is None:
+                fullgame += 1
+            else:
+                il += 1
+
+        p: list[dict[str, str]] = r["pagination"]["links"]
+        if not p or "next" not in p[-1].values():
+            break
+
+    print(
+        f"Full Game: {fullgame}\n"
+        + f"Individual Level: {il}\n"
+        + f"Total: {fullgame + il}"
+    )
+    return EXIT_SUCCESS
 
 
-print(
-    f"Full Game: {fullgame}\n"
-    + f"Individual Level: {il}\n"
-    + f"Total: {fullgame + il}"
-)
+if __name__ == "__main__":
+    ret: int = main()
+    exit(ret)

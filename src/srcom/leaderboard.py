@@ -28,7 +28,7 @@ def pad(TIME: str, MS: bool) -> str:
     return f"{TIME}    " if "." not in TIME else TIME
 
 
-def main():
+def main() -> int:
     # Get the games categories
     GAME, GID = game(argv[1])
     r: dict = requests.get(f"{API}/games/{GID}/categories").json()
@@ -51,7 +51,7 @@ def main():
 
     # TODO: Support levels
     if not cid:
-        exit(0)
+        return EXIT_FAILURE
 
     # Get top 10
     r = requests.get(f"{API}/leaderboards/{GID}/category/{cid}?top=10").json()
@@ -85,7 +85,9 @@ def main():
         )
         + "```"
     )
+    return EXIT_SUCCESS
 
 
 if __name__ == "__main__":
-    main()
+    ret: int = main()
+    exit(ret)
