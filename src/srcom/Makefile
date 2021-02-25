@@ -37,7 +37,7 @@ objs/%.o: %.c
 # Phony targets
 .PHONY: clean test
 clean:
-	rm -rf objs/ bin/
+	rm -rf objs/ bin/ __pycache__/ ../__pycache__/
 
 # TODO: Less garbage testing
 test:
