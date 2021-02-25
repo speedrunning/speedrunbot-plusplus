@@ -64,7 +64,7 @@ rows: list[list[str]] = [
 MAXLEN: int = max([len(i[1]) for i in rows])
 
 print(
-    f"Top 10: {GAME} - {CAT}\n"
+    f"Top {len(rows)}: {GAME} - {CAT}\n"
     + "```"
     + "\n".join(
         [
