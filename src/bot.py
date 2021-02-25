@@ -6,7 +6,8 @@ from subprocess import CompletedProcess, run
 import discord
 from discord.ext import commands
 
-DATA: str = f"{Path(__file__).parent}/../data"
+PREFIX: Path = Path(__file__).parent
+DATA: str = f"{PREFIX}/../data"
 EXTENSIONS: tuple[str] = ("cogs.general", "cogs.src")
 
 
@@ -35,14 +36,9 @@ class SRBpp(commands.Bot):
     def execv(self, PROG: str, *ARGS: tuple[str]) -> CompletedProcess:
         """
         Run a program as a subprocess and return its output + return code
-
-        >>> SRBpp.execv("echo", "-n", "testy test")
-        CompletedProcess(args=('echo', '-n', 'testy test'), returncode=0, stdout='testy test', stderr='')
-        >>> SRBpp.execv("echo", "yet", "another", None, "testy test")
-        CompletedProcess(args=('echo', 'yet', 'another', 'testy test'), returncode=0, stdout='yet another testy test\\n', stderr='')
         """
         return run(
-            (PROG,) + tuple(filter(lambda x: x, ARGS)),
+            (f"{PREFIX}/{PROG}",) + tuple(filter(lambda x: x, ARGS)),
             capture_output=True,
             text=True,
         )

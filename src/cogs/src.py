@@ -1,11 +1,9 @@
-from pathlib import Path
 from subprocess import CompletedProcess
 
 import discord
 from discord.ext import commands
 
-FPATH: Path = Path(__file__).parent.absolute()
-PREFIX: str = f"{FPATH}/../srcom/bin"
+PREFIX: str = "srcom/bin"
 
 
 class Src(commands.Cog):
