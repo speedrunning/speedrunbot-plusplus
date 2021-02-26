@@ -68,12 +68,11 @@ size_t write_callback(const void *ptr, const size_t size, const size_t nmemb,
 /**
  * @brief Find the number of occurances of a substring in a string.
  * 
- * @param sub The substring to search for.
  * @param str The string to seach through.
- * @param strl The length of the string to search through.
+ * @param sub The substring to search for.
+ * @param subl The length of the substring.
  * @return unsigned int The number of occurances.
  */
-unsigned int substr(const char *const sub, const char *const str,
-                    const size_t strl);
+unsigned int substr(const char *str, const char *const sub, const int subl);
 
 #endif /* !__UTILS_H_ */

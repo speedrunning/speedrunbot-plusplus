@@ -73,18 +73,10 @@ void get_req(const char *uri, string_t *json)
 	curl_easy_cleanup(curl);
 }
 
-unsigned int substr(const char *const sub, const char *const str,
-                    const size_t strl)
+unsigned int substr(const char *str, const char *const sub, const int subl)
 {
 	unsigned int c = 0;
-	const size_t subl = strlen(sub);
-
-	for (size_t i = 0; i < strl - subl; i++) {
-		if (strstr(str + i, sub) == str + i) {
-			c++;
-			i += subl - 1;
-		}
-	}
-
+	for (str = strstr(str, sub); str; str = strstr(str + subl, sub))
+		c++;
 	return c;
 }
