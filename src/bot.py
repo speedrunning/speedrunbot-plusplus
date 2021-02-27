@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import datetime
 from pathlib import Path
 from subprocess import CompletedProcess, run
@@ -8,7 +9,9 @@ from discord.ext import commands
 
 PREFIX: Path = Path(__file__).parent
 DATA: str = f"{PREFIX}/../data"
-EXTENSIONS: tuple[str] = ("cogs.general", "cogs.src")
+EXTENSIONS: list[str] = [
+    f"cogs.{f[:-3]}" for f in os.listdir(f"{PREFIX}/cogs") if f.endswith(".py")
+]
 
 
 def get_prefix(bot, message):
