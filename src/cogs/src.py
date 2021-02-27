@@ -95,6 +95,18 @@ class Src(commands.Cog):
         embed = discord.Embed(title=TITLE, description=WR)
         await ctx.send(embed=embed)
 
+    @commands.command(name="verified")
+    async def verified(self, ctx, PLAYER: str = None):
+        if not PLAYER:
+            await ctx.send("Usage: `!verified [PLAYER NAME]`")
+            return
+
+        RET: CompletedProcess = self.bot.execv(f"{PREFIX}/verified", PLAYER)
+        embed = discord.Embed(
+            title="Runs verified: {PLAYER}", description=RET.stdout
+        )
+        await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Src(bot))
