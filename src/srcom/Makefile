@@ -1,11 +1,12 @@
 CC     := cc
-CFLAGS := -O3 -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wno-unused-result
+CFLAGS := -O3 -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes \
+		-Wno-unused-result
 INC    := -I../../include/srcom
 PY     := python3.9
 
 cprogs  := bin/games bin/modcount bin/wrs
 pyprogs := bin/categories bin/leaderboard bin/runs bin/verified bin/worldrecord \
-			bin/utils.py
+		bin/utils.py
 
 all: $(pyprogs) $(cprogs)
 $(shell mkdir -p bin/ objs/)
@@ -40,6 +41,7 @@ clean:
 
 # TODO: Less garbage testing
 test:
-	$(PY) -m doctest utils.py
 	$(PY) -m doctest leaderboard.py
+	$(PY) -m doctest runs.py
+	$(PY) -m doctest utils.py
 	$(PY) -m doctest verified.py
