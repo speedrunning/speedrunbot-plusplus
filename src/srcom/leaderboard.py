@@ -61,12 +61,16 @@ def main() -> int:
         [ptime(run["run"]["times"]["primary_t"]) for run in r["data"]["runs"]]
     )
 
-    # TODO: Support coop runs
+    # TODO: Strip flags from guests name
+    # Example: "[br][nl]Mango Man" -> "Mango Man"
     rows: list[list[str]] = [
         [
             str(run["place"]),
             pad(ptime(run["run"]["times"]["primary_t"]), MS),
-            username(run["run"]["players"][0]["id"]),
+            ", ".join(
+                username(player["id"]) if player["rel"] == "user" else player["name"]
+                for player in run["run"]["players"]
+            ),
         ]
         for run in r["data"]["runs"]
     ]

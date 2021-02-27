@@ -43,16 +43,20 @@ def main() -> int:
     # Get WR
     r = requests.get(f"{API}/leaderboards/{GID}/category/{cid}?top=1").json()
 
-    # TODO: Coop support
+    # TODO: Strip flags from guests name
+    # Example: "[br][nl]Mango Man" -> "Mango Man"
     WR: dict = r["data"]["runs"][0]["run"]
     TIME: str = ptime(WR["times"]["primary_t"])
-    PLAYER: str = username(WR["players"][0]["id"])
+    PLAYERS: str = ", ".join(
+        username(player["id"]) if player["rel"] == "user" else player["name"]
+        for player in WR["players"]
+    )
     VIDEOS: list[dict[str, str]] = WR["videos"]["links"]
 
     print(
         f"World Record: {GAME} - {CAT}\n"
-        + f"{TIME}  {PLAYER}\n"
-        + "\n".join([f"<{R['uri']}>" for R in VIDEOS])
+        + f"{TIME}  {PLAYERS}\n"
+        + "\n".join(f"<{R['uri']}>" for R in VIDEOS)
     )
     return EXIT_SUCCESS
 
