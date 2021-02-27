@@ -9,9 +9,9 @@ from discord.ext import commands
 
 PREFIX: Path = Path(__file__).parent
 DATA: str = f"{PREFIX}/../data"
-EXTENSIONS: list[str] = [
+EXTENSIONS: tuple[str] = tuple(
     f"cogs.{f[:-3]}" for f in os.listdir(f"{PREFIX}/cogs") if f.endswith(".py")
-]
+)
 
 
 def get_prefix(bot, message):
