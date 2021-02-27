@@ -5,6 +5,7 @@ This program returns the top 10 for a given game (argv[1]) as well as an
 optional category (argv[2]) and optional subcategory (argv[3]).
 """
 
+from re import sub
 from sys import argv, exit
 
 import requests
@@ -61,8 +62,6 @@ def main() -> int:
         [ptime(run["run"]["times"]["primary_t"]) for run in r["data"]["runs"]]
     )
 
-    # TODO: Strip flags from guests name
-    # Example: "[br][nl]Mango Man" -> "Mango Man"
     rows: list[list[str]] = [
         [
             str(run["place"]),
@@ -70,7 +69,7 @@ def main() -> int:
             ", ".join(
                 username(player["id"])
                 if player["rel"] == "user"
-                else player["name"]
+                else sub("^\[.*\]", "", player["name"])  # Regex to remove flags
                 for player in run["run"]["players"]
             ),
         ]

@@ -5,6 +5,7 @@ This program gets the current world record for a given game (argv[1]) and
 optionally a specific category (argv[2]) and subcategories (argv[3..]).
 """
 
+from re import sub
 from sys import argv, exit
 
 import requests
@@ -43,12 +44,12 @@ def main() -> int:
     # Get WR
     r = requests.get(f"{API}/leaderboards/{GID}/category/{cid}?top=1").json()
 
-    # TODO: Strip flags from guests name
-    # Example: "[br][nl]Mango Man" -> "Mango Man"
     WR: dict = r["data"]["runs"][0]["run"]
     TIME: str = ptime(WR["times"]["primary_t"])
     PLAYERS: str = ", ".join(
-        username(player["id"]) if player["rel"] == "user" else player["name"]
+        username(player["id"])
+        if player["rel"] == "user"
+        else sub("^\[.*\]", "", player["name"])  # Regex to remove flags
         for player in WR["players"]
     )
     VIDEOS: list[dict[str, str]] = WR["videos"]["links"]
