@@ -18,7 +18,7 @@ int main(int UNUSED(argc), char **argv)
 
 	/*
 	 * Each run will have a level. If the level is null, the run is a
-	 * fullgame one. Counting the number of "levels" is a quick and easy way
+	 * fullgame run. Counting the number of "levels" is a quick and easy way
 	 * to get the number of runs without the need of parsing the JSON.
 	 */
 	const unsigned int total = substr(runs.ptr, "\"level\":", 8);

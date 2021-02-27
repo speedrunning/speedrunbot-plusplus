@@ -1,5 +1,10 @@
 #!/usr/bin/env python3.9
 
+"""
+Get all the given categories for a given game (argv[1]). This includes fullgame,
+miscellaneous, and individual level categories.
+"""
+
 from sys import argv
 
 import requests

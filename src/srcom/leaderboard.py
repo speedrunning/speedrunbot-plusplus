@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.9
 
 """
-This program returns the top 10 for a given gave (argv[1]) as well as an
+This program returns the top 10 for a given game (argv[1]) as well as an
 optional category (argv[2]) and optional subcategory (argv[3]).
 """
 
@@ -56,7 +56,7 @@ def main() -> int:
     # Get top 10
     r = requests.get(f"{API}/leaderboards/{GID}/category/{cid}?top=10").json()
 
-    # Set this flag if no runs have milliseconds.
+    # Set this flag if atleast one run has milliseconds.
     MS: bool = "." in "".join(
         [ptime(run["run"]["times"]["primary_t"]) for run in r["data"]["runs"]]
     )

@@ -10,14 +10,14 @@
 
 #include "utils.h"
 
-void init_string(string_t *json)
+void init_string(string_t *str)
 {
-	json->len = 0;
-	json->ptr = malloc(json->len + 1);
-	if (json->ptr == NULL)
+	str->len = 0;
+	str->ptr = malloc(str->len + 1);
+	if (str->ptr == NULL)
 		exit(EXIT_FAILURE);
 
-	json->ptr[0] = '\0';
+	str->ptr[0] = '\0';
 	return;
 }
 
