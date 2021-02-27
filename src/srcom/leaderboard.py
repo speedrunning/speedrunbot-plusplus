@@ -68,7 +68,9 @@ def main() -> int:
             str(run["place"]),
             pad(ptime(run["run"]["times"]["primary_t"]), MS),
             ", ".join(
-                username(player["id"]) if player["rel"] == "user" else player["name"]
+                username(player["id"])
+                if player["rel"] == "user"
+                else player["name"]
                 for player in run["run"]["players"]
             ),
         ]
