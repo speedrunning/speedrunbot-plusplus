@@ -8,7 +8,7 @@ Use snake_case for variables and functions and whatnot. Use CAPS for constants i
 
 If a C/C++ function takes no parameters, write it as `type func(void)` instead of `type func()`.
 
-With the exception of Python because `black` is mean, use tabs.
+Use tabs. Even with `black`. `unexpand -t 4 --first-only file.py > file2.py` is your best friend.
 
 Begin a program with a shebang if appropriate and a comment explaining what the program does, for example:
 
