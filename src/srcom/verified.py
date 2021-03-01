@@ -16,12 +16,12 @@ from utils import *
 
 async def verified(UID: int) -> int:
 	"""
-	Get the number of runs verified/rejected by a user with the user id `UID`.
-	Each request can only return at most 200 runs, and because this command is
-	generally going to be used to track mods/verifiers with thousands of runs
-	verified, 25 requests are done in parallel. If none of the 25 requests have
-	0 runs in them (meaning all runs have been seen), another 25 requests are
-	made until the condition is met.
+	Get the number of runs verified/rejected by a user with the user id
+	`UID`. Each request can only return at most 200 runs, and because this
+	command is generally going to be used to track mods/verifiers with
+	thousands of runs verified, 25 requests are done in parallel. If none of
+	the 25 requests have 0 runs in them (meaning all runs have been seen),
+	another 25 requests are made until the condition is met.
 
 	>>> loop = asyncio.get_event_loop()
 	>>> loop.run_until_complete(verified("zx7gd1yx")) > 2000

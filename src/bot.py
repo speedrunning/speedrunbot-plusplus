@@ -37,7 +37,7 @@ class SRBpp(commands.Bot):
 
 	def execv(_, PROG: str, *ARGS: tuple[str]) -> CompletedProcess:
 		"""
-		Run a program as a subprocess and return its output + return code.
+		Run a program as a subprocess and return its output + exit code.
 		"""
 		return run(
 			(f"{PREFIX}/{PROG}",) + tuple(filter(lambda x: x, ARGS)),

@@ -8,7 +8,7 @@ from bot import DATA, SRBpp
 
 def check_jsons() -> None:
 	"""
-	Make sure all JSON configuration files are present
+	Make sure all JSON configuration files are present.
 	"""
 	CONFIG: str = f"{DATA}/config.json"
 	try:

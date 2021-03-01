@@ -15,9 +15,9 @@ from utils import *
 
 async def runs(UID: int) -> tuple[int, int]:
 	"""
-	Get the number of runs by a user with the user id `UID`. This function works
-	exactly the same as the one in `verified.py`, so read the docstring for that
-	one if you care about how it works.
+	Get the number of runs by a user with the user id `UID`. This function
+	works exactly the same as the one in `verified.py`, so read the
+	docstring for that one if you care about how it works.
 
 	>>> loop = asyncio.get_event_loop()
 	>>> loop.run_until_complete(runs("v81ggnp8"))
