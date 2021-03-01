@@ -6,8 +6,10 @@ This program gets the number of runs that a given player (argv[1]) has set.
 
 import asyncio
 import concurrent.futures
+from asyncio.events import AbstractEventLoop
 from itertools import count
 from sys import argv, exit
+from typing import Awaitable, Iterator
 
 import requests
 from utils import *
@@ -32,8 +34,8 @@ async def runs(UID: int) -> tuple[int, int]:
 
 	for offstart in count(0, 1000):
 		with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-			loop = asyncio.get_event_loop()
-			futures = (
+			loop: AbstractEventLoop = asyncio.get_event_loop()
+			futures: Iterator[Awaitable] = (
 				loop.run_in_executor(
 					executor,
 					requests.get,
@@ -59,17 +61,20 @@ def main() -> int:
 	except UserError:
 		return EXIT_FAILURE
 
-	loop = asyncio.get_event_loop()
-	fullgame, il = loop.run_until_complete(runs(UID))
+	FULLGAME: int
+	IL: int
+
+	LOOP: AbstractEventLoop = asyncio.get_event_loop()
+	FULLGAME, IL = LOOP.run_until_complete(runs(UID))
 
 	print(
-		f"Full Game: {fullgame}\n"
-		+ f"Individual Level: {il}\n"
-		+ f"Total: {fullgame + il}"
+		f"Full Game: {FULLGAME}\n"
+		+ f"Individual Level: {IL}\n"
+		+ f"Total: {FULLGAME + IL}"
 	)
 	return EXIT_SUCCESS
 
 
 if __name__ == "__main__":
-	ret: int = main()
-	exit(ret)
+	RET: int = main()
+	exit(RET)

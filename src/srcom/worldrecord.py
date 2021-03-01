@@ -57,11 +57,11 @@ def main() -> int:
 	print(
 		f"World Record: {GAME} - {CAT}\n"
 		+ f"{TIME}  {PLAYERS}\n"
-		+ "\n".join(f"<{R['uri']}>" for R in VIDEOS)
+		+ "\n".join(f"<{r['uri']}>" for r in VIDEOS)
 	)
 	return EXIT_SUCCESS
 
 
 if __name__ == "__main__":
-	ret: int = main()
-	exit(ret)
+	RET: int = main()
+	exit(RET)

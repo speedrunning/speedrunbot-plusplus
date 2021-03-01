@@ -35,9 +35,9 @@ def uid(USER: str) -> str:
 	utils.UserError: User with username 'abc' not found.
 	"""
 
-	r: dict = requests.get(f"{API}/users/{USER}").json()
+	R: dict = requests.get(f"{API}/users/{USER}").json()
 	try:
-		return r["data"]["id"]
+		return R["data"]["id"]
 	except KeyError:
 		raise UserError(f"User with username '{USER}' not found.")
 
@@ -55,9 +55,9 @@ def username(UID: str) -> str:
 	    ...
 	utils.UserError: User with uid 'Sesame Street' not found.
 	"""
-	r: dict = requests.get(f"{API}/users/{UID}").json()
+	R: dict = requests.get(f"{API}/users/{UID}").json()
 	try:
-		return r["data"]["names"]["international"]
+		return R["data"]["names"]["international"]
 	except KeyError:
 		raise UserError(f"User with uid '{UID}' not found.")
 
@@ -75,10 +75,10 @@ def game(ABR: str) -> tuple[str, str]:
 	    ...
 	utils.GameError: Game with abbreviation 'Fake Game' not found.
 	"""
-	r: dict = requests.get(f"{API}/games?abbreviation={ABR}").json()
+	R: dict = requests.get(f"{API}/games?abbreviation={ABR}").json()
 	try:
-		GID: str = r["data"][0]["id"]
-		GAME: str = r["data"][0]["names"]["international"]
+		GID: str = R["data"][0]["id"]
+		GAME: str = R["data"][0]["names"]["international"]
 		return (GAME, GID)
 	except IndexError:
 		raise GameError(f"Game with abbreviation '{ABR}' not found.")

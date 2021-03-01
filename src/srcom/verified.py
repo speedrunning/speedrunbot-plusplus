@@ -7,8 +7,10 @@ or rejected.
 
 import asyncio
 import concurrent.futures
+from asyncio.events import AbstractEventLoop
 from itertools import count
 from sys import argv, exit
+from typing import Awaitable, Iterable
 
 import requests
 from utils import *
@@ -35,8 +37,8 @@ async def verified(UID: int) -> int:
 
 	for offstart in count(0, 5000):
 		with concurrent.futures.ThreadPoolExecutor(max_workers=25) as executor:
-			loop = asyncio.get_event_loop()
-			futures = (
+			loop: AbstractEventLoop = asyncio.get_event_loop()
+			futures: Iterable[Awaitable] = (
 				loop.run_in_executor(
 					executor,
 					requests.get,
@@ -58,13 +60,13 @@ def main() -> int:
 	except UserError:
 		return EXIT_FAILURE
 
-	loop = asyncio.get_event_loop()
-	VERIFIED: int = loop.run_until_complete(verified(UID))
+	LOOP: AbstractEventLoop = asyncio.get_event_loop()
+	VERIFIED: int = LOOP.run_until_complete(verified(UID))
 
 	print(f"Verified: {VERIFIED}")
 	return EXIT_SUCCESS
 
 
 if __name__ == "__main__":
-	ret: int = main()
-	exit(ret)
+	RET: int = main()
+	exit(RET)

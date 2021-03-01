@@ -3,20 +3,17 @@ import os
 from datetime import datetime
 from pathlib import Path
 from subprocess import CompletedProcess, run
+from typing import Iterable
 
 import discord
 from discord.ext import commands
+from discord.message import Message
 
 PREFIX: Path = Path(__file__).parent
 DATA: str = f"{PREFIX}/../data"
-EXTENSIONS: tuple[str] = tuple(
+EXTENSIONS: Iterable[str] = (
 	f"cogs.{f[:-3]}" for f in os.listdir(f"{PREFIX}/cogs") if f.endswith(".py")
 )
-
-
-def get_prefix(bot, message):
-	prefixes = ("!", ";", "+")
-	return commands.when_mentioned_or(*prefixes)(bot, message)
 
 
 class SRBpp(commands.Bot):
@@ -35,7 +32,7 @@ class SRBpp(commands.Bot):
 		with open(f"{DATA}/config.json", "r") as f:
 			self.config = json.load(f)
 
-	def execv(_, PROG: str, *ARGS: tuple[str]) -> CompletedProcess:
+	def execv(_, PROG: str, *ARGS: tuple[str, ...]) -> CompletedProcess:
 		"""
 		Run a program as a subprocess and return its output + exit code.
 		"""
@@ -49,9 +46,9 @@ class SRBpp(commands.Bot):
 		"""
 		Code to run when the bot starts up.
 		"""
-		self.uptime = datetime.utcnow()
-		game: discord.Game = discord.Game("!help / ;help")
-		await self.change_presence(activity=game)
+		self.uptime: datetime = datetime.utcnow()
+		GAME: discord.Game = discord.Game("!help / ;help")
+		await self.change_presence(activity=GAME)
 
 	async def close(self) -> None:
 		"""
@@ -70,3 +67,12 @@ class SRBpp(commands.Bot):
 		Run the bot.
 		"""
 		super().run(self.config["token"], reconnect=True)
+
+
+def get_prefix(bot: SRBpp, message: Message) -> list[str]:
+	"""
+	Gets the list of prefixes that can be used to call the bot, including
+	pinging the bot.
+	"""
+	PREFIXES: tuple[str, ...] = ("!", ";", "+")
+	return commands.when_mentioned_or(*PREFIXES)(bot, message)

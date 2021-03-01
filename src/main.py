@@ -19,7 +19,11 @@ def check_jsons() -> None:
 			json.dump({"token": TOKEN}, f, indent=4)
 
 
-if __name__ == "__main__":
+def main() -> None:
 	check_jsons()
-	bot = SRBpp()
-	bot.run()
+	BOT: SRBpp = SRBpp()
+	BOT.run()
+
+
+if __name__ == "__main__":
+	main()

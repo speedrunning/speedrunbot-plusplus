@@ -12,18 +12,21 @@ from utils import *
 
 
 def main() -> int:
+	GAME: int
+	GID: int
+
 	GAME, GID = game(argv[1])
 	r: dict = requests.get(f"{API}/games/{GID}/categories").json()
 
-	FULLGAME: tuple[str] = tuple(
+	FULLGAME: tuple[str, ...] = tuple(
 		c["name"]
 		for c in r["data"]
 		if c["miscellaneous"] == False and c["type"] == "per-game"
 	)
-	MISC: tuple[str] = tuple(
+	MISC: tuple[str, ...] = tuple(
 		c["name"] for c in r["data"] if c["miscellaneous"] == True
 	)
-	IL: tuple[str] = tuple(
+	IL: tuple[str, ...] = tuple(
 		c["name"]
 		for c in r["data"]
 		if c["miscellaneous"] == False and c["type"] == "per-level"
@@ -45,5 +48,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-	ret: int = main()
-	exit(ret)
+	RET: int = main()
+	exit(RET)
