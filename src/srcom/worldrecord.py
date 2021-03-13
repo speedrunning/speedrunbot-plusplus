@@ -13,7 +13,7 @@ from utils import *
 
 
 def main() -> int:
-	# Get the game ID and name
+	# Get the game ID and name.
 	GAME: str
 	GID: str
 	try:
@@ -22,43 +22,56 @@ def main() -> int:
 		print(f"Error: {e}", file=stderr)
 		return EXIT_FAILURE
 
-	# Get the games categories
+	# Get the games categories.
 	r = requests.get(f"{API}/games/{GID}/categories").json()
 	CAT: str
 	cid: str = None
+	lflag: bool = False
 
 	try:
 		CAT = argv[2]
-		for c in r["data"]:
-			if c["name"] == CAT:
-				cid = c["id"]
-				break
-	# Get default category if none supplied
+		cid = getcid(CAT, r)
+		if not cid:
+			r = requests.get(f"{API}/games/{GID}/levels").json()
+			cid = getcid(CAT, r)
+			lflag = True
+		if not cid:
+			print(f"Error: Category with name '{CAT}' not found.", file=stderr)
+			return EXIT_FAILURE
+	# Get default category if none supplied.
 	except IndexError:
-		for c in r["data"]:
-			if c["type"] == "per-game":
-				CAT = c["name"]
-				cid = c["id"]
-				break
+		try:
+			CAT = r["data"][0]["name"]
+			cid = r["data"][0]["id"]
+			if r["data"][0]["type"] == "per-level":
+				lflag = True
+		except IndexError:  # I don't even know if this is possible, but sr.c staff are ghosting me.
+			print(
+				f"Error: The game '{argv[1]}' does not have any categories.", file=stderr
+			)
+			return EXIT_FAILURE
 
-	# TODO: Support levels
-	if not cid:
-		return EXIT_FAILURE
-
-	# Get WR
+	# Get WR.
 	VID: str
 	VVAL: str
 	try:
 		VID, VVAL = subcatid(cid, argv[3])
 	except IndexError:
 		VID, VVAL = "", ""
-	except SubcatError as e:
+	except (SubcatError, NotSupportedError) as e:
 		print(f"Error: {e}", file=stderr)
 		return EXIT_FAILURE
 
-	r = requests.get(
-		f"{API}/leaderboards/{GID}/category/{cid}?top=1&var-{VID}={VVAL}"
-	).json()
+	if lflag:  # ILs
+		r = requests.get(f"{API}/levels/{cid}/categories").json()
+		ILCID: str = r["data"][0]["id"]
+		r = requests.get(
+			f"{API}/leaderboards/{GID}/level/{cid}/{ILCID}?top=10"
+		).json()
+	else:
+		r = requests.get(
+			f"{API}/leaderboards/{GID}/category/{cid}?top=10&var-{VID}={VVAL}"
+		).json()
 
 	WR: dict = r["data"]["runs"][0]["run"]
 	TIME: str = ptime(WR["times"]["primary_t"])
@@ -68,12 +81,21 @@ def main() -> int:
 		else sub("^\[.*\]", "", player["name"])  # Regex to remove flags
 		for player in WR["players"]
 	)
-	VIDEOS: list[dict[str, str]] = WR["videos"]["links"]
+	VIDEOS: Union[list[dict[str, str]], None]
+	try:
+		VIDEOS = WR["videos"]["links"]
+	except TypeError:  # No video.
+		VIDEOS = None
 
 	print(
-		f"World Record: {GAME} - {CAT}\n"
+		f"World Record: {GAME} - {CAT}"
+		+ (f" - {argv[3]}\n" if VID else "\n")
 		+ f"{TIME}  {PLAYERS}\n"
-		+ "\n".join(f"<{r['uri']}>" for r in VIDEOS)
+		+ (
+			"\n".join(f"<{r['uri']}>" for r in VIDEOS)
+			if type(VIDEOS) == list
+			else "No video available."
+		)
 	)
 	return EXIT_SUCCESS
 

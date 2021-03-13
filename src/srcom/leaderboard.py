@@ -35,7 +35,7 @@ def main() -> int:
 	GAME: str
 	GID: str
 
-	# Get the games categories
+	# Get the games categories.
 	try:
 		GAME, GID = game(argv[1])
 	except GameError as e:
@@ -44,39 +44,52 @@ def main() -> int:
 
 	r: dict = requests.get(f"{API}/games/{GID}/categories").json()
 	cid: str = None
+	lflag: bool = False
 
 	try:
 		CAT = argv[2]
-		for c in r["data"]:
-			if c["name"] == CAT:
-				cid = c["id"]
-				break
-	# Get default category if none supplied
+		cid = getcid(CAT, r)
+		if not cid:
+			r = requests.get(f"{API}/games/{GID}/levels").json()
+			cid = getcid(CAT, r)
+			lflag = True
+		if not cid:
+			print(f"Error: Category with name '{CAT}' not found.", file=stderr)
+			return EXIT_FAILURE
+	# Get default category if none supplied.
 	except IndexError:
-		for c in r["data"]:
-			if c["type"] == "per-game":
-				CAT = c["name"]
-				cid = c["id"]
-				break
+		try:
+			CAT = r["data"][0]["name"]
+			cid = r["data"][0]["id"]
+			if r["data"][0]["type"] == "per-level":
+				lflag = True
+		except IndexError:  # I don't even know if this is possible, but sr.c staff are ghosting me.
+			print(
+				f"Error: The game '{argv[1]}' does not have any categories.", file=stderr
+			)
+			return EXIT_FAILURE
 
-	# TODO: Support levels
-	if not cid:
-		return EXIT_FAILURE
-
-	# Get top 10
+	# Get top 10.
 	VID: str
 	VVAL: str
 	try:
 		VID, VVAL = subcatid(cid, argv[3])
 	except IndexError:
 		VID, VVAL = "", ""
-	except SubcatError as e:
+	except (SubcatError, NotSupportedError) as e:
 		print(f"Error: {e}", file=stderr)
 		return EXIT_FAILURE
 
-	r = requests.get(
-		f"{API}/leaderboards/{GID}/category/{cid}?top=10&var-{VID}={VVAL}"
-	).json()
+	if lflag:  # ILs
+		r = requests.get(f"{API}/levels/{cid}/categories").json()
+		ILCID: str = r["data"][0]["id"]
+		r = requests.get(
+			f"{API}/leaderboards/{GID}/level/{cid}/{ILCID}?top=10"
+		).json()
+	else:
+		r = requests.get(
+			f"{API}/leaderboards/{GID}/category/{cid}?top=10&var-{VID}={VVAL}"
+		).json()
 
 	# Set this flag if atleast one run has milliseconds.
 	MS: bool = "." in "".join(
@@ -97,7 +110,7 @@ def main() -> int:
 		for run in r["data"]["runs"]
 	)
 
-	# Length of the longest run time, used for output padding
+	# Length of the longest run time, used for output padding.
 	MAXLEN: int = max(len(i[1]) for i in ROWS)
 
 	print(

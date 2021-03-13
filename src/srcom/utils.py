@@ -5,6 +5,8 @@ This file contains all sorts of variables and utilities used in the sr.c
 related programs.
 """
 
+from typing import Union
+
 import requests
 
 API: str = "https://www.speedrun.com/api/v1"
@@ -23,6 +25,10 @@ class GameError(Exception):
 
 class SubcatError(Exception):
 	"""Raised when trying to get a subcategory that does not exist."""
+
+
+class NotSupportedError(Exception):
+	"""Raised when trying to use a feature that is not yet supported."""
 
 
 def uid(USER: str) -> str:
@@ -104,11 +110,14 @@ def subcatid(CID: str, SUBCAT: str) -> tuple[str, str]:
 	utils.SubcatError: Subcategory with label 'Gem Skips' not found.
 	"""
 	R: dict = requests.get(f"{API}/categories/{CID}/variables").json()
-	for var in R["data"]:
-		if var["is-subcategory"]:
-			for v in var["values"]["values"]:
-				if var["values"]["values"][v]["label"] == SUBCAT:
-					return (var["id"], v)
+	try:
+		for var in R["data"]:
+			if var["is-subcategory"]:
+				for v in var["values"]["values"]:
+					if var["values"]["values"][v]["label"] == SUBCAT:
+						return (var["id"], v)
+	except KeyError:
+		raise NotSupportedError(f"Subcategories are not yet supported for ILs.")
 	raise SubcatError(f"Subcategory with label '{SUBCAT}' not found.")
 
 
@@ -141,3 +150,19 @@ def ptime(s: float) -> str:
 	if not ms:
 		return "{}:{:02d}:{:02d}".format(int(h), int(m), int(s))
 	return "{}:{:02d}:{:02d}.{:03d}".format(int(h), int(m), int(s), ms)
+
+
+def getcid(CAT: str, R: dict) -> Union[str, None]:
+	"""
+	Get the category ID with the name `CAT` from the request `R`. This
+	function doesn't do the request itself, since it's meant to work with
+	both fullgame and IL's, amongst other reasons.
+
+	# TODO: Fix these broken tests.
+	>> r: dict = requests.get(f"{API}/levels/").json()
+	>> getcid("", )
+	"""
+	for c in R["data"]:
+		if c["name"] == CAT:
+			return c["id"]
+	return None
