@@ -4,7 +4,7 @@ CFLAGS := -O3 -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes \
 INC    := -I../../include/srcom
 PY     := python3.9
 
-cprogs  := bin/games bin/modcount bin/wrs
+cprogs  := bin/categoriesplayed bin/games bin/modcount bin/worldrecords
 pyprogs := bin/categories bin/leaderboard bin/runs bin/verified bin/worldrecord \
 		bin/utils.py
 
@@ -22,11 +22,19 @@ bin/%: %.py
 
 # C programs
 
-# The special rule for `bin/games` comes first to ensure that it doesn't get
-# linked without `-ljansson`
+# The special rule for `bin/categoriesplayed` and `bin/games` comes first to
+# ensure that they don't get linked without `-ljansson`. Additionally, `games`
+# and `categoriesplayed` are almost identical, so they both use `games.c`, with
+# preproccessor statements.
 .PRECIOUS: objs/%.o
+objs/categoriesplayed.o: games.c
+	$(CC) $(CFLAGS) $(INC) -DCATEGORIES -o $@ -c $<
+
 objs/%.o: %.c
 	$(CC) $(CFLAGS) $(INC) -o $@ -c $<
+
+bin/categoriesplayed: objs/categoriesplayed.o objs/utils.o
+	$(CC) $(CFLAGS) -o $@ $^ -lcurl -ljansson
 
 bin/games: objs/games.o objs/utils.o
 	$(CC) $(CFLAGS) -o $@ $^ -lcurl -ljansson

@@ -16,7 +16,7 @@ int main(int UNUSED(argc), char **argv)
 	string_t runs;
 	init_string(&runs);
 
-	/* Get players PRs */
+	/* Get players PRs. */
 	static char uri[URIBUF];
 	snprintf(uri, URIBUF, API "/users/%s/personal-bests?top=1", uid);
 	get_req(uri, &runs);
