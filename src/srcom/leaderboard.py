@@ -36,7 +36,12 @@ def main() -> int:
 	GID: str
 
 	# Get the games categories
-	GAME, GID = game(argv[1])
+	try:
+		GAME, GID = game(argv[1])
+	except GameError as e:
+		print(f"Error: {e}", file=stderr)
+		return EXIT_FAILURE
+
 	r: dict = requests.get(f"{API}/games/{GID}/categories").json()
 	cid: str = None
 
