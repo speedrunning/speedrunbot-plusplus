@@ -10,19 +10,16 @@ elif command -v gcc >/dev/null 2>&1; then
 elif command -v cc >/dev/null 2>&1; then
 	CC="cc"
 else
-	echo "You must install a C compiler before setting up the bot. Clang or \
-	GCC are recommended."
+	echo "You must install a C compiler before setting up the bot. Clang or GCC are recommended."
 	exit 0
 fi
 
 # Check for Python 3.9.
 if ! command -v python >/dev/null 2>&1; then
-	echo "You must install python before setting up the bot. Python 3.9 is \
-	recommended."
+	echo "You must install python before setting up the bot. Python 3.9 is recommended."
 	exit 0
 elif ! command -v python3.9 >/dev/null 2>&1; then
-	echo "WARNING: Python3.9 is not installed. There is no guarantee the \
-	bot will work."
+	echo "WARNING: Python3.9 is not installed. There is no guarantee the bot will work."
 fi
 
 # Run the Makefiles.
