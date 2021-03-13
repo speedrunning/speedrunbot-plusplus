@@ -15,8 +15,8 @@ else
 fi
 
 # Check for Python 3.9.
-if ! command -v python >/dev/null 2>&1; then
-	echo "You must install python before setting up the bot. Python 3.9 is recommended."
+if ! command -v python3 >/dev/null 2>&1; then
+	echo "You must install python3 before setting up the bot. Python 3.9 is recommended."
 	exit 0
 elif ! command -v python3.9 >/dev/null 2>&1; then
 	echo "WARNING: Python3.9 is not installed. There is no guarantee the bot will work."
@@ -27,6 +27,12 @@ printf "Command to gain superuser privileges [sudo]: "
 read -r SU
 test "$SU" = "" && SU="sudo"
 echo "Installing dependencies..."
+if command -v python3.9 >/dev/null 2>&1; then
+	PY="python3.9"
+else
+	PY="python3"
+fi
+$PY -m pip install -r requirements.txt
 
 # Assuming debian based, everyone else needs to deal with it.
 yes | $SU apt install libjansson-dev libcurl4-openssl-dev >/dev/null
