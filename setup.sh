@@ -2,6 +2,25 @@
 
 # This is the setup script for the bot.
 
+install_python39() {
+	$(SU) apt update
+	yes | $(SU) apt install build-essential zlib1g-dev libncurses5-dev \
+		libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev \
+		libreadline-dev libffi-dev curl libbz2-dev
+	wget https://www.python.org/ftp/python/3.9.1/Python-3.9.1.tgz
+	tar -xf Python-3.9.1.tgz
+	cd Python-3.9.1 || exit 1
+	./configure --enable-optimizations
+	make -j "$(nproc)"
+	$(SU) make altinstall
+	rm -rf Python-3.9.1
+}
+
+# I'm very cool and use Doas instead of Sudo. Doas gang rise up.
+printf "Command to gain superuser privileges [sudo]: "
+read -r SU
+test "$SU" = "" && SU="sudo"
+
 # Check for C compilers. Clang is preferred, then GCC, then the systems default.
 if command -v clang >/dev/null 2>&1; then
 	CC="clang"
@@ -20,12 +39,11 @@ if ! command -v python3 >/dev/null 2>&1; then
 	exit 0
 elif ! command -v python3.9 >/dev/null 2>&1; then
 	echo "WARNING: Python3.9 is not installed. There is no guarantee the bot will work."
+	printf "Do you want to install python3.9? (Only tested on Debian) [y/N]: "
+	read -r C
+	test "$C" = "y" && install_python39
 fi
 
-# I'm very cool and use Doas instead of Sudo. Doas gang rise up.
-printf "Command to gain superuser privileges [sudo]: "
-read -r SU
-test "$SU" = "" && SU="sudo"
 echo "Installing dependencies..."
 if command -v python3.9 >/dev/null 2>&1; then
 	PY="python3.9"
