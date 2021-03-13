@@ -6,7 +6,7 @@ optionally a specific category (argv[2]) and subcategories (argv[3..]).
 """
 
 from re import sub
-from sys import argv, exit
+from sys import argv, exit, stderr
 
 import requests
 from utils import *
@@ -48,6 +48,9 @@ def main() -> int:
 		VID, VVAL = subcatid(cid, argv[3])
 	except IndexError:
 		VID, VVAL = "", ""
+	except SubcatError as e:
+		print(f"Error: {e}", file=stderr)
+		return EXIT_FAILURE
 
 	r = requests.get(
 		f"{API}/leaderboards/{GID}/category/{cid}?top=1&var-{VID}={VVAL}"

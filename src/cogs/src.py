@@ -20,6 +20,11 @@ class Src(commands.Cog):
 			return
 
 		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/wrs", PLAYER)
+
+		if RET.returncode == 1:
+			await ctx.send(RET.stderr)
+			return
+
 		embed = discord.Embed(
 			title=f"World Record Count: {PLAYER}", description=RET.stdout
 		)
@@ -32,6 +37,11 @@ class Src(commands.Cog):
 			return
 
 		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/runs", PLAYER)
+
+		if RET.returncode == 1:
+			await ctx.send(RET.stderr)
+			return
+
 		embed = discord.Embed(title=f"Run Count: {PLAYER}", description=RET.stdout)
 		await ctx.send(embed=embed)
 
@@ -42,6 +52,11 @@ class Src(commands.Cog):
 			return
 
 		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/games", PLAYER)
+
+		if RET.returncode == 1:
+			await ctx.send(RET.stderr)
+			return
+
 		embed = discord.Embed(title=f"Games Played: {PLAYER}", description=RET.stdout)
 		await ctx.send(embed=embed)
 
@@ -52,6 +67,11 @@ class Src(commands.Cog):
 			return
 
 		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/modcount", PLAYER)
+
+		if RET.returncode == 1:
+			await ctx.send(RET.stderr)
+			return
+
 		embed = discord.Embed(
 			title=f"Leaderboards Moderated: {PLAYER}", description=RET.stdout
 		)
@@ -64,6 +84,11 @@ class Src(commands.Cog):
 			return
 
 		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/categories", GAME)
+
+		if RET.returncode == 1:
+			await ctx.send(RET.stderr)
+			return
+
 		TITLE, CATS = RET.stdout.split("\n", 1)
 		embed = discord.Embed(title=TITLE, description=CATS)
 		await ctx.send(embed=embed)
@@ -81,6 +106,11 @@ class Src(commands.Cog):
 		RET: CompletedProcess = self.bot.execv(
 			f"{PREFIX}/leaderboard", GAME, CAT, SUBCAT
 		)
+
+		if RET.returncode == 1:
+			await ctx.send(RET.stderr)
+			return
+
 		TITLE, LB = RET.stdout.split("\n", 1)
 		embed = discord.Embed(title=TITLE, description=LB)
 		await ctx.send(embed=embed)
@@ -98,6 +128,11 @@ class Src(commands.Cog):
 		RET: CompletedProcess = self.bot.execv(
 			f"{PREFIX}/worldrecord", GAME, CAT, SUBCAT
 		)
+
+		if RET.returncode == 1:
+			await ctx.send(RET.stderr)
+			return
+
 		TITLE, WR = RET.stdout.split("\n", 1)
 		embed = discord.Embed(title=TITLE, description=WR)
 		await ctx.send(embed=embed)
@@ -109,6 +144,11 @@ class Src(commands.Cog):
 			return
 
 		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/verified", PLAYER)
+
+		if RET.returncode == 1:
+			await ctx.send(RET.stderr)
+			return
+
 		embed = discord.Embed(title="Runs verified: {PLAYER}", description=RET.stdout)
 		await ctx.send(embed=embed)
 

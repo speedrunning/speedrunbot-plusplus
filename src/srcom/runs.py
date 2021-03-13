@@ -8,7 +8,7 @@ import asyncio
 import concurrent.futures
 from asyncio.events import AbstractEventLoop
 from itertools import count
-from sys import argv, exit
+from sys import argv, exit, stderr
 from typing import Awaitable, Iterator
 
 import requests
@@ -58,7 +58,8 @@ async def runs(UID: int) -> tuple[int, int]:
 def main() -> int:
 	try:
 		UID = uid(argv[1])
-	except UserError:
+	except UserError as e:
+		print(f"Error: {e}", file=stderr)
 		return EXIT_FAILURE
 
 	FULLGAME: int

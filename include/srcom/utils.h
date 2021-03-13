@@ -40,7 +40,7 @@ void init_string(string_t *str);
  * @brief Get a players user ID.
  * 
  * @param username The players speedrun.com username.
- * @return char* The players user ID.
+ * @return char* The players user ID, or NULL on error.
  */
 char *get_uid(const char *const username);
 

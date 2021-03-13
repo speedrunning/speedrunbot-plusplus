@@ -9,7 +9,7 @@ import asyncio
 import concurrent.futures
 from asyncio.events import AbstractEventLoop
 from itertools import count
-from sys import argv, exit
+from sys import argv, exit, stderr
 from typing import Awaitable, Iterable
 
 import requests
@@ -57,7 +57,8 @@ async def verified(UID: int) -> int:
 def main() -> int:
 	try:
 		UID: str = uid(argv[1])
-	except UserError:
+	except UserError as e:
+		print(f"Error: {e}", file=stderr)
 		return EXIT_FAILURE
 
 	LOOP: AbstractEventLoop = asyncio.get_event_loop()

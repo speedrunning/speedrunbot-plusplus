@@ -5,7 +5,7 @@ Get all the given categories for a given game (argv[1]). This includes fullgame,
 miscellaneous, and individual level categories.
 """
 
-from sys import argv
+from sys import argv, stderr
 
 import requests
 from utils import *
@@ -15,7 +15,12 @@ def main() -> int:
 	GAME: int
 	GID: int
 
-	GAME, GID = game(argv[1])
+	try:
+		GAME, GID = game(argv[1])
+	except GameError as e:
+		print(f"Error: {e}", file=stderr)
+		return EXIT_FAILURE
+
 	r: dict = requests.get(f"{API}/games/{GID}/categories").json()
 
 	FULLGAME: tuple[str, ...] = tuple(

@@ -29,6 +29,12 @@ bool in_games(char *gid)
 int main(int UNUSED(argc), char **argv)
 {
 	char *uid = get_uid(argv[1]);
+	if (!uid) {
+		fprintf(stderr, "Error: User with username '%s' not found.\n",
+		        argv[1]);
+		return EXIT_FAILURE;
+	}
+
 	string_t prs;
 	init_string(&prs);
 
@@ -41,8 +47,11 @@ int main(int UNUSED(argc), char **argv)
 	json_t *root, *data;
 	json_error_t error;
 	root = json_loads(prs.ptr, 0, &error);
-	if (!root)
+	if (!root) {
+		fputs("Error: Unable to parse sr.c reponse, try again later.\n",
+		      stderr);
 		return EXIT_FAILURE;
+	}
 
 	/* Loop through PRs and find number of unique games */
 	unsigned int c = 0;

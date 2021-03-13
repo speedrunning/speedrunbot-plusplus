@@ -10,6 +10,11 @@
 int main(int UNUSED(argc), char **argv)
 {
 	char *uid = get_uid(argv[1]);
+	if (!uid) {
+		fprintf(stderr, "Error: User with username '%s' not found.\n",
+		        argv[1]);
+		return EXIT_FAILURE;
+	}
 
 	string_t games, series;
 	init_string(&games);

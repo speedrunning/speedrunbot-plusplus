@@ -33,6 +33,8 @@ char *get_uid(const char *const username)
 	static char uid[UIDBUF];
 	sscanf(user.ptr, "{\"data\":[{\"id\":\"%[^\"]", uid);
 
+	if (uid[0] == '\0')
+		return NULL;
 	return uid;
 }
 

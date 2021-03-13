@@ -6,7 +6,7 @@ optional category (argv[2]) and optional subcategory (argv[3]).
 """
 
 from re import sub
-from sys import argv, exit
+from sys import argv, exit, stderr
 from typing import Iterable
 
 import requests
@@ -65,6 +65,9 @@ def main() -> int:
 		VID, VVAL = subcatid(cid, argv[3])
 	except IndexError:
 		VID, VVAL = "", ""
+	except SubcatError as e:
+		print(f"Error: {e}", file=stderr)
+		return EXIT_FAILURE
 
 	r = requests.get(
 		f"{API}/leaderboards/{GID}/category/{cid}?top=10&var-{VID}={VVAL}"
@@ -93,7 +96,8 @@ def main() -> int:
 	MAXLEN: int = max(len(i[1]) for i in ROWS)
 
 	print(
-		f"Top {len(ROWS)}: {GAME} - {CAT}\n"
+		f"Top {len(ROWS)}: {GAME} - {CAT}"
+		+ (f" - {argv[3]}\n" if VID else "\n")
 		+ "```"
 		+ "\n".join(
 			f"{row[0].rjust(2).ljust(3)} {row[1].rjust(MAXLEN).ljust(MAXLEN + 1)} {row[2]}"
