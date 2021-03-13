@@ -16,7 +16,9 @@ class Src(commands.Cog):
 	@commands.command(name="wrs")
 	async def wrs(self, ctx: Context, PLAYER: str = None) -> None:
 		if not PLAYER:
-			await ctx.send("Usage: `!wrs [PLAYER NAME]`")
+			await ctx.send(
+				"Usage: `!wrs [PLAYER NAME]`\n" + "Example: `!wrs AnInternetTroll`"
+			)
 			return
 
 		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/wrs", PLAYER)
@@ -33,7 +35,9 @@ class Src(commands.Cog):
 	@commands.command(name="runs")
 	async def runs(self, ctx: Context, PLAYER: str = None) -> None:
 		if not PLAYER:
-			await ctx.send("Usage: `!runs [PLAYER NAME]`")
+			await ctx.send(
+				"Usage: `!runs [PLAYER NAME]`\n" + "Example: `!runs AnInternetTroll`"
+			)
 			return
 
 		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/runs", PLAYER)
@@ -48,7 +52,9 @@ class Src(commands.Cog):
 	@commands.command(name="games")
 	async def games(self, ctx: Context, PLAYER: str = None) -> None:
 		if not PLAYER:
-			await ctx.send("Usage: `!games [PLAYER NAME]`")
+			await ctx.send(
+				"Usage: `!games [PLAYER NAME]`\n" + "Example: `!games AnInternetTroll`"
+			)
 			return
 
 		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/games", PLAYER)
@@ -63,7 +69,9 @@ class Src(commands.Cog):
 	@commands.command(name="modcount", aliases=("mc",))
 	async def modcount(self, ctx: Context, PLAYER: str = None) -> None:
 		if not PLAYER:
-			await ctx.send("Usage: `!modcount [PLAYER NAME]`")
+			await ctx.send(
+				"Usage: `!modcount [PLAYER NAME]`" + "Example: `!modcount AnInternetTroll`"
+			)
 			return
 
 		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/modcount", PLAYER)
@@ -80,7 +88,9 @@ class Src(commands.Cog):
 	@commands.command(name="categories", aliases=("cats",))
 	async def categories(self, ctx: Context, GAME: str = None) -> None:
 		if not GAME:
-			await ctx.send("Usage: `!categories [GAME]`")
+			await ctx.send(
+				"Usage: `!categories [GAME]`\n" + "Example: `!categories mcbe`"
+			)
 			return
 
 		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/categories", GAME)
@@ -99,7 +109,8 @@ class Src(commands.Cog):
 	) -> None:
 		if not GAME:
 			await ctx.send(
-				"Usage: `!leaderboard [GAME] [CATEGORY (Optional)] [SUBCATEGORY (Optional)]`"
+				"Usage: `!leaderboard [GAME] [CATEGORY (Optional)] [SUBCATEGORY (Optional)]`\n"
+				+ 'Example: `!leaderboard mkw "Nitro Tracks"`'
 			)
 			return
 
@@ -121,7 +132,8 @@ class Src(commands.Cog):
 	) -> None:
 		if not GAME:
 			await ctx.send(
-				"Usage: `!worldrecord [GAME] [CATEGORY (Optional)] [SUBCATEGORY (Optional)]`"
+				"Usage: `!worldrecord [GAME] [CATEGORY (Optional)] [SUBCATEGORY (Optional)]`\n"
+				+ 'Example: `!worldrecord mkw "Nitro Tracks"`'
 			)
 			return
 
@@ -140,7 +152,10 @@ class Src(commands.Cog):
 	@commands.command(name="verified")
 	async def verified(self, ctx: Context, PLAYER: str = None) -> None:
 		if not PLAYER:
-			await ctx.send("Usage: `!verified [PLAYER NAME]`")
+			await ctx.send(
+				"Usage: `!verified [PLAYER NAME]`\n"
+				+ "Example: `!verified AnInternetTroll`"
+			)
 			return
 
 		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/verified", PLAYER)
