@@ -13,6 +13,7 @@ def check_jsons() -> None:
 	CONFIG: str = f"{DATA}/config.json"
 	try:
 		f: IO = open(CONFIG, "r")
+		f.close()
 	except FileNotFoundError:
 		TOKEN: str = input("BOT SETUP - Enter bot token: ")
 		with open(CONFIG, "w+") as f:
