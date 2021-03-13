@@ -22,6 +22,15 @@ elif ! command -v python3.9 >/dev/null 2>&1; then
 	echo "WARNING: Python3.9 is not installed. There is no guarantee the bot will work."
 fi
 
+# I'm very cool and use Doas instead of Sudo. Doas gang rise up.
+printf "Command to gain superuser privileges [sudo]: "
+read -r SU
+test "$SU" = "" && SU="sudo"
+echo "Installing dependencies..."
+
+# Assuming debian based, everyone else needs to deal with it.
+yes | $SU apt install libjansson-dev libcurl4-openssl-dev >/dev/null
+
 # Run the Makefiles.
 SCR_PATH=$(cd "$(dirname "$0")" && pwd)
 cd "$SCR_PATH"/src/srcom && make CC=$CC
