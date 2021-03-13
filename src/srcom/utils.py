@@ -14,11 +14,15 @@ EXIT_FAILURE: int = 1
 
 
 class UserError(Exception):
-	"""Raised when trying to access a user that does not exist"""
+	"""Raised when trying to access a user that does not exist."""
 
 
 class GameError(Exception):
-	"""Raised when trying to access a game that does not exist"""
+	"""Raised when trying to access a game that does not exist."""
+
+
+class SubcatError(Exception):
+	"""Raised when trying to get a subcategory that does not exist."""
 
 
 def uid(USER: str) -> str:
@@ -82,6 +86,30 @@ def game(ABR: str) -> tuple[str, str]:
 		return (GAME, GID)
 	except IndexError:
 		raise GameError(f"Game with abbreviation '{ABR}' not found.")
+
+
+def subcatid(CID: str, SUBCAT: str) -> tuple[str, str]:
+	"""
+	Get the subcategory ID and and value ID from the given category ID and
+	subcategory value label. Whoever decided to handle subcategories like
+	this should consider switching professions.
+
+	>>> subcatid("w20gmyzk", "Random Seed")
+	('5ly7759l', '5q804wk1')
+	>>> subcatid("wk68zp21", "Skips")
+	('j84rwjl9', '81p4xxg1')
+	>>> subcatid("mkeoz98d", "Gem Skips")
+	Traceback (most recent call last):
+	    ...
+	utils.SubcatError: Subcategory with label 'Gem Skips' not found.
+	"""
+	R: dict = requests.get(f"{API}/categories/{CID}/variables").json()
+	for var in R["data"]:
+		if var["is-subcategory"]:
+			for v in var["values"]["values"]:
+				if var["values"]["values"][v]["label"] == SUBCAT:
+					return (var["id"], v)
+	raise SubcatError(f"Subcategory with label '{SUBCAT}' not found.")
 
 
 def ptime(s: float) -> str:
