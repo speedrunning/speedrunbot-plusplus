@@ -14,9 +14,13 @@ from utils import *
 
 def main() -> int:
 	# Get the game ID and name
-	r: dict = requests.get(f"{API}/games?abbreviation={argv[1]}").json()
-	GID: str = r["data"][0]["id"]
-	GAME: str = r["data"][0]["names"]["international"]
+	GAME: str
+	GID: str
+	try:
+		GAME, GID = game(argv[1])
+	except GameError as e:
+		print(f"Error: {e}", file=stderr)
+		return EXIT_FAILURE
 
 	# Get the games categories
 	r = requests.get(f"{API}/games/{GID}/categories").json()
