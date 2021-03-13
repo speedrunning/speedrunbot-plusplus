@@ -70,7 +70,8 @@ class Src(commands.Cog):
 	async def modcount(self, ctx: Context, PLAYER: str = None) -> None:
 		if not PLAYER:
 			await ctx.send(
-				"Usage: `!modcount [PLAYER NAME]`" + "Example: `!modcount AnInternetTroll`"
+				"Usage: `!modcount [PLAYER NAME]`\n"
+				+ "Example: `!modcount AnInternetTroll`"
 			)
 			return
 
