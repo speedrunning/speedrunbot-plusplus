@@ -14,8 +14,12 @@ void init_string(string_t *str)
 {
 	str->len = 0;
 	str->ptr = malloc(str->len + 1);
-	if (str->ptr == NULL)
+	if (str->ptr == NULL) {
+		fputs("Error: Memory allocation error, the bot is likely out "
+		      "of RAM, try again later.\n",
+		      stderr);
 		exit(EXIT_FAILURE);
+	}
 
 	str->ptr[0] = '\0';
 	return;
@@ -44,8 +48,12 @@ size_t write_callback(const void *ptr, const size_t size, const size_t nmemb,
 	/* Update the length of the JSON, and allocate more memory if needed */
 	const size_t new_len = json->len + size * nmemb;
 	json->ptr = realloc(json->ptr, new_len + 1);
-	if (json->ptr == NULL)
+	if (json->ptr == NULL) {
+		fputs("Error: Memory reallocation error, the bot is likely out "
+		      "of RAM, try again later.\n",
+		      stderr);
 		exit(EXIT_FAILURE);
+	}
 
 	/* Copy the incoming bytes to `json` */
 	memcpy(json->ptr + json->len, ptr, size * nmemb);
@@ -58,8 +66,10 @@ size_t write_callback(const void *ptr, const size_t size, const size_t nmemb,
 void get_req(const char *uri, string_t *json)
 {
 	CURL *curl = curl_easy_init();
-	if (curl == NULL)
+	if (curl == NULL) {
+		fputs("Error: Unable to initialize curl.\n", stderr);
 		exit(EXIT_FAILURE);
+	}
 
 	/* Load the contents of the API request to `json` */
 	curl_easy_setopt(curl, CURLOPT_URL, uri);
@@ -69,6 +79,8 @@ void get_req(const char *uri, string_t *json)
 	CURLcode res;
 	if ((res = curl_easy_perform(curl)) != 0) {
 		curl_easy_cleanup(curl);
+		fputs("Error: Unable to retrieve data from the sr.c API.\n",
+		      stderr);
 		exit(EXIT_FAILURE);
 	}
 
