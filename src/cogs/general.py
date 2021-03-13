@@ -22,7 +22,7 @@ class General(commands.Cog):
 	@commands.command(name="invite")
 	async def invite(_, ctx: Context) -> None:
 		INV: str = (
-			"https://discord.com/oauth2/authorize?client_id=812751357119037460&scope=bot"
+			"https://discord.com/oauth2/authorize?client_id=644879546650198016&scope=bot"
 		)
 		await ctx.send(INV)
 
