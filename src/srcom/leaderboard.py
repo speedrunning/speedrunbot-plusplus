@@ -59,7 +59,16 @@ def main() -> int:
 		return EXIT_FAILURE
 
 	# Get top 10
-	r = requests.get(f"{API}/leaderboards/{GID}/category/{cid}?top=10").json()
+	VID: str
+	VVAL: str
+	try:
+		VID, VVAL = subcatid(cid, argv[3])
+	except IndexError:
+		VID, VVAL = "", ""
+
+	r = requests.get(
+		f"{API}/leaderboards/{GID}/category/{cid}?top=10&var-{VID}={VVAL}"
+	).json()
 
 	# Set this flag if atleast one run has milliseconds.
 	MS: bool = "." in "".join(

@@ -70,26 +70,34 @@ class Src(commands.Cog):
 
 	@commands.command(name="leaderboard", aliases=("lb",))
 	async def leaderboard(
-		self, ctx: Context, GAME: str = None, CAT: str = None
+		self, ctx: Context, GAME: str = None, CAT: str = None, SUBCAT: str = None
 	) -> None:
 		if not GAME:
-			await ctx.send("Usage: `!leaderboard [GAME] [CATEGORY (Optional)]`")
+			await ctx.send(
+				"Usage: `!leaderboard [GAME] [CATEGORY (Optional)] [SUBCATEGORY (Optional)]`"
+			)
 			return
 
-		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/leaderboard", GAME, CAT)
+		RET: CompletedProcess = self.bot.execv(
+			f"{PREFIX}/leaderboard", GAME, CAT, SUBCAT
+		)
 		TITLE, LB = RET.stdout.split("\n", 1)
 		embed = discord.Embed(title=TITLE, description=LB)
 		await ctx.send(embed=embed)
 
 	@commands.command(name="worldrecord", aliases=("wr",))
 	async def worldrecord(
-		self, ctx: Context, GAME: str = None, CAT: str = None
+		self, ctx: Context, GAME: str = None, CAT: str = None, SUBCAT: str = None
 	) -> None:
 		if not GAME:
-			await ctx.send("Usage: `!worldrecord [GAME] [CATEGORY (Optional)]`")
+			await ctx.send(
+				"Usage: `!worldrecord [GAME] [CATEGORY (Optional)] [SUBCATEGORY (Optional)]`"
+			)
 			return
 
-		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/worldrecord", GAME, CAT)
+		RET: CompletedProcess = self.bot.execv(
+			f"{PREFIX}/worldrecord", GAME, CAT, SUBCAT
+		)
 		TITLE, WR = RET.stdout.split("\n", 1)
 		embed = discord.Embed(title=TITLE, description=WR)
 		await ctx.send(embed=embed)

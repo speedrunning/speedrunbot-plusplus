@@ -42,7 +42,16 @@ def main() -> int:
 		return EXIT_FAILURE
 
 	# Get WR
-	r = requests.get(f"{API}/leaderboards/{GID}/category/{cid}?top=1").json()
+	VID: str
+	VVAL: str
+	try:
+		VID, VVAL = subcatid(cid, argv[3])
+	except IndexError:
+		VID, VVAL = "", ""
+
+	r = requests.get(
+		f"{API}/leaderboards/{GID}/category/{cid}?top=1&var-{VID}={VVAL}"
+	).json()
 
 	WR: dict = r["data"]["runs"][0]["run"]
 	TIME: str = ptime(WR["times"]["primary_t"])
