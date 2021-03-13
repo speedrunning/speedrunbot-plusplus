@@ -80,7 +80,7 @@ def main() -> int:
 		print(f"Error: {e}", file=stderr)
 		return EXIT_FAILURE
 
-	if lflag:  # ILs
+	if lflag:  # ILs.
 		r = requests.get(f"{API}/levels/{cid}/categories").json()
 		ILCID: str = r["data"][0]["id"]
 		r = requests.get(
@@ -103,7 +103,7 @@ def main() -> int:
 			", ".join(
 				username(player["id"])
 				if player["rel"] == "user"
-				else sub("^\[.*\]", "", player["name"])  # Regex to remove flags
+				else sub("^\[.*\]", "", player["name"])  # Regex to remove flags.
 				for player in run["run"]["players"]
 			),
 		)

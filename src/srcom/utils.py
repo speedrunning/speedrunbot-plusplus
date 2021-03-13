@@ -58,9 +58,9 @@ def username(UID: str) -> str:
 
 	>>> username("zx7gd1yx")
 	'1'
-	>>> username('7j477kvj')
+	>>> username("7j477kvj")
 	'AnInternetTroll'
-	>>> username('Sesame Street')
+	>>> username("Sesame Street")
 	Traceback (most recent call last):
 	    ...
 	utils.UserError: User with uid 'Sesame Street' not found.
