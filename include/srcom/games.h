@@ -2,12 +2,12 @@
 #define __GAMES_H_
 
 /**
- * @brief Check if `gid` is in the `games` array, and if not, add it.
+ * @brief Check if `id` is in the `unique` array, and if not, add it.
  * 
- * @param gid The game ID to check for.
- * @return true The game ID was in the array.
- * @return false The game ID was not in the array.
+ * @param id The ID to check for.
+ * @return true The ID was in the array.
+ * @return false The ID was not in the array.
  */
-bool in_games(char *gid);
+bool in_unique(char *gid);
 
 #endif /* !__GAMES_H_ */

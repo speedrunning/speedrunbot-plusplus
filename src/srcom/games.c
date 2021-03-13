@@ -13,16 +13,16 @@
 #include "utils.h"
 
 /* Who in their right mind would play this many games? Besides Cytruss. */
-char games[8196][UIDBUF];
+char unique[8196][UIDBUF];
 
-bool in_games(char *gid)
+bool in_unique(char *id)
 {
 	int i = 0;
-	for (; games[i][0] != '\0'; i++)
-		if (strcmp(games[i], gid) == 0)
+	for (; unique[i][0] != '\0'; i++)
+		if (strcmp(unique[i], id) == 0)
 			return true;
 
-	strncpy(games[i], gid, UIDBUF);
+	strncpy(unique[i], id, UIDBUF);
 	return false;
 }
 
@@ -38,12 +38,12 @@ int main(int UNUSED(argc), char **argv)
 	string_t prs;
 	init_string(&prs);
 
-	/* Get players' PRs */
+	/* Get players' PRs. */
 	char uri[URIBUF];
 	snprintf(uri, URIBUF, API "/users/%s/personal-bests", uid);
 	get_req(uri, &prs);
 
-	/* We don't free `prs.ptr` after this because it's slow */
+	/* We don't free `prs.ptr` after this because it's slow. */
 	json_t *root, *data;
 	json_error_t error;
 	root = json_loads(prs.ptr, 0, &error);
@@ -53,22 +53,30 @@ int main(int UNUSED(argc), char **argv)
 		return EXIT_FAILURE;
 	}
 
-	/* Loop through PRs and find number of unique games */
+	/* Loop through PRs and find number of unique games. */
 	unsigned int c = 0;
 	data = json_object_get(root, "data");
 	for (size_t i = 0, len = json_array_size(data); i < len; i++) {
-		json_t *obj, *run, *gid;
+		json_t *obj, *run, *id;
 		obj = json_array_get(data, i);
 		run = json_object_get(obj, "run");
-		gid = json_object_get(run, "game");
+#ifdef CATEGORIES
+		id = json_object_get(run, "category");
+#else
+		id = json_object_get(run, "game");
+#endif
 
-		/* Typecast to discard 'const' quantifier */
-		char *gid_str = (char *) json_string_value(gid);
-		if (!in_games(gid_str))
+		/* Typecast to discard 'const' qualifier. */
+		char *id_str = (char *) json_string_value(id);
+		if (!in_unique(id_str))
 			c++;
 	}
 
 	json_decref(root);
+#ifdef CATEGORIES
+	printf("Categories: %u\n", c);
+#else
 	printf("Games: %u\n", c);
+#endif
 	return EXIT_SUCCESS;
 }

@@ -13,40 +13,42 @@ class Src(commands.Cog):
 	def __init__(self, bot: SRBpp) -> None:
 		self.bot: SRBpp = bot
 
-	@commands.command(name="wrs")
-	async def wrs(self, ctx: Context, PLAYER: str = None) -> None:
-		if not PLAYER:
+	@commands.command(name="categories", aliases=("cats",))
+	async def categories(self, ctx: Context, GAME: str = None) -> None:
+		if not GAME:
 			await ctx.send(
-				"Usage: `!wrs [PLAYER NAME]`\n" + "Example: `!wrs AnInternetTroll`"
+				"Usage: `!categories [GAME]`\n" + "Example: `!categories mcbe`"
 			)
 			return
 
-		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/wrs", PLAYER)
+		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/categories", GAME)
+
+		if RET.returncode == 1:
+			await ctx.send(RET.stderr)
+			return
+
+		TITLE, CATS = RET.stdout.split("\n", 1)
+		embed = discord.Embed(title=TITLE, description=CATS)
+		await ctx.send(embed=embed)
+
+	@commands.command(name="categoriesplayed", aliases=("catsplayed,"))
+	async def categoriesplayed(self, ctx: Context, PLAYER: str = None) -> None:
+		if not PLAYER:
+			await ctx.send(
+				"Usage: `!categoriesplayed [PLAYER NAME]`\n"
+				+ "Example: `!categoriesplayed AnInternetTroll`"
+			)
+			return
+
+		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/categoriesplayed", PLAYER)
 
 		if RET.returncode == 1:
 			await ctx.send(RET.stderr)
 			return
 
 		embed = discord.Embed(
-			title=f"World Record Count: {PLAYER}", description=RET.stdout
+			title=f"Categories Played: {PLAYER}", description=RET.stdout
 		)
-		await ctx.send(embed=embed)
-
-	@commands.command(name="runs")
-	async def runs(self, ctx: Context, PLAYER: str = None) -> None:
-		if not PLAYER:
-			await ctx.send(
-				"Usage: `!runs [PLAYER NAME]`\n" + "Example: `!runs AnInternetTroll`"
-			)
-			return
-
-		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/runs", PLAYER)
-
-		if RET.returncode == 1:
-			await ctx.send(RET.stderr)
-			return
-
-		embed = discord.Embed(title=f"Run Count: {PLAYER}", description=RET.stdout)
 		await ctx.send(embed=embed)
 
 	@commands.command(name="games")
@@ -64,44 +66,6 @@ class Src(commands.Cog):
 			return
 
 		embed = discord.Embed(title=f"Games Played: {PLAYER}", description=RET.stdout)
-		await ctx.send(embed=embed)
-
-	@commands.command(name="modcount", aliases=("mc",))
-	async def modcount(self, ctx: Context, PLAYER: str = None) -> None:
-		if not PLAYER:
-			await ctx.send(
-				"Usage: `!modcount [PLAYER NAME]`\n"
-				+ "Example: `!modcount AnInternetTroll`"
-			)
-			return
-
-		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/modcount", PLAYER)
-
-		if RET.returncode == 1:
-			await ctx.send(RET.stderr)
-			return
-
-		embed = discord.Embed(
-			title=f"Leaderboards Moderated: {PLAYER}", description=RET.stdout
-		)
-		await ctx.send(embed=embed)
-
-	@commands.command(name="categories", aliases=("cats",))
-	async def categories(self, ctx: Context, GAME: str = None) -> None:
-		if not GAME:
-			await ctx.send(
-				"Usage: `!categories [GAME]`\n" + "Example: `!categories mcbe`"
-			)
-			return
-
-		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/categories", GAME)
-
-		if RET.returncode == 1:
-			await ctx.send(RET.stderr)
-			return
-
-		TITLE, CATS = RET.stdout.split("\n", 1)
-		embed = discord.Embed(title=TITLE, description=CATS)
 		await ctx.send(embed=embed)
 
 	@commands.command(name="leaderboard", aliases=("lb",))
@@ -127,6 +91,61 @@ class Src(commands.Cog):
 		embed = discord.Embed(title=TITLE, description=LB)
 		await ctx.send(embed=embed)
 
+	@commands.command(name="modcount", aliases=("mc",))
+	async def modcount(self, ctx: Context, PLAYER: str = None) -> None:
+		if not PLAYER:
+			await ctx.send(
+				"Usage: `!modcount [PLAYER NAME]`\n"
+				+ "Example: `!modcount AnInternetTroll`"
+			)
+			return
+
+		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/modcount", PLAYER)
+
+		if RET.returncode == 1:
+			await ctx.send(RET.stderr)
+			return
+
+		embed = discord.Embed(
+			title=f"Leaderboards Moderated: {PLAYER}", description=RET.stdout
+		)
+		await ctx.send(embed=embed)
+
+	@commands.command(name="runs")
+	async def runs(self, ctx: Context, PLAYER: str = None) -> None:
+		if not PLAYER:
+			await ctx.send(
+				"Usage: `!runs [PLAYER NAME]`\n" + "Example: `!runs AnInternetTroll`"
+			)
+			return
+
+		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/runs", PLAYER)
+
+		if RET.returncode == 1:
+			await ctx.send(RET.stderr)
+			return
+
+		embed = discord.Embed(title=f"Run Count: {PLAYER}", description=RET.stdout)
+		await ctx.send(embed=embed)
+
+	@commands.command(name="verified")
+	async def verified(self, ctx: Context, PLAYER: str = None) -> None:
+		if not PLAYER:
+			await ctx.send(
+				"Usage: `!verified [PLAYER NAME]`\n"
+				+ "Example: `!verified AnInternetTroll`"
+			)
+			return
+
+		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/verified", PLAYER)
+
+		if RET.returncode == 1:
+			await ctx.send(RET.stderr)
+			return
+
+		embed = discord.Embed(title="Runs verified: {PLAYER}", description=RET.stdout)
+		await ctx.send(embed=embed)
+
 	@commands.command(name="worldrecord", aliases=("wr",))
 	async def worldrecord(
 		self, ctx: Context, GAME: str = None, CAT: str = None, SUBCAT: str = None
@@ -150,22 +169,24 @@ class Src(commands.Cog):
 		embed = discord.Embed(title=TITLE, description=WR)
 		await ctx.send(embed=embed)
 
-	@commands.command(name="verified")
-	async def verified(self, ctx: Context, PLAYER: str = None) -> None:
+	@commands.command(name="worldrecords", aliases=("wrs",))
+	async def worldrecords(self, ctx: Context, PLAYER: str = None) -> None:
 		if not PLAYER:
 			await ctx.send(
-				"Usage: `!verified [PLAYER NAME]`\n"
-				+ "Example: `!verified AnInternetTroll`"
+				"Usage: `!worldrecords [PLAYER NAME]`\n"
+				+ "Example: `!worldrecords AnInternetTroll`"
 			)
 			return
 
-		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/verified", PLAYER)
+		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/worldrecords", PLAYER)
 
 		if RET.returncode == 1:
 			await ctx.send(RET.stderr)
 			return
 
-		embed = discord.Embed(title="Runs verified: {PLAYER}", description=RET.stdout)
+		embed = discord.Embed(
+			title=f"World Record Count: {PLAYER}", description=RET.stdout
+		)
 		await ctx.send(embed=embed)
 
 
