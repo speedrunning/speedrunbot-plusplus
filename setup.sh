@@ -35,7 +35,7 @@ fi
 $PY -m pip install -r requirements.txt
 
 # Assuming debian based, everyone else needs to deal with it.
-yes | $SU apt install libjansson-dev libcurl4-openssl-dev >/dev/null
+yes | $SU apt install libjansson-dev libcurl4-openssl-dev >/dev/null 2>&1
 
 # Run the Makefiles.
 SCR_PATH=$(cd "$(dirname "$0")" && pwd)
