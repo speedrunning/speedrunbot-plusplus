@@ -33,7 +33,7 @@ async def verified(UID: int) -> int:
 	>>> loop.run_until_complete(verified("jn39g1qx")) > 4000
 	True
 	"""
-	runs: list[list] = []
+	runcount: int = 0
 
 	for offstart in count(0, 5000):
 		with concurrent.futures.ThreadPoolExecutor(max_workers=25) as executor:
@@ -49,9 +49,9 @@ async def verified(UID: int) -> int:
 			for response in await asyncio.gather(*futures):
 				r: dict = response.json()
 				if len(r["data"]) == 0:
-					return len(runs)
+					return runcount
 
-				runs.extend(response.json()["data"])
+				runcount += len(response.json()["data"])
 
 
 def main() -> int:
