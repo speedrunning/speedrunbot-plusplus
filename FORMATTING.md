@@ -2,7 +2,7 @@
 
 Formatting is easy.
 
-If using Python, format with `black` and imports with `isort`, if using C/C++, format with `clang-format`. When in doubt, run `./format.sh`.
+If using Python, format with `black -l 80` and imports with `isort`, if using C/C++, format with `clang-format`. When in doubt, run `./format.sh`.
 
 Use snake_case for variables and functions and whatnot. Use CAPS for constants in Python and `#define`'s in C/C++.
 
