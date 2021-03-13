@@ -39,7 +39,6 @@ bin/%: objs/%.o objs/utils.o
 clean:
 	rm -rf objs/ bin/ __pycache__/ ../__pycache__/
 
-# TODO: Less garbage testing
 test:
 	$(PY) -m doctest leaderboard.py
 	$(PY) -m doctest runs.py
