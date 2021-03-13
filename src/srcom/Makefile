@@ -1,4 +1,4 @@
-CC     := cc
+CC     := clang
 CFLAGS := -O3 -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes \
 		-Wno-unused-result
 INC    := -I../../include/srcom
