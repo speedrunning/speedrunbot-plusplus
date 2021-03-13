@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Format all the source files.
+
 shopt -s globstar nullglob
 
 SCR_PATH=$(cd "$(dirname "$0")" && pwd)
