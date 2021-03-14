@@ -27,7 +27,10 @@ class SRBpp(commands.Bot):
 		)
 
 		for extension in EXTENSIONS:
-			self.load_extension(extension)
+			try:
+				self.load_extension(extension)
+			except Exception as e:
+				print(e)
 
 		with open(f"{DATA}/config.json", "r") as f:
 			self.config = json.load(f)
