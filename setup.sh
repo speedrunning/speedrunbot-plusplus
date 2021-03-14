@@ -17,7 +17,7 @@ install_python39() {
 	$SU make altinstall
 
 	cd ../
-	rm -rf Python-3.9.1 Python-3.9.1.tgz
+	$SU rm -rf Python-3.9.1 Python-3.9.1.tgz
 }
 
 SCR_PATH=$(cd "$(dirname "$0")" && pwd)
