@@ -3,8 +3,8 @@
 # This is the setup script for the bot.
 
 install_python39() {
-	$(SU) apt update
-	yes | $(SU) apt install build-essential zlib1g-dev libncurses5-dev \
+	$SU apt update
+	yes | $SU apt install build-essential zlib1g-dev libncurses5-dev \
 		libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev \
 		libreadline-dev libffi-dev curl libbz2-dev
 	wget https://www.python.org/ftp/python/3.9.1/Python-3.9.1.tgz
@@ -12,7 +12,7 @@ install_python39() {
 	cd Python-3.9.1 || exit 1
 	./configure --enable-optimizations
 	make -j "$(nproc)"
-	$(SU) make altinstall
+	$SU make altinstall
 	rm -rf Python-3.9.1
 }
 
