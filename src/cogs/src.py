@@ -31,7 +31,7 @@ class Src(commands.Cog):
 		embed = discord.Embed(title=TITLE, description=CATS)
 		await ctx.send(embed=embed)
 
-	@commands.command(name="categoriesplayed", aliases=("catsplayed,"))
+	@commands.command(name="categoriesplayed", aliases=("catsplayed",))
 	async def categoriesplayed(self, ctx: Context, PLAYER: str = None) -> None:
 		if not PLAYER:
 			await ctx.send(
