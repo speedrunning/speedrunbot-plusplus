@@ -22,8 +22,8 @@ async def verified(UID: int) -> int:
 	`UID`. Each request can only return at most 200 runs, and because this
 	command is generally going to be used to track mods/verifiers with
 	thousands of runs verified, 25 requests are done in parallel. If none of
-	the 25 requests have 0 runs in them (meaning all runs have been seen),
-	another 25 requests are made until the condition is met.
+	the 25 requests have less than 200 runs in them (meaning there are more
+	runs), another 25 requests are made until the condition is met.
 
 	>>> loop = asyncio.get_event_loop()
 	>>> loop.run_until_complete(verified("zx7gd1yx")) > 2000
@@ -48,10 +48,11 @@ async def verified(UID: int) -> int:
 			)
 			for response in await asyncio.gather(*futures):
 				r: dict = response.json()
-				if len(r["data"]) == 0:
-					return runcount
+				size: int = len(r["data"])
+				if size < 200:
+					return runcount + size
 
-				runcount += len(response.json()["data"])
+				runcount += size
 
 
 def main() -> int:
