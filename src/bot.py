@@ -32,7 +32,7 @@ class SRBpp(commands.Bot):
 			except Exception as e:
 				print(e)
 
-		with open(f"{DATA}/config.json", "r") as f:
+		with open(f"{DATA}/srbpp.json", "r") as f:
 			self.config = json.load(f)
 
 	def execv(_, PROG: str, *ARGS: tuple[str, ...]) -> CompletedProcess:

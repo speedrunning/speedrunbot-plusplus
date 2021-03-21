@@ -10,7 +10,7 @@ def check_jsons() -> None:
 	"""
 	Make sure all JSON configuration files are present.
 	"""
-	CONFIG: str = f"{DATA}/config.json"
+	CONFIG: str = f"{DATA}/srbpp.json"
 	try:
 		f: IO = open(CONFIG, "r")
 		f.close()
