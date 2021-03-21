@@ -24,10 +24,10 @@ SCR_PATH=$(cd "$(dirname "$0")" && pwd)
 
 # I'm very cool and use Doas instead of Sudo. Doas gang rise up.
 echo Checking for program to grant superuser privileges
-if command -v sudo >/dev/null 2>&1; then
-	SU="sudo"
-elif command -v doas >/dev/null 2>&1; then
+if command -v doas >/dev/null 2>&1; then
 	SU="doas"
+elif command -v sudo >/dev/null 2>&1; then
+	SU="sudo"
 else
 	printf "Command to gain superuser privileges (typically sudo or doas): "
 	read -r SU
@@ -89,3 +89,5 @@ yes | $SU apt install libjansson-dev libcurl4-openssl-dev >/dev/null 2>&1
 # Run the Makefiles.
 echo Building executables
 cd "$SCR_PATH"/src/srcom && make CCMP=$CC >/dev/null 2>&1
+echo Building manpages
+cd "$SCR_PATH"/man && make SU="$SU" >/dev/null 2>&1

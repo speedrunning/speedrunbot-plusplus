@@ -67,10 +67,12 @@ $
 .
 ├── data          # Configuration files and related.
 ├── include       # C preprocessor include files.
-│   └── srcom     # Include files for speedrun.com
+│   └── srcom     # Include files for speedrun.com.
+├── man           # Bot documentation in the form of manpages.
+│   └── srcom     # Manpages for the speedrun.com related programs.
 └── src           # Source code files.
     ├── cogs      # The bots cogs.
-    └── srcom     # Command source code files for speedrun.com
+    └── srcom     # Command source code files for speedrun.com.
         ├── bin   # Program executables and binaries.
         └── objs  # C compiler object files.
 ```
