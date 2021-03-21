@@ -110,6 +110,23 @@ class Src(commands.Cog):
 			title=f"Leaderboards Moderated: {PLAYER}", description=RET.stdout
 		)
 		await ctx.send(embed=embed)
+	
+	@commands.command(name="queue")
+	async def queue(self, ctx: Context, GAME: str = None) -> None:
+		if not GAME:
+			await ctx.send(
+				"Usage: `!queue [GAME]`\n" + "Example: `!queue mkw`"
+			)
+			return
+		
+		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/queue", GAME)
+		
+		if RET.returncode == 1:
+			await ctx.send(RET.stderr)
+			return
+		
+		embed = discord.Embed(title=f"Runs Awaiting Verification: {GAME}", description=RET.stdout)
+		await ctx.send(embed=embed)
 
 	@commands.command(name="runs")
 	async def runs(self, ctx: Context, PLAYER: str = None) -> None:
