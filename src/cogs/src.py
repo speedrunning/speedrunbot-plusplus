@@ -6,6 +6,8 @@ from discord.ext import commands
 from bot import SRBpp
 
 Context = commands.context.Context
+TITLE: str
+DESC: str
 PREFIX: str = "srcom/bin"
 
 
@@ -15,6 +17,9 @@ class Src(commands.Cog):
 
 	@commands.command(name="categories", aliases=("cats",))
 	async def categories(self, ctx: Context, GAME: str = None) -> None:
+		"""
+		Get a list of all of a games categories.
+		"""
 		if not GAME:
 			await ctx.send(
 				"Usage: `!categories [GAME]`\n" + "Example: `!categories mcbe`"
@@ -27,12 +32,15 @@ class Src(commands.Cog):
 			await ctx.send(RET.stderr)
 			return
 
-		TITLE, CATS = RET.stdout.split("\n", 1)
-		embed = discord.Embed(title=TITLE, description=CATS)
+		TITLE, DESC = RET.stdout.split("\n", 1)
+		embed = discord.Embed(title=TITLE, description=DESC)
 		await ctx.send(embed=embed)
 
 	@commands.command(name="categoriesplayed", aliases=("catsplayed",))
 	async def categoriesplayed(self, ctx: Context, PLAYER: str = None) -> None:
+		"""
+		Get the number of unique categories a player has submit runs to.
+		"""
 		if not PLAYER:
 			await ctx.send(
 				"Usage: `!categoriesplayed [PLAYER NAME]`\n"
@@ -53,6 +61,9 @@ class Src(commands.Cog):
 
 	@commands.command(name="games")
 	async def games(self, ctx: Context, PLAYER: str = None) -> None:
+		"""
+		Get the number of unique games a player has submit runs to.
+		"""
 		if not PLAYER:
 			await ctx.send(
 				"Usage: `!games [PLAYER NAME]`\n" + "Example: `!games AnInternetTroll`"
@@ -72,6 +83,9 @@ class Src(commands.Cog):
 	async def leaderboard(
 		self, ctx: Context, GAME: str = None, CAT: str = None, SUBCAT: str = None
 	) -> None:
+		"""
+		Get the top 10 runs for a game, with an optional category and subcategory.
+		"""
 		if not GAME:
 			await ctx.send(
 				"Usage: `!leaderboard [GAME] [CATEGORY (Optional)] [SUBCATEGORY (Optional)]`\n"
@@ -87,12 +101,15 @@ class Src(commands.Cog):
 			await ctx.send(RET.stderr)
 			return
 
-		TITLE, LB = RET.stdout.split("\n", 1)
-		embed = discord.Embed(title=TITLE, description=LB)
+		TITLE, DESC = RET.stdout.split("\n", 1)
+		embed = discord.Embed(title=TITLE, description=DESC)
 		await ctx.send(embed=embed)
 
 	@commands.command(name="modcount", aliases=("mc",))
 	async def modcount(self, ctx: Context, PLAYER: str = None) -> None:
+		"""
+		Get the number of games and series a player moderates.
+		"""
 		if not PLAYER:
 			await ctx.send(
 				"Usage: `!modcount [PLAYER NAME]`\n"
@@ -113,6 +130,9 @@ class Src(commands.Cog):
 
 	@commands.command(name="runqueue", aliases=("queue",))
 	async def runqueue(self, ctx: Context, GAME: str = None) -> None:
+		"""
+		Get the number of runs awaiting verification for a given game
+		"""
 		if not GAME:
 			await ctx.send("Usage: `!runqueue [GAME]`\n" + "Example: `!runqueue mkw`")
 			return
@@ -123,13 +143,15 @@ class Src(commands.Cog):
 			await ctx.send(RET.stderr)
 			return
 
-		embed = discord.Embed(
-			title=f"Runs Awaiting Verification: {GAME}", description=RET.stdout
-		)
+		TITLE, DESC = RET.stdout.split("\n", 1)
+		embed = discord.Embed(title=TITLE, description=DESC)
 		await ctx.send(embed=embed)
 
 	@commands.command(name="runs")
 	async def runs(self, ctx: Context, PLAYER: str = None) -> None:
+		"""
+		Get the amount of runs a player has submit.
+		"""
 		if not PLAYER:
 			await ctx.send(
 				"Usage: `!runs [PLAYER NAME]`\n" + "Example: `!runs AnInternetTroll`"
@@ -147,6 +169,9 @@ class Src(commands.Cog):
 
 	@commands.command(name="verified")
 	async def verified(self, ctx: Context, PLAYER: str = None) -> None:
+		"""
+		Get the amount of runs a player has verified or rejected.
+		"""
 		if not PLAYER:
 			await ctx.send(
 				"Usage: `!verified [PLAYER NAME]`\n"
@@ -167,6 +192,9 @@ class Src(commands.Cog):
 	async def worldrecord(
 		self, ctx: Context, GAME: str = None, CAT: str = None, SUBCAT: str = None
 	) -> None:
+		"""
+		Get the world record for a game, with an optional category and subcategory.
+		"""
 		if not GAME:
 			await ctx.send(
 				"Usage: `!worldrecord [GAME] [CATEGORY (Optional)] [SUBCATEGORY (Optional)]`\n"
@@ -182,12 +210,15 @@ class Src(commands.Cog):
 			await ctx.send(RET.stderr)
 			return
 
-		TITLE, WR = RET.stdout.split("\n", 1)
-		embed = discord.Embed(title=TITLE, description=WR)
+		TITLE, DESC = RET.stdout.split("\n", 1)
+		embed = discord.Embed(title=TITLE, description=DESC)
 		await ctx.send(embed=embed)
 
 	@commands.command(name="worldrecords", aliases=("wrs",))
 	async def worldrecords(self, ctx: Context, PLAYER: str = None) -> None:
+		"""
+		Get the number of world records a player currently holds.
+		"""
 		if not PLAYER:
 			await ctx.send(
 				"Usage: `!worldrecords [PLAYER NAME]`\n"
