@@ -125,8 +125,7 @@ class Src(commands.Cog):
 			await ctx.send(RET.stderr)
 			return
 		
-		TITLE, QUEUE = RET.stdout.split("\n", 1)
-		embed = discord.Embed(title=TITLE, description=QUEUE)
+		embed = discord.Embed(title=f"Runs Awaiting Verification: {GAME}", description=RET.stdout)
 		await ctx.send(embed=embed)
 
 	@commands.command(name="runs")
