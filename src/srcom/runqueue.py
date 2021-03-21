@@ -16,14 +16,15 @@ import requests
 from utils import *
 
 
-async def queue(GID: str) -> int:
+async def queue(GID: str) -> tuple[int, int]:
 	"""
 	Get the number of runs in the queue of the game with ID `GID`. Since
 	each request can only return at most 200 runs, 5 requests of 200 runs
 	are done in parallel. If none of the requests have less than 200 runs,
 	additional series of 5 requests are made until the condition is met.
 	"""
-	runcount: int = 0
+	fullgame: int = 0
+	il: int = 0
 
 	for offstart in count(0, 1000):
 		with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
@@ -38,10 +39,15 @@ async def queue(GID: str) -> int:
 			)
 			for response in await asyncio.gather(*futures):
 				r: dict = response.json()
-	                        size: int = len(r["data"])
-	                        runcount += size
-	                        if size < 200:
-	                                return runcount
+				size: int = len(r["data"])
+				for run in r["data"]:
+					if run["level"]:
+						il += 1
+					else:
+						fullgame += 1
+
+				if size < 200:
+					return (fullgame, il)
 
 
 def main() -> int:
@@ -52,9 +58,16 @@ def main() -> int:
 		return EXIT_FAILURE
 
 	LOOP: AbstractEventLoop = asyncio.get_event_loop()
-	LENGTH: int = LOOP.run_until_complete(queue(GID))
 
-	print(f"Queue Length: {LENGTH}")
+	FULLGAME: int
+	IL: int
+	FULLGAME, IL = LOOP.run_until_complete(queue(GID))
+
+	print(
+		f"Fullgame: {FULLGAME}\n"
+		+ f"Individual Level: {IL}\n"
+		+ f"Total: {FULLGAME + IL}"
+	)
 	return EXIT_SUCCESS
 
 

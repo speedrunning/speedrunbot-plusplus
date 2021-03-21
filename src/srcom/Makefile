@@ -5,7 +5,7 @@ INC    := -I../../include/srcom
 PY     := python3.9
 
 cprogs  := bin/categoriesplayed bin/games bin/modcount bin/worldrecords
-pyprogs := bin/categories bin/leaderboard bin/queue bin/runs bin/verified \
+pyprogs := bin/categories bin/leaderboard bin/runqueue bin/runs bin/verified \
 		bin/worldrecord bin/utils.py
 
 all: $(pyprogs) $(cprogs)
