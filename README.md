@@ -36,6 +36,7 @@ Checking for C compiler
 Checking for Python3.9
 Installing dependencies
 Building executables
+Building manpages
 $
 ```
 
