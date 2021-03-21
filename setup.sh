@@ -23,11 +23,18 @@ install_python39() {
 SCR_PATH=$(cd "$(dirname "$0")" && pwd)
 
 # I'm very cool and use Doas instead of Sudo. Doas gang rise up.
-printf "Command to gain superuser privileges [sudo]: "
-read -r SU
-test "$SU" = "" && SU="sudo"
+echo Checking for program to grant superuser privileges
+if command -v sudo >/dev/null 2>&1; then
+	SU="sudo"
+elif command -v doas >/dev/null 2>&1; then
+	SU="doas"
+else
+	printf "Command to gain superuser privileges (typically sudo or doas): "
+	read -r SU
+fi
 
 # Check for C compilers. Clang is preferred, then GCC, then the systems default.
+echo Checking for C compiler
 if command -v clang >/dev/null 2>&1; then
 	CC="clang"
 elif command -v gcc >/dev/null 2>&1; then
@@ -35,35 +42,50 @@ elif command -v gcc >/dev/null 2>&1; then
 elif command -v cc >/dev/null 2>&1; then
 	CC="cc"
 else
-	echo "You must install a C compiler before setting up the bot. Clang or GCC are recommended."
+	echo You must install a C compiler before setting up the bot. Clang or \
+		GCC are recommended.
 	exit 0
 fi
 
 # Check for Python 3.9.
-if ! command -v python3 >/dev/null 2>&1; then
-	echo "You must install python3 before setting up the bot. Python 3.9 is recommended."
-	exit 0
-elif ! command -v python3.9 >/dev/null 2>&1; then
-	echo "WARNING: Python3.9 is not installed. There is no guarantee the bot will work."
+echo Checking for Python3.9
+if command -v python3.9 >/dev/null 2>&1; then
+	PY="python3.9"
+elif command -v python3 >/dev/null 2>&1; then
+	echo WARNING: Python3 was found but not Python3.9. There is no \
+		guarantee the bot will work.
+	install_python39
 	printf "Do you want to install python3.9? (Only tested on Debian) [y/N]: "
 	read -r C
 
 	if test "$C" = "y" || test "$C" = "Y"; then
+		PY="python3.9"
 		install_python39
+	else
+		PY="python3"
+	fi
+else
+	echo ERROR: Python3 was not found. The bot will not work. You can \
+		either install Python3 from your distributions package manager \
+		or you can install Python3.9 from this script.
+	printf "Do you want to install python3.9? (Only tested on Debian) [y/N]: "
+	read -r C
+
+	if test "$C" = "y" || test "$C" = "Y"; then
+		PY="python3.9"
+		install_python39
+	else
+		exit 1
 	fi
 fi
 
 # Install dependencies
-echo "Installing dependencies..."
-if command -v python3.9 >/dev/null 2>&1; then
-	PY="python3.9"
-else
-	PY="python3"
-fi
+echo Installing dependencies
 $PY -m pip install -r requirements.txt >/dev/null 2>&1
 
 # Assuming debian based, everyone else needs to deal with it.
 yes | $SU apt install libjansson-dev libcurl4-openssl-dev >/dev/null 2>&1
 
 # Run the Makefiles.
-cd "$SCR_PATH"/src/srcom && make CCMP=$CC
+echo Building executables
+cd "$SCR_PATH"/src/srcom && make CCMP=$CC >/dev/null 2>&1
