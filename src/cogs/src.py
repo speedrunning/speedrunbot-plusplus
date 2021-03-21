@@ -119,7 +119,7 @@ class Src(commands.Cog):
 			)
 			return
 		
-		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/runs", GAME)
+		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/queue", GAME)
 		
 		if RET.returncode == 1:
 			await ctx.send(RET.stderr)
