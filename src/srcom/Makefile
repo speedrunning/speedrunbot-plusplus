@@ -1,4 +1,4 @@
-CC     ?= clang
+CCMP   ?= clang
 CFLAGS := -O3 -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes \
 		-Wno-unused-result
 INC    := -I../../include/srcom
@@ -28,19 +28,19 @@ bin/%: %.py
 # preproccessor statements.
 .PRECIOUS: objs/%.o
 objs/categoriesplayed.o: games.c
-	$(CC) $(CFLAGS) $(INC) -DCATEGORIES -o $@ -c $<
+	$(CCMP) $(CFLAGS) $(INC) -DCATEGORIES -o $@ -c $<
 
 objs/%.o: %.c
-	$(CC) $(CFLAGS) $(INC) -o $@ -c $<
+	$(CCMP) $(CFLAGS) $(INC) -o $@ -c $<
 
 bin/categoriesplayed: objs/categoriesplayed.o objs/utils.o
-	$(CC) $(CFLAGS) -o $@ $^ -lcurl -ljansson
+	$(CCMP) $(CFLAGS) -o $@ $^ -lcurl -ljansson
 
 bin/games: objs/games.o objs/utils.o
-	$(CC) $(CFLAGS) -o $@ $^ -lcurl -ljansson
+	$(CCMP) $(CFLAGS) -o $@ $^ -lcurl -ljansson
 
 bin/%: objs/%.o objs/utils.o
-	$(CC) $(CFLAGS) -o $@ $^ -lcurl
+	$(CCMP) $(CFLAGS) -o $@ $^ -lcurl
 
 # Phony targets
 .PHONY: clean test

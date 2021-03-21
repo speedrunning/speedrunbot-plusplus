@@ -66,4 +66,4 @@ $PY -m pip install -r requirements.txt >/dev/null 2>&1
 yes | $SU apt install libjansson-dev libcurl4-openssl-dev >/dev/null 2>&1
 
 # Run the Makefiles.
-cd "$SCR_PATH"/src/srcom && make CC=$CC
+cd "$SCR_PATH"/src/srcom && make CCMP=$CC
