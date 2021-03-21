@@ -33,7 +33,7 @@ class NotSupportedError(Exception):
 
 def uid(USER: str) -> str:
 	"""
-	Get a users user ID from their username. Returns None on error.
+	Get a users user ID from their username.
 
 	>>> uid("1")
 	'zx7gd1yx'
