@@ -5,8 +5,8 @@ INC    := -I../../include/srcom
 PY     := python3.9
 
 cprogs  := bin/categoriesplayed bin/games bin/modcount bin/worldrecords
-pyprogs := bin/categories bin/leaderboard bin/runs bin/verified bin/worldrecord \
-		bin/utils.py
+pyprogs := bin/categories bin/leaderboard bin/queue bin/runs bin/verified \
+		bin/worldrecord bin/utils.py
 
 all: $(pyprogs) $(cprogs)
 $(shell mkdir -p bin/ objs/)
