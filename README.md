@@ -25,15 +25,18 @@ bot it only tested on debian-based Linux, but it can be made to work on other
 systems with minimal effort.
 
 To install the required dependencies and build the programs, you need to run the
-setup script. The script will prompt you for the program you use to gain
-superuser privileges. This is typically `sudo`, but it could also be `doas` for
-example.
+setup script. The script will require superuser privileges and will search for
+sudo and doas in your `PATH`. If neither is found, you will be prompted to enter
+the name of the command that grants you superuser privileges.
 
 ```sh
 $ ./setup.sh
-Command to gain superuser privileges [sudo]: doas
-Installing dependencies...
-... # Makefile output
+Checking for program to grant superuser privileges
+Checking for C compiler
+Checking for Python3.9
+Installing dependencies
+Building executables
+$
 ```
 
 The script will also check to make sure you have a C compiler and python
@@ -41,6 +44,20 @@ installed. Python3.9 is recommended and it is not guaranteed that anything will
 work on other versions of Python3. Additionally, if you use a C compiler that
 is not `clang` or `gcc` (why?), you want to make sure that `cc` links to it, or
 you can just edit the setup script yourself.
+
+In the case that you do NOT have Python3.9 installed, the script will prompt you
+asking if you would like to install Python3.9.
+
+```sh
+$ ./setup.sh
+Checking for a program to grant superuser privileges
+Checking for C compiler
+Checking for Python3.9
+ERROR: Python3 was not found. The bot will not work. You can either install Python3 from your distributions package manager or you can install Python3.9 from this script.
+Do you want to install python3.9? (Only tested on Debian) [y/N]: y
+...  # Python3.9 installation output
+$
+```
 
 ## Developer Information
 
