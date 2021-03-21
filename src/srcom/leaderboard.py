@@ -12,6 +12,12 @@ from typing import Iterable
 import requests
 from utils import *
 
+CAT: str
+GAME: str
+GID: str
+VID: str
+VVAL: str
+
 
 def pad(TIME: str, MS: bool) -> str:
 	"""
@@ -31,10 +37,6 @@ def pad(TIME: str, MS: bool) -> str:
 
 
 def main() -> int:
-	CAT: str
-	GAME: str
-	GID: str
-
 	# Get the games categories.
 	try:
 		GAME, GID = game(argv[1])
@@ -70,8 +72,6 @@ def main() -> int:
 			return EXIT_FAILURE
 
 	# Get top 10.
-	VID: str
-	VVAL: str
 	try:
 		VID, VVAL = subcatid(cid, argv[3])
 	except IndexError:

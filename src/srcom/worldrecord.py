@@ -11,11 +11,16 @@ from sys import argv, exit, stderr
 import requests
 from utils import *
 
+GAME: str
+GID: str
+CAT: str
+VID: str
+VVAL: str
+VIDEOS: Union[list[dict[str, str]], None]
+
 
 def main() -> int:
 	# Get the game ID and name.
-	GAME: str
-	GID: str
 	try:
 		GAME, GID = game(argv[1])
 	except GameError as e:
@@ -24,7 +29,6 @@ def main() -> int:
 
 	# Get the games categories.
 	r = requests.get(f"{API}/games/{GID}/categories").json()
-	CAT: str
 	cid: str = None
 	lflag: bool = False
 
@@ -45,15 +49,13 @@ def main() -> int:
 			cid = r["data"][0]["id"]
 			if r["data"][0]["type"] == "per-level":
 				lflag = True
-		except IndexError:  # I don't even know if this is possible, but sr.c staff are ghosting me.
+		except IndexError:
 			print(
 				f"Error: The game '{argv[1]}' does not have any categories.", file=stderr
 			)
 			return EXIT_FAILURE
 
 	# Get WR.
-	VID: str
-	VVAL: str
 	try:
 		VID, VVAL = subcatid(cid, argv[3])
 	except IndexError:
@@ -81,7 +83,6 @@ def main() -> int:
 		else sub("^\[.*\]", "", player["name"])  # Regex to remove flags.
 		for player in WR["players"]
 	)
-	VIDEOS: Union[list[dict[str, str]], None]
 	try:
 		VIDEOS = WR["videos"]["links"]
 	except TypeError:  # No video.

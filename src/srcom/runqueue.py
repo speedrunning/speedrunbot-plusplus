@@ -15,6 +15,11 @@ from typing import Awaitable, Iterable
 import requests
 from utils import *
 
+GAME: str
+GID: str
+FULLGAME: int
+IL: int
+
 
 async def queue(GID: str) -> tuple[int, int]:
 	"""
@@ -52,18 +57,17 @@ async def queue(GID: str) -> tuple[int, int]:
 
 def main() -> int:
 	try:
-		GID: str = game(argv[1])[1]
+		GAME, GID = game(argv[1])
 	except GameError as e:
 		print(f"Error: {e}", file=stderr)
 		return EXIT_FAILURE
 
 	LOOP: AbstractEventLoop = asyncio.get_event_loop()
 
-	FULLGAME: int
-	IL: int
 	FULLGAME, IL = LOOP.run_until_complete(queue(GID))
 
 	print(
+		f"Runs Awaiting Verification: {GAME}\n"
 		f"Fullgame: {FULLGAME}\n"
 		+ f"Individual Level: {IL}\n"
 		+ f"Total: {FULLGAME + IL}"

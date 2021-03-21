@@ -14,6 +14,9 @@ from typing import Awaitable, Iterator
 import requests
 from utils import *
 
+FULLGAME: int
+IL: int
+
 
 async def runs(UID: int) -> tuple[int, int]:
 	"""
@@ -45,14 +48,14 @@ async def runs(UID: int) -> tuple[int, int]:
 			)
 			for response in await asyncio.gather(*futures):
 				r: dict = response.json()
-				if len(r["data"]) == 0:
-					return (fullgame, il)
-
 				for run in r["data"]:
-					if run["level"] is None:
-						fullgame += 1
-					else:
+					if run["level"]:
 						il += 1
+					else:
+						fullgame += 1
+
+				if len(r["data"]) < 200:
+					return (fullgame, il)
 
 
 def main() -> int:
@@ -61,9 +64,6 @@ def main() -> int:
 	except UserError as e:
 		print(f"Error: {e}", file=stderr)
 		return EXIT_FAILURE
-
-	FULLGAME: int
-	IL: int
 
 	LOOP: AbstractEventLoop = asyncio.get_event_loop()
 	FULLGAME, IL = LOOP.run_until_complete(runs(UID))
