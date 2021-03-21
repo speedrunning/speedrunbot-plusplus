@@ -2,15 +2,23 @@
 
 Formatting is easy.
 
-If using Python, format with `black -l 80` and imports with `isort`, if using C/C++, format with `clang-format`. When in doubt, run `./format.sh`.
+If using Python, format with `black -l 80` and imports with `isort`, if using
+C/C++, format with `clang-format`. When in doubt, run `./format.sh`.
 
-Use snake_case for variables and functions and whatnot. Use CAPS for constants in Python and `#define`'s in C/C++.
+Use snake_case for variables and functions and whatnot. Use CAPS for constants
+in Python and `#define`'s in C/C++.
 
-If a C/C++ function takes no parameters, write it as `type func(void)` instead of `type func()`.
+If a C/C++ function takes no parameters, write it as `type func(void)` instead
+of `type func()`.
 
-Use tabs. Even with `black`. `unexpand -t 4 --first-only file.py > file2.py` is your best friend.
+Use tabs. Even with `black`. `unexpand -t 4 --first-only file.py > file2.py` is
+your best friend.
 
-Begin a program with a shebang if appropriate and a comment explaining what the program does, for example:
+If you're too lazy to do this stuff, you can just run `./format.sh`, assuming
+you have `black`, `isort`, and `clang-format` installed.
+
+Begin a program with a shebang if appropriate and a comment explaining what the
+program does, for example:
 
 (`games.c`)
 
