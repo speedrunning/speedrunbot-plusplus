@@ -6,5 +6,5 @@ dist/
 objs/
 
 test.json
-config.json
+srbpp.json
 *.spec
