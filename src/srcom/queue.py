@@ -46,7 +46,7 @@ async def queue(GID: str) -> int:
 
 def main() -> int:
         try:
-                GID: str = game(argv[1])[1]
+                GAME, GID: str = game(argv[1])
         except GameError as e:
                 print(f"Error: {e}", file=stderr)
                 return EXIT_FAILURE
@@ -54,7 +54,7 @@ def main() -> int:
         LOOP: AbstractEventLoop = asyncio.get_event_loop()
         LENGTH: int = LOOP.run_until_complete(queue(GID))
         
-        print(f"Queue Length: {LENGTH}")
+        print(f"Queue: {GAME}\nLength: {LENGTH}")
         return EXIT_SUCCESS
 
 
