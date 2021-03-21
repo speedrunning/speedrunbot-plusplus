@@ -56,8 +56,8 @@ elif command -v python3 >/dev/null 2>&1; then
 		guarantee the bot will work.
 	install_python39
 	printf "Do you want to install python3.9? (Only tested on Debian) [y/N]: "
-	read -r C
 
+	read -r C
 	if test "$C" = "y" || test "$C" = "Y"; then
 		PY="python3.9"
 		install_python39
@@ -69,8 +69,8 @@ else
 		either install Python3 from your distributions package manager \
 		or you can install Python3.9 from this script.
 	printf "Do you want to install python3.9? (Only tested on Debian) [y/N]: "
-	read -r C
 
+	read -r C
 	if test "$C" = "y" || test "$C" = "Y"; then
 		PY="python3.9"
 		install_python39
