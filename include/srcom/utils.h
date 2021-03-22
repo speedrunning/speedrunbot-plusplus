@@ -1,10 +1,6 @@
 #ifndef __UTILS_H_
 #define __UTILS_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stddef.h>
 
 #define API    "https://www.speedrun.com/api/v1"
@@ -22,6 +18,10 @@ extern "C" {
 #ifndef EXIT_SUCCESS
 #	define EXIT_SUCCESS 0
 #	define EXIT_FAILURE 1
+#endif
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 /**
