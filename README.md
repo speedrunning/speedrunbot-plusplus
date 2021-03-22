@@ -36,7 +36,6 @@ Checking for C compiler
 Checking for Python3.9
 Installing dependencies
 Building executables
-Building manpages
 $
 ```
 
@@ -69,8 +68,6 @@ $
 ├── data          # Configuration files and related.
 ├── include       # C preprocessor include files.
 │   └── srcom     # Include files for speedrun.com.
-├── man           # Bot documentation in the form of manpages.
-│   └── srcom     # Manpages for the speedrun.com related programs.
 └── src           # Source code files.
     ├── cogs      # The bots cogs.
     └── srcom     # Command source code files for speedrun.com.
