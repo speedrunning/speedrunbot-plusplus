@@ -1,6 +1,10 @@
 #ifndef __UTILS_H_
 #define __UTILS_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 
 #define API    "https://www.speedrun.com/api/v1"
@@ -74,5 +78,9 @@ size_t write_callback(const void *ptr, const size_t size, const size_t nmemb,
  * @return unsigned int The number of occurances.
  */
 unsigned int substr(const char *str, const char *const sub, const int subl);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* !__UTILS_H_ */
