@@ -158,9 +158,16 @@ def getcid(CAT: str, R: dict) -> Union[str, None]:
 	function doesn't do the request itself, since it's meant to work with
 	both fullgame and IL's, amongst other reasons.
 
-	# TODO: Fix these broken tests.
-	>> r: dict = requests.get(f"{API}/levels/").json()
-	>> getcid("", )
+	>>> r: dict = requests.get(f"{API}/games/l3dxogdy/categories").json()
+	>>> getcid("Nitro Tracks", r)
+	'7kj6mz23'
+	>>> getcid("Retro Tracks", r)
+	'xk9v3gd0'
+	>>> r = requests.get(f"{API}/games/l3dxogdy/levels").json()
+	>>> getcid("This game has no levels", r)
+	>>> r = requests.get(f"{API}/games/4d7e7z67/levels").json()
+	>>> getcid("100m", r)
+	'rdn25e5d'
 	"""
 	for c in R["data"]:
 		if c["name"] == CAT:
