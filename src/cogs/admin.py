@@ -37,7 +37,7 @@ class Admin(commands.Cog):
 			await ctx.send(f"Command '{COMMAND}' does not exist.")
 		else:
 			# TODO: Make it DM me the error maybe?
-			print(type(err))
+			print(type(err), file=stderr)
 			print(err, file=stderr)
 
 	@commands.check(isbotmaster)
@@ -48,7 +48,7 @@ class Admin(commands.Cog):
 		"""
 		RET: CompletedProcess = run(("git", "pull"), capture_output=True, text=True)
 
-		if RET.returncode == 1:
+		if RET.returncode != 0:
 			await ctx.send(RET.stderr)
 			return
 
