@@ -86,6 +86,29 @@ class Update(commands.Cog):
 			)
 			print(e, file=stderr)
 
+	@commands.check(isbotmaster)
+	@commands.command(name="unload")
+	async def unload(self, ctx: Context, EXT: str) -> None:
+		"""
+		Unloads an extension.
+		"""
+		try:
+			self.bot.unload_extension(f"cogs.{EXT}")
+			await ctx.send(f"The extension {EXT} was unloaded.")
+		except commands.ExtensionNotFound:
+			await ctx.send(f"The extension {EXT} doesn't exist.")
+		except commands.ExtensionAlreadyLoaded:
+			await ctx.send(f"The extension {EXT} is already loaded.")
+		except commands.NoEntryPointError:
+			await ctx.send(
+				f"The extension {EXT} doesn't have an entry point. (Try adding the setup function)"
+			)
+		except commands.ExtensionFailed as e:
+			await ctx.send(
+				f"Some unknown error happened while trying to reload extension {EXT}."
+			)
+			print(e, file=stderr)
+
 
 def setup(bot: SRBpp) -> None:
 	bot.add_cog(Update(bot))
