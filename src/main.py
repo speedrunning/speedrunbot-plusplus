@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.9
 
 import json
-from typing import IO
+from os.path import isfile
 
 from bot import DATA, SRBpp
 
@@ -11,10 +11,7 @@ def check_jsons() -> None:
 	Make sure all JSON configuration files are present.
 	"""
 	CONFIG: str = f"{DATA}/srbpp.json"
-	try:
-		f: IO = open(CONFIG, "r")
-		f.close()
-	except FileNotFoundError:
+	if not isfile(CONFIG):
 		TOKEN: str = input("BOT SETUP - Enter bot token: ")
 		with open(CONFIG, "w+") as f:
 			json.dump({"token": TOKEN}, f, indent=4)
