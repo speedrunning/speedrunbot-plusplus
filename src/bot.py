@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 from subprocess import CompletedProcess, run
+from sys import stderr
 from typing import Iterable
 
 import discord
@@ -30,7 +31,7 @@ class SRBpp(commands.Bot):
 			try:
 				self.load_extension(extension)
 			except Exception as e:
-				print(e)
+				print(e, file=stderr)
 
 		with open(f"{DATA}/srbpp.json", "r") as f:
 			self.config = json.load(f)
@@ -50,7 +51,7 @@ class SRBpp(commands.Bot):
 		Code to run when the bot starts up.
 		"""
 		self.uptime: datetime = datetime.utcnow()
-		GAME: discord.Game = discord.Game("!help / ;help")
+		GAME: discord.Game = discord.Game("+help / ;help")
 		await self.change_presence(activity=GAME)
 
 	async def close(self) -> None:
@@ -61,7 +62,7 @@ class SRBpp(commands.Bot):
 			try:
 				self.unload_extension(extension)
 			except Exception as e:
-				print(e)
+				print(e, file=stderr)
 
 		await super().close()
 
@@ -77,5 +78,5 @@ def get_prefix(bot: SRBpp, message: Message) -> list[str]:
 	Gets the list of prefixes that can be used to call the bot, including
 	pinging the bot.
 	"""
-	PREFIXES: tuple[str, ...] = ("!", ";", "+")
+	PREFIXES: tuple[str, ...] = (";", "+")
 	return commands.when_mentioned_or(*PREFIXES)(bot, message)
