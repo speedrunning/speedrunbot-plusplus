@@ -3,13 +3,13 @@ from sys import stderr
 
 import discord
 from discord.ext import commands
+from discord.ext.commands.context import Context
+from discord.ext.commands.errors import CommandError
 
 from bot import SRBpp
 
-Context = commands.context.Context
 
-
-class Update(commands.Cog):
+class Admin(commands.Cog):
 	def __init__(self, bot: SRBpp) -> None:
 		self.bot: SRBpp = bot
 
@@ -17,13 +17,28 @@ class Update(commands.Cog):
 		"""
 		Check if the caller of the command is a 'botmaster' or not. To
 		learn how to configure who is and isn't a botmaster, see the
-		man page `man/srbpp.json.5`.
+		docs at `data/README.md`.
 		"""
 		if ctx.author.id in ctx.bot.config["botmasters"]:
 			return True
 		else:
-			await ctx.send("You do not have permission to execute this command.")
 			return False
+
+	@commands.Cog.listener()
+	async def on_command_error(_, ctx: Context, err: CommandError) -> None:
+		"""
+		A simple error handler to avoid spamming my console with errors
+		I do not care about.
+		"""
+		if type(err) == commands.CheckFailure:
+			await ctx.send("You do not have permission to execute this command.")
+		elif type(err) == commands.errors.CommandNotFound:
+			COMMAND: str = err.args[0].split('"')[1]
+			await ctx.send(f"Command '{COMMAND}' does not exist.")
+		else:
+			# TODO: Make it DM me the error maybe?
+			print(type(err))
+			print(err, file=stderr)
 
 	@commands.check(isbotmaster)
 	@commands.command(name="pull")
@@ -111,4 +126,4 @@ class Update(commands.Cog):
 
 
 def setup(bot: SRBpp) -> None:
-	bot.add_cog(Update(bot))
+	bot.add_cog(Admin(bot))
