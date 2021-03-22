@@ -2,10 +2,10 @@ from subprocess import CompletedProcess
 
 import discord
 from discord.ext import commands
+from discord.ext.commands.context import Context
 
 from bot import SRBpp
 
-Context = commands.context.Context
 TITLE: str
 DESC: str
 PREFIX: str = "srcom/bin"

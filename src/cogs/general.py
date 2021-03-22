@@ -1,8 +1,7 @@
 from discord.ext import commands
+from discord.ext.commands.context import Context
 
 from bot import SRBpp
-
-Context = commands.context.Context
 
 
 class General(commands.Cog):
