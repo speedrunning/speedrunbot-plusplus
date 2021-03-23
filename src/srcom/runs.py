@@ -48,13 +48,14 @@ async def runs(UID: int) -> tuple[int, int]:
 			)
 			for response in await asyncio.gather(*futures):
 				r: dict = response.json()
+				size: int = r["pagination"]["size"]
 				for run in r["data"]:
 					if run["level"]:
 						il += 1
 					else:
 						fullgame += 1
 
-				if len(r["data"]) < 200:
+				if size < 200:
 					return (fullgame, il)
 
 

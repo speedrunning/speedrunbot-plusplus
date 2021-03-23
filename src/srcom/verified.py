@@ -48,7 +48,7 @@ async def verified(UID: int) -> int:
 			)
 			for response in await asyncio.gather(*futures):
 				r: dict = response.json()
-				size: int = len(r["data"])
+				size: int = r["pagination"]["size"]
 				if size < 200:
 					return runcount + size
 

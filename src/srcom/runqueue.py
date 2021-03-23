@@ -44,7 +44,7 @@ async def queue(GID: str) -> tuple[int, int]:
 			)
 			for response in await asyncio.gather(*futures):
 				r: dict = response.json()
-				size: int = len(r["data"])
+				size: int = r["pagination"]["size"]
 				for run in r["data"]:
 					if run["level"]:
 						il += 1
