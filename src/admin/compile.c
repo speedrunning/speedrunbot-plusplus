@@ -12,8 +12,8 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "defines.h"
 #include "admin/compile.h"
+#include "defines.h"
 
 /* These directories are excluded by the program. */
 const char *const MAKE_EXCLUDES[] = {".", "..", "__pycache__", "cogs", NULL};
