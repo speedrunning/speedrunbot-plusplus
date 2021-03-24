@@ -20,14 +20,7 @@ class Src(commands.Cog):
 		"""
 		Get a list of all of a games categories.
 		"""
-		if not GAME:
-			await ctx.send(
-				"Usage: `!categories [GAME]`\n" + "Example: `!categories mcbe`"
-			)
-			return
-
 		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/categories", GAME)
-
 		if RET.returncode == 1:
 			await ctx.send(RET.stderr)
 			return
@@ -41,15 +34,7 @@ class Src(commands.Cog):
 		"""
 		Get the number of unique categories a player has submit runs to.
 		"""
-		if not PLAYER:
-			await ctx.send(
-				"Usage: `!categoriesplayed [PLAYER NAME]`\n"
-				+ "Example: `!categoriesplayed AnInternetTroll`"
-			)
-			return
-
 		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/categoriesplayed", PLAYER)
-
 		if RET.returncode == 1:
 			await ctx.send(RET.stderr)
 			return
@@ -64,14 +49,7 @@ class Src(commands.Cog):
 		"""
 		Get the number of unique games a player has submit runs to.
 		"""
-		if not PLAYER:
-			await ctx.send(
-				"Usage: `!games [PLAYER NAME]`\n" + "Example: `!games AnInternetTroll`"
-			)
-			return
-
 		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/games", PLAYER)
-
 		if RET.returncode == 1:
 			await ctx.send(RET.stderr)
 			return
@@ -86,17 +64,9 @@ class Src(commands.Cog):
 		"""
 		Get the top 10 runs for a game, with an optional category and subcategory.
 		"""
-		if not GAME:
-			await ctx.send(
-				"Usage: `!leaderboard [GAME] [CATEGORY (Optional)] [SUBCATEGORY (Optional)]`\n"
-				+ 'Example: `!leaderboard mkw "Nitro Tracks"`'
-			)
-			return
-
 		RET: CompletedProcess = self.bot.execv(
 			f"{PREFIX}/leaderboard", GAME, CAT, SUBCAT
 		)
-
 		if RET.returncode == 1:
 			await ctx.send(RET.stderr)
 			return
@@ -110,15 +80,7 @@ class Src(commands.Cog):
 		"""
 		Get the number of games and series a player moderates.
 		"""
-		if not PLAYER:
-			await ctx.send(
-				"Usage: `!modcount [PLAYER NAME]`\n"
-				+ "Example: `!modcount AnInternetTroll`"
-			)
-			return
-
 		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/modcount", PLAYER)
-
 		if RET.returncode == 1:
 			await ctx.send(RET.stderr)
 			return
@@ -133,12 +95,7 @@ class Src(commands.Cog):
 		"""
 		Get the number of runs awaiting verification for a given game
 		"""
-		if not GAME:
-			await ctx.send("Usage: `!runqueue [GAME]`\n" + "Example: `!runqueue mkw`")
-			return
-
 		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/runqueue", GAME)
-
 		if RET.returncode == 1:
 			await ctx.send(RET.stderr)
 			return
@@ -152,14 +109,7 @@ class Src(commands.Cog):
 		"""
 		Get the amount of runs a player has submit.
 		"""
-		if not PLAYER:
-			await ctx.send(
-				"Usage: `!runs [PLAYER NAME]`\n" + "Example: `!runs AnInternetTroll`"
-			)
-			return
-
 		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/runs", PLAYER)
-
 		if RET.returncode == 1:
 			await ctx.send(RET.stderr)
 			return
@@ -172,15 +122,7 @@ class Src(commands.Cog):
 		"""
 		Get the amount of runs a player has verified or rejected.
 		"""
-		if not PLAYER:
-			await ctx.send(
-				"Usage: `!verified [PLAYER NAME]`\n"
-				+ "Example: `!verified AnInternetTroll`"
-			)
-			return
-
 		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/verified", PLAYER)
-
 		if RET.returncode == 1:
 			await ctx.send(RET.stderr)
 			return
@@ -195,17 +137,9 @@ class Src(commands.Cog):
 		"""
 		Get the world record for a game, with an optional category and subcategory.
 		"""
-		if not GAME:
-			await ctx.send(
-				"Usage: `!worldrecord [GAME] [CATEGORY (Optional)] [SUBCATEGORY (Optional)]`\n"
-				+ 'Example: `!worldrecord mkw "Nitro Tracks"`'
-			)
-			return
-
 		RET: CompletedProcess = self.bot.execv(
 			f"{PREFIX}/worldrecord", GAME, CAT, SUBCAT
 		)
-
 		if RET.returncode == 1:
 			await ctx.send(RET.stderr)
 			return
@@ -219,15 +153,7 @@ class Src(commands.Cog):
 		"""
 		Get the number of world records a player currently holds.
 		"""
-		if not PLAYER:
-			await ctx.send(
-				"Usage: `!worldrecords [PLAYER NAME]`\n"
-				+ "Example: `!worldrecords AnInternetTroll`"
-			)
-			return
-
 		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/worldrecords", PLAYER)
-
 		if RET.returncode == 1:
 			await ctx.send(RET.stderr)
 			return

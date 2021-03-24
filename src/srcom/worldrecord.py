@@ -19,7 +19,22 @@ VVAL: str
 VIDEOS: Union[list[dict[str, str]], None]
 
 
+def usage() -> None:
+	"""
+	Print the commands usage and example if an invalid number of arguments
+	are given.
+	"""
+	print(
+		"Usage: `+worldrecord [GAME] [CATEGORY (Optional)] [SUBCATEGORY (Optional)]`\n"
+		+ 'Example: `+worldrecord mkw "Nitro Tracks"`'
+	)
+	exit(EXIT_FAILURE)
+
+
 def main() -> int:
+	if 1 < len(argv) <= 4:
+		usage()
+
 	# Get the game ID and name.
 	try:
 		GAME, GID = game(argv[1])

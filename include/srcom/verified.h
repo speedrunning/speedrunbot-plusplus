@@ -5,6 +5,12 @@
 #define THREAD_COUNT 25
 
 /**
+ * @brief Print the commands usage and example if an invalid number of arguments
+ * are given.
+ */
+void usage(void) __attribute__((noreturn));
+
+/**
  * @brief The routine executed by all the threads. It performs a GET request to
  * the sr.c API, and adds the number of runs recieved to the `counts` array.
  * 

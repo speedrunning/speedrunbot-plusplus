@@ -1,11 +1,24 @@
 /* This program gets the number of WRs that a given player (argv[1]) has set. */
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "utils.h"
+#include "worldrecords.h"
 
-int main(int UNUSED(argc), char **argv)
+void usage(void)
 {
+	fputs("Usage: `+worldrecords [PLAYER NAME]`\n"
+	      "Example: `+worldrecords AnInternetTroll`\n",
+	      stderr);
+	exit(EXIT_FAILURE);
+}
+
+int main(int argc, char **argv)
+{
+	if (argc != 2)
+		usage();
+
 	char *uid = get_uid(argv[1]);
 	if (!uid) {
 		fprintf(stderr, "Error: User with username '%s' not found.\n",

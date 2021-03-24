@@ -15,6 +15,20 @@
 /* Who in their right mind would play this many games? Besides Cytruss. */
 char unique[8196][UIDBUF];
 
+void usage(void)
+{
+#ifdef CATEGORIES
+	fputs("Usage: `+categoriesplayed [PLAYER NAME]`\n"
+	      "Example: `+categoriesplayed AnInternetTroll`\n",
+	      stderr);
+#else
+	fputs("Usage: `+games [PLAYER NAME]`\n"
+	      "Example: `+games AnInternetTroll`\n",
+	      stderr);
+#endif
+	exit(EXIT_FAILURE);
+}
+
 bool in_unique(char *id)
 {
 	int i = 0;
@@ -26,8 +40,11 @@ bool in_unique(char *id)
 	return false;
 }
 
-int main(int UNUSED(argc), char **argv)
+int main(int argc, char **argv)
 {
+	if (argc != 2)
+		usage();
+
 	char *uid = get_uid(argv[1]);
 	if (!uid) {
 		fprintf(stderr, "Error: User with username '%s' not found.\n",

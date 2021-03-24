@@ -11,7 +11,19 @@ import requests
 from utils import *
 
 
+def usage() -> None:
+	"""
+	Print the commands usage and example if an invalid number of arguments
+	are given.
+	"""
+	print("Usage: `+categories [GAME]`\n" + "Example: `+categories mcbe`")
+	exit(EXIT_FAILURE)
+
+
 def main() -> int:
+	if len(argv) != 2:
+		usage()
+
 	GAME: int
 	GID: int
 

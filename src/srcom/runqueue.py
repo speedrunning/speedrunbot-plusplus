@@ -21,6 +21,15 @@ FULLGAME: int
 IL: int
 
 
+def usage() -> None:
+	"""
+	Print the commands usage and example if an invalid number of arguments
+	are given.
+	"""
+	print("Usage: `+runqueue [GAME]`\n" + "Example: `+runqueue mkw`")
+	exit(EXIT_FAILURE)
+
+
 async def queue(GID: str) -> tuple[int, int]:
 	"""
 	Get the number of runs in the queue of the game with ID `GID`. Since
@@ -56,6 +65,9 @@ async def queue(GID: str) -> tuple[int, int]:
 
 
 def main() -> int:
+	if len(argv) != 2:
+		usage()
+
 	try:
 		GAME, GID = game(argv[1])
 	except GameError as e:

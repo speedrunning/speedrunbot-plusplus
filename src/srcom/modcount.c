@@ -4,11 +4,24 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 
+#include "modcount.h"
 #include "utils.h"
 
-int main(int UNUSED(argc), char **argv)
+void usage(void)
 {
+	fputs("Usage: `+modcount [PLAYER NAME]`\n"
+	      "Example: `+modcount AnInternetTroll`\n",
+	      stderr);
+	exit(EXIT_FAILURE);
+}
+
+int main(int argc, char **argv)
+{
+	if (argc != 2)
+		usage();
+
 	char *uid = get_uid(argv[1]);
 	if (!uid) {
 		fprintf(stderr, "Error: User with username '%s' not found.\n",

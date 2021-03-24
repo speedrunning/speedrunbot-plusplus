@@ -18,6 +18,15 @@ FULLGAME: int
 IL: int
 
 
+def usage() -> None:
+	"""
+	Print the commands usage and example if an invalid number of arguments
+	are given.
+	"""
+	print("Usage: `+runs [PLAYER NAME]`\n" + "Example: `+runs AnInternetTroll`")
+	exit(EXIT_FAILURE)
+
+
 async def runs(UID: int) -> tuple[int, int]:
 	"""
 	Get the number of runs by a user with the user id `UID`. This function
@@ -60,6 +69,9 @@ async def runs(UID: int) -> tuple[int, int]:
 
 
 def main() -> int:
+	if len(argv) != 2:
+		usage()
+
 	try:
 		UID = uid(argv[1])
 	except UserError as e:

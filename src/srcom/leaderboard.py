@@ -19,6 +19,18 @@ VID: str
 VVAL: str
 
 
+def usage() -> None:
+	"""
+	Print the commands usage and example if an invalid number of arguments
+	are given.
+	"""
+	print(
+		"Usage: `+leaderboard [GAME] [CATEGORY (Optional)] [SUBCATEGORY (Optional)]`\n"
+		+ 'Example: `+leaderboard mkw "Nitro Tracks"`'
+	)
+	exit(EXIT_FAILURE)
+
+
 def pad(TIME: str, MS: bool) -> str:
 	"""
 	Pad a time with blank spaces if it doesnt contain milliseconds for
@@ -37,6 +49,9 @@ def pad(TIME: str, MS: bool) -> str:
 
 
 def main() -> int:
+	if 1 < len(argv) <= 4:
+		usage()
+
 	# Get the games categories.
 	try:
 		GAME, GID = game(argv[1])
