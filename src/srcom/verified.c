@@ -13,7 +13,6 @@
 #include "srcom/verified.h"
 
 bool done = false;
-char *uid;
 char uri_base[URIBUF];
 int offset_start = 0;
 int counts[THREAD_COUNT] = {0};
@@ -57,7 +56,7 @@ int main(int argc, char **argv)
 	if (argc != 2)
 		usage();
 
-	uid = get_uid(argv[1]);
+	const char *uid = get_uid(argv[1]);
 	if (!uid) {
 		fprintf(stderr, "Error: User with username '%s' not found.\n",
 		        argv[1]);
