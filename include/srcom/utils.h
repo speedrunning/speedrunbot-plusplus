@@ -77,7 +77,18 @@ size_t write_callback(const void *ptr, const size_t size, const size_t nmemb,
  * @param subl The length of the substring.
  * @return unsigned int The number of occurances.
  */
-unsigned int substr(const char *str, const char *const sub, const int subl);
+unsigned int count_substr(const char *str, const char *const sub,
+                          const int subl);
+
+/**
+ * @brief Find the last occurance of a substring in a string.
+ * 
+ * @param str The string to seach through.
+ * @param sub The substring to search for.
+ * @param subl The length of the substring.
+ * @return char* A pointer to the last substring found, or NULL if none found.
+ */
+char *last_substr(const char *str, const char *const sub, const int subl);
 
 #ifdef __cplusplus
 }

@@ -37,8 +37,8 @@ int main(int UNUSED(argc), char **argv)
 	 * quick and easy way to get the number of games/series without the need
 	 * of parsing the JSON.
 	 */
-	const unsigned int gcount = substr(games.ptr, "\"id\":", 5);
-	const unsigned int scount = substr(series.ptr, "\"id\":", 5);
+	const unsigned int gcount = count_substr(games.ptr, "\"id\":", 5);
+	const unsigned int scount = count_substr(series.ptr, "\"id\":", 5);
 
 	printf("Games: %u\n"
 	       "Series: %u\n"
