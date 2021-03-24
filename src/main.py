@@ -1,24 +1,23 @@
 #!/usr/bin/env python3.9
 
-import json
 from os.path import isfile
 
-from bot import DATA, SRBpp
+from bot import ROOT_DIR, SRBpp
 
 
-def check_jsons() -> None:
+def check_files() -> None:
 	"""
-	Make sure all JSON configuration files are present.
+	Make sure all required files are present.
 	"""
-	CONFIG: str = f"{DATA}/srbpp.json"
-	if not isfile(CONFIG):
+	TOKEN_FILE: str = f"{ROOT_DIR}/token"
+	if not isfile(TOKEN_FILE):
 		TOKEN: str = input("BOT SETUP - Enter bot token: ")
-		with open(CONFIG, "w+") as f:
-			json.dump({"token": TOKEN, "botmasters": []}, f, indent=4)
+		with open(TOKEN_FILE, "w+") as f:
+			f.write(TOKEN)
 
 
 def _start() -> None:
-	check_jsons()
+	check_files()
 	BOT: SRBpp = SRBpp()
 	BOT.run()
 

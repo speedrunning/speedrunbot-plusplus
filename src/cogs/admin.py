@@ -15,24 +15,13 @@ class Admin(commands.Cog):
 	def __init__(self, bot: SRBpp) -> None:
 		self.bot: SRBpp = bot
 
-	async def isbotmaster(ctx: Context) -> bool:
-		"""
-		Check if the caller of the command is a 'botmaster' or not. To
-		learn how to configure who is and isn't a botmaster, see the
-		docs at `data/README.md`.
-		"""
-		if ctx.author.id in ctx.bot.config["botmasters"]:
-			return True
-		else:
-			return False
-
 	@commands.Cog.listener()
 	async def on_command_error(_, ctx: Context, err: CommandError) -> None:
 		"""
 		A simple error handler to avoid spamming my console with errors
 		I do not care about.
 		"""
-		if type(err) == commands.CheckFailure:
+		if type(err) == commands.errors.NotOwner:
 			await ctx.send("You do not have permission to execute this command.")
 		elif type(err) == commands.errors.CommandNotFound:
 			COMMAND: str = err.args[0].split('"')[1]
@@ -42,7 +31,7 @@ class Admin(commands.Cog):
 			print(type(err), file=stderr)
 			print(err, file=stderr)
 
-	@commands.check(isbotmaster)
+	@commands.is_owner()
 	@commands.command(name="compile", aliases=("make", "comp"))
 	async def compile(self, ctx: Context) -> None:
 		"""
@@ -59,7 +48,7 @@ class Admin(commands.Cog):
 			await ctx.send(f"```{output[0:2000 - 6]}```")
 			output = output[2000 - 6 :]
 
-	@commands.check(isbotmaster)
+	@commands.is_owner()
 	@commands.command(name="pull")
 	async def pull(_, ctx: Context) -> None:
 		"""
@@ -74,7 +63,7 @@ class Admin(commands.Cog):
 		embed = discord.Embed(title="Git Pull", description=RET.stdout)
 		await ctx.send(embed=embed)
 
-	@commands.check(isbotmaster)
+	@commands.is_owner()
 	@commands.command(name="reload")
 	async def reload(self, ctx: Context, EXT: str) -> None:
 		"""
@@ -97,7 +86,7 @@ class Admin(commands.Cog):
 			)
 			print(e, file=stderr)
 
-	@commands.check(isbotmaster)
+	@commands.is_owner()
 	@commands.command(name="load")
 	async def load(self, ctx: Context, EXT: str) -> None:
 		"""
@@ -120,7 +109,7 @@ class Admin(commands.Cog):
 			)
 			print(e, file=stderr)
 
-	@commands.check(isbotmaster)
+	@commands.is_owner()
 	@commands.command(name="unload")
 	async def unload(self, ctx: Context, EXT: str) -> None:
 		"""

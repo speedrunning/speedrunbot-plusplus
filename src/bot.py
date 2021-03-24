@@ -1,4 +1,3 @@
-import json
 import os
 from datetime import datetime
 from pathlib import Path
@@ -11,7 +10,7 @@ from discord.ext import commands
 from discord.message import Message
 
 PREFIX: Path = Path(__file__).parent
-DATA: str = f"{PREFIX}/../data"
+ROOT_DIR: str = f"{PREFIX}/.."
 EXTENSIONS: Iterable[str] = (
 	f"cogs.{f[:-3]}" for f in os.listdir(f"{PREFIX}/cogs") if f.endswith(".py")
 )
@@ -33,8 +32,8 @@ class SRBpp(commands.Bot):
 			except Exception as e:
 				print(e, file=stderr)
 
-		with open(f"{DATA}/srbpp.json", "r") as f:
-			self.config = json.load(f)
+		with open(f"{ROOT_DIR}/token", "r") as f:
+			self.token = f.read().strip()
 
 	def execv(_, PROG: str, *ARGS: tuple[str, ...]) -> CompletedProcess:
 		"""
@@ -70,7 +69,7 @@ class SRBpp(commands.Bot):
 		"""
 		Run the bot.
 		"""
-		super().run(self.config["token"], reconnect=True)
+		super().run(self.token, reconnect=True)
 
 
 def get_prefix(bot: SRBpp, message: Message) -> list[str]:
@@ -78,5 +77,5 @@ def get_prefix(bot: SRBpp, message: Message) -> list[str]:
 	Gets the list of prefixes that can be used to call the bot, including
 	pinging the bot.
 	"""
-	PREFIXES: tuple[str, ...] = (";", "+")
+	PREFIXES: tuple[str, ...] = ("+", ";")
 	return commands.when_mentioned_or(*PREFIXES)(bot, message)
