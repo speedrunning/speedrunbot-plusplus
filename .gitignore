@@ -1,10 +1,8 @@
 .vscode/
 __pycache__/
-build/
 bin/
-dist/
 objs/
 
+token
 test.json
-srbpp.json
 *.spec

@@ -66,7 +66,6 @@ $
 
 ```sh
 .
-├── data          # Configuration files and related.
 ├── include       # C preprocessor include files.
 │   ├── admin     # Include files for admin only programs.
 │   └── srcom     # Include files for speedrun.com.
