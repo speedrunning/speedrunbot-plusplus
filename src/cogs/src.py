@@ -96,8 +96,6 @@ class Src(commands.Cog):
 		Get the number of runs awaiting verification for a given game
 		"""
 		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/runqueue", GAME)
-		# THIS IS A QUICK TEST
-		await ctx.send(RET.returncode)
 		if RET.returncode == 1:
 			await ctx.send(RET.stderr)
 			return
