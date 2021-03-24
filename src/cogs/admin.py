@@ -1,4 +1,3 @@
-from os import listdir, path
 from subprocess import CompletedProcess, run
 from sys import stderr
 
@@ -49,25 +48,12 @@ class Admin(commands.Cog):
 		"""
 		Run the bots Makefiles to update all the code.
 		"""
-		# MAKE_EXCLUDES: tuple[str, ...] = ("__pycache__", "cogs")
-		# PATH: str = path.dirname(__file__)
-		# FILES: list[str] = listdir(f"{PATH}/../")
-
-		# output: str = ""
-		# for file in FILES:
-		# 	fpath: str = f"{PATH}/../{file}"
-		# 	if path.isdir(fpath) and file not in MAKE_EXCLUDES:
-		# 		RET: CompletedProcess = run(
-		# 			("make", "-C", fpath), capture_output=True, text=True
-		# 		)
-		# 		output += RET.stdout
-
-		# If you compile a lot of stuff, you end up with lots of output.
 		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/compile")
 		if RET.returncode == 1:
 			await ctx.send(RET.stderr)
 			return
 
+		# If you compile a lot of stuff, you end up with lots of output.
 		output: str = RET.stdout
 		while len(output) > 0:
 			await ctx.send(f"```{output[0:2000 - 6]}```")
