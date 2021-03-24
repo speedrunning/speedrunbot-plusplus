@@ -127,7 +127,9 @@ class Src(commands.Cog):
 			await ctx.send(RET.stderr)
 			return
 
-		embed = discord.Embed(title="Runs verified: {PLAYER}", description=RET.stdout)
+		embed = discord.Embed(
+			title=f"Runs verified: {PLAYER}", description=RET.stdout
+		)
 		await ctx.send(embed=embed)
 
 	@commands.command(name="worldrecord", aliases=("wr",))
