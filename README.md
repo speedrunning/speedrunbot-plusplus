@@ -67,8 +67,12 @@ $
 .
 ├── data          # Configuration files and related.
 ├── include       # C preprocessor include files.
+│   ├── admin     # Include files for admin only programs.
 │   └── srcom     # Include files for speedrun.com.
 └── src           # Source code files.
+    ├── admin     # Command source code file for admin only programs.
+    │   ├── bin   # Program executables and binaries.
+    │   └── objs  # C compiler object files.
     ├── cogs      # The bots cogs.
     └── srcom     # Command source code files for speedrun.com.
         ├── bin   # Program executables and binaries.
