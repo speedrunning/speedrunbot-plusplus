@@ -9,6 +9,8 @@ from discord.ext.commands.errors import CommandError
 
 from bot import SRBpp
 
+PREFIX: str = "admin/bin"
+
 
 class Admin(commands.Cog):
 	def __init__(self, bot: SRBpp) -> None:
@@ -42,25 +44,31 @@ class Admin(commands.Cog):
 			print(err, file=stderr)
 
 	@commands.check(isbotmaster)
-	@commands.command(name="make")
-	async def make(_, ctx: Context) -> None:
+	@commands.command(name="compile", aliases=("make", "comp"))
+	async def compile(self, ctx: Context) -> None:
 		"""
 		Run the bots Makefiles to update all the code.
 		"""
-		MAKE_EXCLUDES: tuple[str, ...] = ("__pycache__", "cogs")
-		PATH: str = path.dirname(__file__)
-		FILES: list[str] = listdir(f"{PATH}/../")
+		# MAKE_EXCLUDES: tuple[str, ...] = ("__pycache__", "cogs")
+		# PATH: str = path.dirname(__file__)
+		# FILES: list[str] = listdir(f"{PATH}/../")
 
-		output: str = ""
-		for file in FILES:
-			fpath: str = f"{PATH}/../{file}"
-			if path.isdir(fpath) and file not in MAKE_EXCLUDES:
-				RET: CompletedProcess = run(
-					("make", "-C", fpath), capture_output=True, text=True
-				)
-				output += RET.stdout
+		# output: str = ""
+		# for file in FILES:
+		# 	fpath: str = f"{PATH}/../{file}"
+		# 	if path.isdir(fpath) and file not in MAKE_EXCLUDES:
+		# 		RET: CompletedProcess = run(
+		# 			("make", "-C", fpath), capture_output=True, text=True
+		# 		)
+		# 		output += RET.stdout
 
 		# If you compile a lot of stuff, you end up with lots of output.
+		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/compile")
+		if RET.returncode == 1:
+			await ctx.send(RET.stderr)
+			return
+
+		output: str = RET.stdout
 		while len(output) > 0:
 			await ctx.send(f"```{output[0:2000 - 6]}```")
 			output = output[2000 - 6 :]
