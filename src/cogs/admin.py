@@ -60,7 +60,10 @@ class Admin(commands.Cog):
 				)
 				output += RET.stdout
 
-		await ctx.send(f"```{output}```")
+		# If you compile a lot of stuff, you end up with lots of output.
+		while len(output) > 0:
+			await ctx.send(f"```{output[0:2000 - 6]}```")
+			output = output[2000 - 6 :]
 
 	@commands.check(isbotmaster)
 	@commands.command(name="pull")
