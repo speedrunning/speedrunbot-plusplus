@@ -4,8 +4,9 @@ CFLAGS := -O3 -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes \
 INC    := -I../../include/srcom
 PY     := python3.9
 
-cprogs  := bin/categoriesplayed bin/games bin/modcount bin/worldrecords
-pyprogs := bin/categories bin/leaderboard bin/runqueue bin/runs bin/verified \
+cprogs  := bin/categoriesplayed bin/games bin/modcount bin/verified \
+		bin/worldrecords
+pyprogs := bin/categories bin/leaderboard bin/runqueue bin/runs \
 		bin/worldrecord bin/utils.py
 
 all: $(pyprogs) $(cprogs)
@@ -22,10 +23,10 @@ bin/%: %.py
 
 # C programs
 
-# The special rule for `bin/categoriesplayed` and `bin/games` comes first to
-# ensure that they don't get linked without `-ljansson`. Additionally, `games`
-# and `categoriesplayed` are almost identical, so they both use `games.c`, with
-# preproccessor statements.
+# The special rules for `bin/categoriesplayed`, `bin/games`, etc. comes first to
+# ensure that they don't get linked with incorrect libraries. Additionally,
+# `games` and `categoriesplayed` are almost identical, so they both use 
+# `games.c`, with preproccessor statements to create two seperate binaries.
 .PRECIOUS: objs/%.o
 objs/categoriesplayed.o: games.c
 	$(CCMP) $(CFLAGS) $(INC) -DCATEGORIES -o $@ -c $<
@@ -39,6 +40,9 @@ bin/categoriesplayed: objs/categoriesplayed.o objs/utils.o
 bin/games: objs/games.o objs/utils.o
 	$(CCMP) $(CFLAGS) -o $@ $^ -lcurl -ljansson
 
+bin/verified: objs/verified.o objs/utils.o
+	$(CCMP) $(CFLAGS) -o $@ $^ -lcurl -pthread
+
 bin/%: objs/%.o objs/utils.o
 	$(CCMP) $(CFLAGS) -o $@ $^ -lcurl
 
@@ -51,4 +55,3 @@ test:
 	$(PY) -m doctest leaderboard.py
 	$(PY) -m doctest runs.py
 	$(PY) -m doctest utils.py
-	$(PY) -m doctest verified.py
