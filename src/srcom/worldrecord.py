@@ -32,7 +32,7 @@ def usage() -> None:
 
 
 def main() -> int:
-	if 1 < len(argv) <= 4:
+	if not (1 < len(argv) <= 4):
 		usage()
 
 	# Get the game ID and name.

@@ -49,7 +49,7 @@ def pad(TIME: str, MS: bool) -> str:
 
 
 def main() -> int:
-	if 1 < len(argv) <= 4:
+	if not (1 < len(argv) <= 4):
 		usage()
 
 	# Get the games categories.
