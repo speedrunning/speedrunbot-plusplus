@@ -9,8 +9,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "utils.h"
-#include "verified.h"
+#include "srcom/utils.h"
+#include "srcom/verified.h"
 
 bool done = false;
 char *uid;

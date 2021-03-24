@@ -1,7 +1,7 @@
 CCMP   ?= clang
 CFLAGS := -O3 -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes \
 		-Wno-unused-result
-INC    := -I../../include/srcom
+INC    := -I../../include
 PY     := python3.9
 
 cprogs  := bin/categoriesplayed bin/games bin/modcount bin/verified \

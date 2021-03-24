@@ -6,8 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "modcount.h"
-#include "utils.h"
+#include "srcom/modcount.h"
+#include "srcom/utils.h"
 
 void usage(void)
 {

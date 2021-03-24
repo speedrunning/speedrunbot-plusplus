@@ -9,8 +9,8 @@
 
 #include <jansson.h>
 
-#include "games.h"
-#include "utils.h"
+#include "srcom/games.h"
+#include "srcom/utils.h"
 
 /* Who in their right mind would play this many games? Besides Cytruss. */
 char unique[8196][UIDBUF];

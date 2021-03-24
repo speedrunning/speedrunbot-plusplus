@@ -8,7 +8,7 @@
 
 #include <curl/curl.h>
 
-#include "utils.h"
+#include "srcom/utils.h"
 
 void init_string(string_t *str)
 {

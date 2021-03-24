@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "utils.h"
-#include "worldrecords.h"
+#include "srcom/utils.h"
+#include "srcom/worldrecords.h"
 
 void usage(void)
 {
