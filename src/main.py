@@ -14,7 +14,7 @@ def check_jsons() -> None:
 	if not isfile(CONFIG):
 		TOKEN: str = input("BOT SETUP - Enter bot token: ")
 		with open(CONFIG, "w+") as f:
-			json.dump({"token": TOKEN}, f, indent=4)
+			json.dump({"token": TOKEN, "botmasters": []}, f, indent=4)
 
 
 def _start() -> None:
