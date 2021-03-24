@@ -5,8 +5,8 @@ INC    := -I../../include
 PY     := python3.9
 
 cprogs  := bin/categoriesplayed bin/games bin/modcount bin/verified \
-		bin/worldrecords
-pyprogs := bin/categories bin/leaderboard bin/runqueue bin/runs \
+		bin/worldrecords bin/runqueue
+pyprogs := bin/categories bin/leaderboard bin/runs \
 		bin/worldrecord bin/utils.py
 
 all: $(pyprogs) $(cprogs)
@@ -42,6 +42,9 @@ bin/games: objs/games.o objs/utils.o
 
 bin/verified: objs/verified.o objs/utils.o
 	$(CCMP) $(CFLAGS) -o $@ $^ -lcurl -pthread
+
+bin/runqueue: objs/runqueue.o objs/utils.o
+	$(CCMP) $(CFLAGS) -o $@ $^ -lcurl -ljansson -pthread
 
 bin/%: objs/%.o objs/utils.o
 	$(CCMP) $(CFLAGS) -o $@ $^ -lcurl
