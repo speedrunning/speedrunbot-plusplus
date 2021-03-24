@@ -89,5 +89,5 @@ yes | $SU apt install libjansson-dev libcurl4-openssl-dev >/dev/null 2>&1
 # Run the Makefiles.
 echo Building executables
 for f in $(find "$SCR_PATH" | grep 'Makefile'); do
-	make -C "$(dirname "$f")" >/dev/null 2>&1
+	make CCMP=$CC -C "$(dirname "$f")" >/dev/null 2>&1
 done
