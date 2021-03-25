@@ -4,10 +4,9 @@ CFLAGS := -O3 -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes \
 INC    := -I../../include
 PY     := python3.9
 
-cprogs  := bin/categoriesplayed bin/games bin/modcount bin/verified \
-		bin/worldrecords bin/runqueue
-pyprogs := bin/categories bin/leaderboard bin/runs \
-		bin/worldrecord bin/utils.py
+cprogs  := bin/categoriesplayed bin/games bin/modcount bin/runqueue bin/verified \
+		bin/worldrecords
+pyprogs := bin/categories bin/leaderboard bin/runs bin/worldrecord bin/utils.py
 
 all: $(pyprogs) $(cprogs)
 $(shell mkdir -p bin/ objs/)
