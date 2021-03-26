@@ -1,7 +1,6 @@
 #ifndef __VERIFIED_H_
 #define __VERIFIED_H_
 
-#define MAX_RECV     200
 #define THREAD_COUNT 25
 
 /**

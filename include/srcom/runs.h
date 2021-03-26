@@ -1,7 +1,6 @@
 #ifndef __RUNS_H_
 #define __RUNS_H_
 
-#define MAX_RECV     200
 #define THREAD_COUNT 5
 
 /**

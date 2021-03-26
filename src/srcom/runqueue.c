@@ -11,6 +11,7 @@
 
 #include <jansson.h>
 
+#include "defines.h"
 #include "srcom/runqueue.h"
 #include "srcom/utils.h"
 
