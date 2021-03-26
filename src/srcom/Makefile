@@ -4,8 +4,8 @@ CFLAGS := -O3 -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes \
 INC    := -I../../include
 PY     := python3.9
 
-cprogs  := bin/categoriesplayed bin/games bin/modcount bin/runqueue bin/runs \
-		bin/verified bin/worldrecords
+cprogs  := bin/categories bin/categoriesplayed bin/games bin/modcount \
+		bin/runqueue bin/runs bin/verified bin/worldrecords
 pyprogs := bin/categories bin/leaderboard bin/worldrecord bin/utils.py
 
 all: $(pyprogs) $(cprogs)
@@ -32,6 +32,9 @@ objs/categoriesplayed.o: games.c
 
 objs/%.o: %.c
 	$(CCMP) $(CFLAGS) $(INC) -o $@ -c $<
+
+bin/categories: objs/categories.o objs/utils.o
+	$(CCMP) $(CFLAGS) -o $@ $^ -lcurl -ljansson
 
 bin/categoriesplayed: objs/categoriesplayed.o objs/utils.o
 	$(CCMP) $(CFLAGS) -o $@ $^ -lcurl -ljansson
