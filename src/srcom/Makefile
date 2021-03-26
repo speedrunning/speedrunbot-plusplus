@@ -4,9 +4,9 @@ CFLAGS := -O3 -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes \
 INC    := -I../../include
 PY     := python3.9
 
-cprogs  := bin/categoriesplayed bin/games bin/modcount bin/runqueue bin/verified \
-		bin/worldrecords
-pyprogs := bin/categories bin/leaderboard bin/runs bin/worldrecord bin/utils.py
+cprogs  := bin/categoriesplayed bin/games bin/modcount bin/runqueue bin/runs \
+		bin/verified bin/worldrecords
+pyprogs := bin/categories bin/leaderboard bin/worldrecord bin/utils.py
 
 all: $(pyprogs) $(cprogs)
 $(shell mkdir -p bin/ objs/)
@@ -45,6 +45,9 @@ bin/verified: objs/verified.o objs/utils.o
 bin/runqueue: objs/runqueue.o objs/utils.o
 	$(CCMP) $(CFLAGS) -o $@ $^ -lcurl -ljansson -pthread
 
+bin/runs: objs/runs.o objs/utils.o
+	$(CCMP) $(CFLAGS) -o $@ $^ -lcurl -ljansson -pthread
+
 bin/%: objs/%.o objs/utils.o
 	$(CCMP) $(CFLAGS) -o $@ $^ -lcurl
 
@@ -55,5 +58,4 @@ clean:
 
 test:
 	$(PY) -m doctest leaderboard.py
-	$(PY) -m doctest runs.py
 	$(PY) -m doctest utils.py
