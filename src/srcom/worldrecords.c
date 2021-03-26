@@ -39,9 +39,10 @@ int main(int argc, char **argv)
 	 * fullgame run. Counting the number of "levels" is a quick and easy way
 	 * to get the number of runs without the need of parsing the JSON.
 	 */
-	const unsigned int total = count_substr(runs.ptr, "\"level\":", 8);
+	const unsigned int total = count_substr(runs.ptr,
+	                                        "\"level\":", TOTAL_KEY_LEN);
 	const unsigned int fullgame = count_substr(runs.ptr, "\"level\":null",
-	                                           12);
+	                                           LEVEL_KEY_LEN);
 
 	printf("Full Game: %u\n"
 	       "Individual Level: %u\n"

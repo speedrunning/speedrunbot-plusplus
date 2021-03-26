@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "defines.h"
 #include "srcom/modcount.h"
 #include "srcom/utils.h"
 
@@ -39,10 +40,12 @@ int main(int argc, char **argv)
 	 * that comes to mind is April.
 	 */
 	static char uri[URIBUF];
-	snprintf(uri, URIBUF, API "/games?moderator=%s&_bulk=yes&max=1000",
+	snprintf(uri, URIBUF,
+	         API "/games?moderator=%s&_bulk=yes&max=" STR(MAX_RECV_BULK),
 	         uid);
 	get_req(uri, &games);
-	snprintf(uri, URIBUF, API "/series?moderator=%s&max=200", uid);
+	snprintf(uri, URIBUF, API "/series?moderator=%s&max=" STR(MAX_RECV),
+	         uid);
 	get_req(uri, &series);
 
 	/*

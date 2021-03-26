@@ -41,7 +41,7 @@ void *routine(void *tnum)
 	init_string(&json);
 	get_req(uri, &json);
 
-	char *size_key = last_substr(json.ptr, "\"size\":", 7);
+	char *size_key = last_substr(json.ptr, "\"size\":", KEY_LEN);
 	sscanf(size_key, "\"size\":%[^,]", size);
 
 	if ((s = atoi(size)) < MAX_RECV)
@@ -64,7 +64,7 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 	snprintf(uri_base, URIBUF,
-	         API "/runs?examiner=%s&max=200&offset=", uid);
+	         API "/runs?examiner=%s&max=" STR(MAX_RECV) "&offset=", uid);
 
 	while (!done) {
 		pthread_t threads[THREAD_COUNT];

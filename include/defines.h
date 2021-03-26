@@ -14,7 +14,12 @@
 #	define EXIT_FAILURE 1
 #endif
 
+/* Took this from stackoverflow. */
+#define STR_HELPER(x) #x
+#define STR(x)        STR_HELPER(x)
+
 /* The maximum number of runs that can be returned from the sr.c API. */
-#define MAX_RECV 200
+#define MAX_RECV      200
+#define MAX_RECV_BULK 1000
 
 #endif /* !__DEFINES_H_ */

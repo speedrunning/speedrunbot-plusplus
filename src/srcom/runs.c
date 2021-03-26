@@ -44,7 +44,7 @@ void *routine(void *tnum)
 	init_string(&json);
 	get_req(uri, &json);
 
-	char *size_key = last_substr(json.ptr, "\"size\":", 7);
+	char *size_key = last_substr(json.ptr, "\"size\":", KEY_LEN);
 	sscanf(size_key, "\"size\":%[^,]", size);
 
 	if ((s = atoi(size)) < MAX_RECV)
@@ -82,7 +82,8 @@ int main(int argc, char **argv)
 
 	/* Get the users ID and name. */
 	char *uid = get_uid(argv[1]);
-	snprintf(uri_base, URIBUF, API "/runs?user=%s&max=200&offset=", uid);
+	snprintf(uri_base, URIBUF,
+	         API "/runs?user=%s&max=" STR(MAX_RECV) "&offset=", uid);
 
 	while (!done) {
 		pthread_t threads[THREAD_COUNT];

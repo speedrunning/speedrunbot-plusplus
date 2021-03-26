@@ -94,7 +94,8 @@ int main(int argc, char **argv)
 	       gid, gname);
 
 	snprintf(uri_base, URIBUF,
-	         API "/runs?game=%s&status=new&max=200&offset=", gid);
+	         API "/runs?game=%s&status=new&max=" STR(MAX_RECV) "&offset=",
+	         gid);
 
 	while (!done) {
 		pthread_t threads[THREAD_COUNT];
