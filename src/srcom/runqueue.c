@@ -51,8 +51,7 @@ void *routine(void *tnum)
 
 	/* Loop through each pending run and tally the fullgame and IL runs. */
 	json_t *root, *data, *obj, *level;
-	json_error_t error;
-	root = json_loads(json.ptr, 0, &error);
+	root = json_loads(json.ptr, 0, NULL);
 	if (!root) {
 		fputs("Error: Unable to parse sr.c reponse, try again later.\n",
 		      stderr);

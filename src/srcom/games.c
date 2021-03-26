@@ -62,8 +62,7 @@ int main(int argc, char **argv)
 
 	/* We don't free `prs.ptr` after this because it's slow. */
 	json_t *root, *data;
-	json_error_t error;
-	root = json_loads(prs.ptr, 0, &error);
+	root = json_loads(prs.ptr, 0, NULL);
 	if (!root) {
 		fputs("Error: Unable to parse sr.c reponse, try again later.\n",
 		      stderr);
