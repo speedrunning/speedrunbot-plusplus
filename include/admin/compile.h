@@ -1,6 +1,14 @@
 #ifndef __COMPILE_H_
 #define __COMPILE_H_
 
+#ifdef clang
+#	define CC "CCMP=clang"
+#elif defined gcc
+#	define CC "CCMP=gcc"
+#else
+#	define CC "CCMP=cc"
+#endif
+
 /**
  * @brief Check if a directory is in the list of excluded directories.
  * 

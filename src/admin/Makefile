@@ -10,9 +10,12 @@ $(shell mkdir -p bin/ objs/)
 
 # C programs
 
+# Some programs (like `bin/compile`) benefit from knowing which compiler was
+# used, so we define it.
+
 .PRECIOUS: objs/%.o
 objs/%.o: %.c
-	$(CCMP) $(CFLAGS) $(INC) -o $@ -c $<
+	$(CCMP) $(CFLAGS) $(INC) -D$(CCMP) -o $@ -c $<
 
 bin/%: objs/%.o
 	$(CCMP) $(CFLAGS) -o $@ $^

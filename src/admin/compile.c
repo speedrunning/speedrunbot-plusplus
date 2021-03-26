@@ -34,7 +34,7 @@ void make(const char *dname)
 		perror("fork");
 		exit(EXIT_FAILURE);
 	case 0:
-		execlp("make", "make", "-C", dname, NULL);
+		execlp("make", "make", "-C", dname, CC, NULL);
 		perror("execlp");
 		exit(EXIT_FAILURE);
 	default:
