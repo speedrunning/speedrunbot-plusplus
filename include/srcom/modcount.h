@@ -1,6 +1,8 @@
 #ifndef __MODCOUNT_H_
 #define __MODCOUNT_H_
 
+#define KEY_LEN 5
+
 /**
  * @brief Print the commands usage and example if an invalid number of arguments
  * are given.
