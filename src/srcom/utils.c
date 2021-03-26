@@ -10,17 +10,22 @@
 
 #include "srcom/utils.h"
 
-void init_string(string_t *str)
+void *safe_malloc(size_t size)
 {
-	str->len = 0;
-	str->ptr = malloc(str->len + 1);
-	if (str->ptr == NULL) {
+	void *ptr = malloc(size);
+	if (ptr == NULL) {
 		fputs("Error: Memory allocation error, the bot is likely out "
 		      "of RAM, try again later.\n",
 		      stderr);
 		exit(EXIT_FAILURE);
 	}
+	return ptr;
+}
 
+void init_string(string_t *str)
+{
+	str->len = 0;
+	str->ptr = safe_malloc(str->len + 1);
 	str->ptr[0] = '\0';
 	return;
 }

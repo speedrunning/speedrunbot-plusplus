@@ -21,6 +21,14 @@ typedef struct {
 } string_t;
 
 /**
+ * @brief A wrapper around `malloc(2)` that does error checking.
+ * 
+ * @param size The amount of bytes to allocate.
+ * @return void* A pointer to the allocated memory.
+ */
+void *safe_malloc(size_t size);
+
+/**
  * @brief Initialize a string_t struct.
  * 
  * @param str A pointer to the string_t struct to initialize.
