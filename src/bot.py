@@ -19,11 +19,12 @@ EXTENSIONS: Iterable[str] = (
 class SRBpp(commands.Bot):
 	def __init__(self) -> None:
 		super().__init__(
-			command_prefix=get_prefix,
-			case_insensitive=True,
 			allowed_mentions=discord.AllowedMentions(
 				everyone=False, users=True, roles=False
 			),
+			case_insensitive=True,
+			command_prefix=get_prefix,
+			intents=discord.Intents(messages=True),
 		)
 
 		for extension in EXTENSIONS:
@@ -50,8 +51,15 @@ class SRBpp(commands.Bot):
 		Code to run when the bot starts up.
 		"""
 		self.uptime: datetime = datetime.utcnow()
-		GAME: discord.Game = discord.Game("+help / ;help")
+		GAME: discord.Game = discord.Game("+help / !help")
 		await self.change_presence(activity=GAME)
+
+		print(
+			f"Bot Name\t\t{self.user.name}\n"
+			+ f"Bot ID\t\t\t{self.user.id}\n"
+			+ f"Discord Version\t\t{discord.__version__}\n"
+			+ f"Time\t\t\t{self.uptime.strftime('%F %T')}"
+		)
 
 	async def close(self) -> None:
 		"""
@@ -77,5 +85,5 @@ def get_prefix(bot: SRBpp, message: Message) -> list[str]:
 	Gets the list of prefixes that can be used to call the bot, including
 	pinging the bot.
 	"""
-	PREFIXES: tuple[str, ...] = ("+", ";")
+	PREFIXES: tuple[str, ...] = ("+", "!")
 	return commands.when_mentioned_or(*PREFIXES)(bot, message)
