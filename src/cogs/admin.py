@@ -23,13 +23,8 @@ class Admin(commands.Cog):
 		"""
 		if type(err) == commands.errors.NotOwner:
 			await ctx.send("You do not have permission to execute this command.")
-		elif type(err) == commands.errors.CommandNotFound:
-			COMMAND: str = err.args[0].split('"')[1]
-			await ctx.send(f"Command '{COMMAND}' does not exist.")
-		else:
-			# TODO: Make it DM me the error maybe?
-			print(type(err), file=stderr)
-			print(err, file=stderr)
+		else:  # TODO: Make it DM me the error maybe?
+			print(f"{type(err)}: {err}", file=stderr)
 
 	@commands.is_owner()
 	@commands.command(name="compile", aliases=("make", "comp"))
