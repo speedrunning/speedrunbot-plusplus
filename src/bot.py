@@ -24,7 +24,7 @@ class SRBpp(commands.Bot):
 			),
 			case_insensitive=True,
 			command_prefix=get_prefix,
-			intents=discord.Intents(messages=True),
+			intents=discord.Intents(messages=True, guilds=True),
 		)
 
 		for extension in EXTENSIONS:
