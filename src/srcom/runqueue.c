@@ -21,8 +21,8 @@ int fgcounts[THREAD_COUNT], ilcounts[THREAD_COUNT];
 
 void usage(void)
 {
-	fputs("Usage: `+runqueue [PLAYER NAME]`\n"
-	      "Example: `+runqueue AnInternetTroll`\n",
+	fputs("Usage: `+runqueue [GAME]`\n"
+	      "Example: `+runqueue mkw`\n",
 	      stderr);
 	exit(EXIT_FAILURE);
 }
