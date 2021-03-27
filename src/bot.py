@@ -45,6 +45,7 @@ async def execv(
 
 	if RET.returncode != 0:
 		await ctx.send(STDERR.decode())
+		curr_procs -= 1
 		return
 
 	if TITLE is not None:
