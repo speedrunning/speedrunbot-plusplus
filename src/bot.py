@@ -63,6 +63,7 @@ class SRBpp(commands.Bot):
 			case_insensitive=True,
 			command_prefix=get_prefix,
 			intents=discord.Intents(messages=True, guilds=True),
+			help_command=commands.MinimalHelpCommand(dm_help=True),
 		)
 
 		for extension in EXTENSIONS:
