@@ -6,7 +6,7 @@ from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.ext.commands.errors import CommandError
 
-from bot import SRBpp
+from bot import SRBpp, execv
 
 PREFIX: str = "admin/bin"
 
@@ -28,20 +28,11 @@ class Admin(commands.Cog):
 
 	@commands.is_owner()
 	@commands.command(name="compile", aliases=("make", "comp"))
-	async def compile(self, ctx: Context) -> None:
+	async def compile(_, ctx: Context) -> None:
 		"""
 		Run the bots Makefiles to update all the code.
 		"""
-		RET: CompletedProcess = self.bot.execv(f"{PREFIX}/compile")
-		if RET.returncode == 1:
-			await ctx.send(RET.stderr)
-			return
-
-		# If you compile a lot of stuff, you end up with lots of output.
-		output: str = RET.stdout
-		while len(output) > 0:
-			await ctx.send(f"```{output[0:2000 - 6]}```")
-			output = output[2000 - 6 :]
+		await execv(ctx, f"{PREFIX}/compile", TITLE="Compile")
 
 	@commands.is_owner()
 	@commands.command(name="pull")
