@@ -40,6 +40,10 @@ bool get_categories(json_t *root, struct counts_t *counts,
 		return false;
 	}
 
+	names->fullgame = safe_malloc(num_cats * sizeof(char *));
+	names->il = safe_malloc(num_cats * sizeof(char *));
+	names->misc = safe_malloc(num_cats * sizeof(char *));
+
 	for (size_t i = 0; i < num_cats; i++) {
 		json_t *obj, *type, *misc, *name;
 		obj = json_array_get(data, i);
@@ -92,7 +96,7 @@ int main(int argc, char **argv)
 	 */
 	json_t *root = NULL;
 	struct counts_t counts = {.fullgame = 0, .il = 0, .misc = 0};
-	struct names_t names;
+	struct names_t names = {.fullgame = NULL, .il = NULL, .misc = NULL};
 	printf("Categories - %s\n", gname);
 
 	if (!get_categories(root, &counts, &names, &categories)) {
