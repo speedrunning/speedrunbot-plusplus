@@ -1,4 +1,5 @@
 from math import trunc
+
 from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.ext.commands.cooldowns import Cooldown
