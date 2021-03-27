@@ -15,21 +15,23 @@ class Src(commands.Cog):
 		"""
 		Get a list of all of a games categories.
 		"""
-		execv(ctx, f"{PREFIX}/categories", GAME)
+		await execv(ctx, f"{PREFIX}/categories", GAME)
 
 	@commands.command(name="categoriesplayed", aliases=("catsplayed",))
 	async def categoriesplayed(_, ctx: Context, PLAYER: str = None) -> None:
 		"""
 		Get the number of unique categories a player has submit runs to.
 		"""
-		execv(ctx, f"{PREFIX}/categoriesplayed", PLAYER, TITLE="Categories Played")
+		await execv(
+			ctx, f"{PREFIX}/categoriesplayed", PLAYER, TITLE="Categories Played"
+		)
 
 	@commands.command(name="games")
 	async def games(_, ctx: Context, PLAYER: str = None) -> None:
 		"""
 		Get the number of unique games a player has submit runs to.
 		"""
-		execv(ctx, f"{PREFIX}/games", PLAYER, TITLE="Games Played")
+		await execv(ctx, f"{PREFIX}/games", PLAYER, TITLE="Games Played")
 
 	@commands.command(name="leaderboard", aliases=("lb",))
 	async def leaderboard(
@@ -38,7 +40,7 @@ class Src(commands.Cog):
 		"""
 		Get the top 10 runs for a game, with an optional category and subcategory.
 		"""
-		execv(ctx, f"{PREFIX}/leaderboard", GAME, CAT, SUBCAT)
+		await execv(ctx, f"{PREFIX}/leaderboard", GAME, CAT, SUBCAT)
 
 	@commands.command(name="modcount", aliases=("mc",))
 	async def modcount(_, ctx: Context, PLAYER: str = None) -> None:
