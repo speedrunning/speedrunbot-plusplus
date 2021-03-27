@@ -63,7 +63,7 @@ class SRBpp(commands.Bot):
 	def __init__(self) -> None:
 		super().__init__(
 			allowed_mentions=discord.AllowedMentions(
-				everyone=False, users=True, roles=False
+				everyone=False, users=False, roles=False
 			),
 			case_insensitive=True,
 			command_prefix=get_prefix,
