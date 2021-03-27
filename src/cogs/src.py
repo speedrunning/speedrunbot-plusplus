@@ -5,14 +5,14 @@ from discord.ext.commands.cooldowns import Cooldown
 from bot import SRBpp, execv
 
 PREFIX: str = "srcom/bin"
-rate: int = 5
+RATE: int = 5
 
 
 class Src(commands.Cog):
 	def __init__(self, bot: SRBpp) -> None:
 		self.bot: SRBpp = bot
 		self._cd = commands.CooldownMapping.from_cooldown(
-			rate, 60, commands.BucketType.user
+			RATE, 60, commands.BucketType.user
 		)
 
 	async def cog_check(self, ctx: Context) -> bool:

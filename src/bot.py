@@ -108,12 +108,15 @@ class SRBpp(commands.Bot):
 		"""
 		super().run(self.token, reconnect=True)
 
-	async def on_message(self, message):
+	async def on_message(self, message: Message) -> None:
+		"""
+		Allow for command chaining using `&&`
+		"""
 		if message.author.bot:
 			return
-		commands = message.content.split(" && ")
 
-		for command in commands:
+		COMMANDS: str = message.content.split(" && ")
+		for command in COMMANDS:
 			message.content = command
 			await self.invoke(await self.get_context(message))
 
