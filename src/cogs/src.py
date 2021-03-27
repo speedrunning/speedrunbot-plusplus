@@ -23,7 +23,9 @@ class Src(commands.Cog):
 		"""
 		bucket: Cooldown = self._cd.get_bucket(ctx.message)
 		retry_after: float = bucket.update_rate_limit()
-		if retry_after:
+		if ctx.command.name == "help":
+			return True
+		elif retry_after:
 			await ctx.send(
 				f"You can only run {self.rate} speedrun.com related commands per minute. Please wait {trunc(retry_after)} seconds."
 			)
