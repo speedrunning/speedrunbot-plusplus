@@ -19,9 +19,6 @@ EXTENSIONS: Iterable[str] = (
 	f"cogs.{f[:-3]}" for f in os.listdir(f"{PREFIX}/cogs") if f.endswith(".py")
 )
 
-curr_procs: int = 0
-MAX_PROCS: int = 15
-
 
 async def execv(
 	ctx: Context, PROG: str, *ARGV: tuple[str, ...], TITLE: Union[str, None] = None
@@ -29,12 +26,6 @@ async def execv(
 	"""
 	Run a program as a subprocess and return its output + exit code.
 	"""
-	global curr_procs, MAX_PROCS
-	if curr_procs == MAX_PROCS:
-		await ctx.send("Too many processes running. Try again in a moment.")
-		return
-	curr_procs += 1
-
 	ARGS: str = " ".join(f'"{arg}"' for arg in tuple(filter(lambda x: x, ARGV)))
 	RET = await asyncio.create_subprocess_shell(
 		f"{PREFIX}/{PROG} {ARGS}",
@@ -45,7 +36,6 @@ async def execv(
 
 	if RET.returncode != 0:
 		await ctx.send(STDERR.decode())
-		curr_procs -= 1
 		return
 
 	if TITLE is not None:
@@ -54,8 +44,6 @@ async def execv(
 		TITLE, DESC = STDOUT.decode().split("\n", 1)
 		embed = discord.Embed(title=TITLE, description=DESC)
 	await ctx.send(embed=embed)
-
-	curr_procs -= 1
 
 
 class SRBpp(commands.Bot):

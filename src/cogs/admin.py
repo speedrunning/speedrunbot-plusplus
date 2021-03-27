@@ -23,6 +23,8 @@ class Admin(commands.Cog):
 		"""
 		if type(err) == commands.errors.NotOwner:
 			await ctx.send("You do not have permission to execute this command.")
+		elif type(err) == commands.errors.CheckFailure:
+			pass
 		else:  # TODO: Make it DM me the error maybe?
 			print(f"{type(err)}: {err}", file=stderr)
 
