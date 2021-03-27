@@ -21,10 +21,13 @@ class Admin(commands.Cog):
 		A simple error handler to avoid spamming my console with errors
 		I do not care about.
 		"""
-		if type(err) == commands.errors.NotOwner:
-			await ctx.send("You do not have permission to execute this command.")
-		elif type(err) == commands.errors.CheckFailure:
+		if type(err) in (
+			commands.errors.CommandNotFound,
+			commands.errors.CheckFailure,
+		):
 			pass
+		elif type(err) == commands.errors.NotOwner:
+			await ctx.send("You do not have permission to execute this command.")
 		else:  # TODO: Make it DM me the error maybe?
 			print(f"{type(err)}: {err}", file=stderr)
 
