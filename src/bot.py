@@ -25,8 +25,12 @@ async def execv(
 	ctx: Context, PROG: str, *ARGV: tuple[str, ...], TITLE: Union[str, None] = None
 ) -> None:
 	"""
-	Run a program as a subprocess and return its output + exit code.
+	Run a program called PROG with the command line arguments ARGV as a
+	subprocess and return its output + exit code. If TITLE is supplied, it
+	will be used as the title of the embed that is sent to discord. If TITLE
+	is not supplied, then the first line of output from PROG will be used.
 	"""
+	# This is like `shlex.join()`, but it gets rid of any `None` values.
 	ARGS: str = " ".join(
 		shlex.quote(arg) for arg in tuple(filter(lambda x: x, ARGV))
 	)
