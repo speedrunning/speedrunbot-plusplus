@@ -1,5 +1,3 @@
-from math import trunc
-
 from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.ext.commands.cooldowns import Cooldown
@@ -7,29 +5,24 @@ from discord.ext.commands.cooldowns import Cooldown
 from bot import SRBpp, execv
 
 PREFIX: str = "srcom/bin"
+rate: int = 5
 
 
 class Src(commands.Cog):
 	def __init__(self, bot: SRBpp) -> None:
 		self.bot: SRBpp = bot
-		self.rate: int = 5
 		self._cd = commands.CooldownMapping.from_cooldown(
-			self.rate, 60, commands.BucketType.user
+			rate, 60, commands.BucketType.user
 		)
 
 	async def cog_check(self, ctx: Context) -> bool:
 		"""
 		Fuck you Khalooody.
 		"""
-		if ctx.command.name == "help":
-			return True
 		bucket: Cooldown = self._cd.get_bucket(ctx.message)
 		retry_after: float = bucket.update_rate_limit()
 		if retry_after:
-			await ctx.send(
-				f"You can only run {self.rate} speedrun.com related commands per minute. Please wait {trunc(retry_after)} seconds."
-			)
-			return False
+			raise commands.CommandOnCooldown(bucket, retry_after)
 		return True
 
 	@commands.command(name="categories", aliases=("cats",))

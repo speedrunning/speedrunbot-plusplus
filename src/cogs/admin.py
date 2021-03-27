@@ -1,5 +1,6 @@
 from subprocess import CompletedProcess, run
 from sys import stderr
+from math import trunc
 
 import discord
 from discord.ext import commands
@@ -7,6 +8,7 @@ from discord.ext.commands.context import Context
 from discord.ext.commands.errors import CommandError
 
 from bot import SRBpp, execv
+from cogs.src import rate
 
 PREFIX: str = "admin/bin"
 
@@ -28,6 +30,10 @@ class Admin(commands.Cog):
 			pass
 		elif type(err) == commands.errors.NotOwner:
 			await ctx.send("You do not have permission to execute this command.")
+		elif type(err) == commands.CommandOnCooldown:
+			await ctx.send(
+				f"You can only run {rate} speedrun.com related commands per minute. Please wait {trunc(err.retry_after)} seconds."
+			)
 		else:  # TODO: Make it DM me the error maybe?
 			print(f"{type(err)}: {err}", file=stderr)
 
