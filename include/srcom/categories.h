@@ -4,6 +4,8 @@
 /* Including because `string_t` is used in a prototype below. */
 #include "utils.h"
 
+#define CATLISTBUF 8192
+
 /**
  * @brief A struct containing the counts of each category type.
  */
@@ -17,9 +19,9 @@ struct counts_t {
  * @brief A struct containing arrays of strings which store the category names.
  */
 struct names_t {
-	char **fullgame;
-	char **il;
-	char **misc;
+	char *fullgame[CATLISTBUF];
+	char *il[CATLISTBUF];
+	char *misc[CATLISTBUF];
 };
 
 /**
