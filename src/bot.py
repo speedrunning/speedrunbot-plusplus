@@ -48,9 +48,7 @@ async def execv(
 		return
 
 	if TITLE is not None:
-		embed = discord.Embed(
-			title=f"{TITLE}: {ARGV[0]}", description=STDOUT.decode()
-		)
+		embed = discord.Embed(title=TITLE, description=STDOUT.decode())
 	else:
 		TITLE, DESC = STDOUT.decode().split("\n", 1)
 		embed = discord.Embed(title=TITLE, description=DESC)

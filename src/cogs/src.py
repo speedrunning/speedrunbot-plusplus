@@ -23,7 +23,10 @@ class Src(commands.Cog):
 		Get the number of unique categories a player has submit runs to.
 		"""
 		await execv(
-			ctx, f"{PREFIX}/categoriesplayed", PLAYER, TITLE="Categories Played"
+			ctx,
+			f"{PREFIX}/categoriesplayed",
+			PLAYER,
+			TITLE=f"Categories Played: {PLAYER}",
 		)
 
 	@commands.command(name="games")
@@ -31,7 +34,7 @@ class Src(commands.Cog):
 		"""
 		Get the number of unique games a player has submit runs to.
 		"""
-		await execv(ctx, f"{PREFIX}/games", PLAYER, TITLE="Games Played")
+		await execv(ctx, f"{PREFIX}/games", PLAYER, TITLE=f"Games Played: {PLAYER}")
 
 	@commands.command(name="leaderboard", aliases=("lb",))
 	async def leaderboard(
@@ -47,7 +50,9 @@ class Src(commands.Cog):
 		"""
 		Get the number of games and series a player moderates.
 		"""
-		await execv(ctx, f"{PREFIX}/modcount", PLAYER, TITLE="Leaderboards Moderated")
+		await execv(
+			ctx, f"{PREFIX}/modcount", PLAYER, TITLE=f"Leaderboards Moderated {PLAYER}"
+		)
 
 	@commands.command(name="runqueue", aliases=("queue",))
 	async def runqueue(_, ctx: Context, GAME: str = None) -> None:
@@ -61,14 +66,16 @@ class Src(commands.Cog):
 		"""
 		Get the amount of runs a player has submit.
 		"""
-		await execv(ctx, f"{PREFIX}/runs", PLAYER, TITLE="Run Count")
+		await execv(ctx, f"{PREFIX}/runs", PLAYER, TITLE=f"Run Count: {PLAYER}")
 
 	@commands.command(name="verified")
 	async def verified(_, ctx: Context, PLAYER: str = None) -> None:
 		"""
 		Get the amount of runs a player has verified or rejected.
 		"""
-		await execv(ctx, f"{PREFIX}/verified", PLAYER, TITLE="Runs Verified")
+		await execv(
+			ctx, f"{PREFIX}/verified", PLAYER, TITLE=f"Runs Verified: {PLAYER}"
+		)
 
 	@commands.command(name="worldrecord", aliases=("wr",))
 	async def worldrecord(
@@ -84,7 +91,9 @@ class Src(commands.Cog):
 		"""
 		Get the number of world records a player currently holds.
 		"""
-		await execv(ctx, f"{PREFIX}/worldrecords", PLAYER, TITLE="World Record Count")
+		await execv(
+			ctx, f"{PREFIX}/worldrecords", PLAYER, TITLE=f"World Record Count: {PLAYER}"
+		)
 
 
 def setup(bot: SRBpp) -> None:
