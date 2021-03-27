@@ -169,7 +169,8 @@ def getcid(CAT: str, R: dict) -> Union[str, None]:
 	>>> getcid("100m", r)
 	'rdn25e5d'
 	"""
+	LCAT: str = CAT.lower()
 	for c in R["data"]:
-		if c["name"] == CAT:
+		if c["name"].lower() == LCAT:
 			return c["id"]
 	return None
