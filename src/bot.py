@@ -1,5 +1,6 @@
 import asyncio
 import os
+import shlex
 from datetime import datetime
 from pathlib import Path
 from sys import stderr
@@ -26,7 +27,10 @@ async def execv(
 	"""
 	Run a program as a subprocess and return its output + exit code.
 	"""
-	ARGS: str = " ".join(f'"{arg}"' for arg in tuple(filter(lambda x: x, ARGV)))
+	ARGS: str = " ".join(
+		shlex.quote(arg) for arg in tuple(filter(lambda x: x, ARGV))
+	)
+
 	RET = await asyncio.create_subprocess_shell(
 		f"{PREFIX}/{PROG} {ARGS}",
 		stdout=asyncio.subprocess.PIPE,
