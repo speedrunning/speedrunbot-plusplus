@@ -108,6 +108,15 @@ class SRBpp(commands.Bot):
 		"""
 		super().run(self.token, reconnect=True)
 
+	async def on_message(self, message):
+		if message.author.bot:
+			return
+		commands = message.content.split(" && ")
+
+		for command in commands:
+			message.content = command
+			await self.invoke(await self.get_context(message))
+
 
 def get_prefix(bot: SRBpp, message: Message) -> list[str]:
 	"""
