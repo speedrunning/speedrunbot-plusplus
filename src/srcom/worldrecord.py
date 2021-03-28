@@ -81,7 +81,13 @@ def main() -> int:
 
 	if lflag:  # ILs.
 		r = requests.get(f"{API}/levels/{cid}/categories").json()
-		ILCID: str = r["data"][0]["id"]
+		try:
+			ILCID: str = r["data"][0]["id"]
+		except KeyError:  # `+wr stafftest`
+			print(
+				f"Error: The category '{CAT}' exists, but the site got confused. If you see this contact `Mango Man#0669`"
+			)
+			return EXIT_FAILURE
 		r = requests.get(
 			f"{API}/leaderboards/{GID}/level/{cid}/{ILCID}?top=10"
 		).json()
