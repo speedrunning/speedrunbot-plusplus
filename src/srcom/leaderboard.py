@@ -109,9 +109,15 @@ def main() -> int:
 		).json()
 
 	# Set this flag if atleast one run has milliseconds.
-	MS: bool = "." in "".join(
-		ptime(run["run"]["times"]["primary_t"]) for run in r["data"]["runs"]
-	)
+	try:
+		MS: bool = "." in "".join(
+			ptime(run["run"]["times"]["primary_t"]) for run in r["data"]["runs"]
+		)
+	except KeyError:
+		print(
+			f"Error: The category '{CAT}' is an IL category, not level.", file=stderr
+		)
+		return EXIT_FAILURE
 
 	ROWS: tuple[Iterable[str], ...] = tuple(
 		(
