@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 	init_string(&runs);
 
 	/* Get players PRs. */
-	static char uri[URIBUF];
+	char uri[URIBUF];
 	snprintf(uri, URIBUF, API "/users/%s/personal-bests?top=1", uid);
 	get_req(uri, &runs);
 
