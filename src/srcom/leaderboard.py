@@ -96,11 +96,18 @@ def main() -> int:
 		return EXIT_FAILURE
 
 	if lflag:  # ILs.
-		r = requests.get(f"{API}/levels/{cid}/categories").json()
-		ILCID: str = r["data"][0]["id"]
-		r = requests.get(
-			f"{API}/leaderboards/{GID}/level/{cid}/{ILCID}?top=10"
-		).json()
+		try:  # TEMPORARY FIX
+			r = requests.get(f"{API}/levels/{cid}/categories").json()
+			ILCID: str = r["data"][0]["id"]
+			r = requests.get(
+				f"{API}/leaderboards/{GID}/level/{cid}/{ILCID}?top=10"
+			).json()
+		except IndexError:
+			print(
+				"The API is having a stroke at the moment, and isn't retrieving IL data. Please try again later.",
+				file=stderr,
+			)
+			return EXIT_FAILURE
 	else:
 		r = requests.get(
 			f"{API}/leaderboards/{GID}/category/{cid}?top=10&var-{VID}={VVAL}"
