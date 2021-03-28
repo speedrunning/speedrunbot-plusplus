@@ -12,8 +12,8 @@ import requests
 from utils import *
 
 GAME: str
-GID: str
 CAT: str
+GID: str
 VID: str
 VVAL: str
 VIDEOS: Union[list[dict[str, str]], None]
@@ -63,6 +63,9 @@ def main() -> int:
 			CAT = r["data"][0]["name"]
 			cid = r["data"][0]["id"]
 			if r["data"][0]["type"] == "per-level":
+				r = requests.get(f"{API}/games/{GID}/levels").json()
+				CAT = r["data"][0]["name"]
+				cid = r["data"][0]["id"]
 				lflag = True
 		except IndexError:
 			print(
@@ -81,19 +84,11 @@ def main() -> int:
 
 	if lflag:  # ILs.
 		r = requests.get(f"{API}/levels/{cid}/categories").json()
-		try:
-			ILCID: str = r["data"][0]["id"]
-		except KeyError:  # `+wr stafftest`
-			print(
-				f"Error: The category '{CAT}' exists, but the site got confused. If you see this contact `Mango Man#0669`"
-			)
-			return EXIT_FAILURE
-		r = requests.get(
-			f"{API}/leaderboards/{GID}/level/{cid}/{ILCID}?top=10"
-		).json()
+		ILCID: str = r["data"][0]["id"]
+		r = requests.get(f"{API}/leaderboards/{GID}/level/{cid}/{ILCID}?top=1").json()
 	else:
 		r = requests.get(
-			f"{API}/leaderboards/{GID}/category/{cid}?top=10&var-{VID}={VVAL}"
+			f"{API}/leaderboards/{GID}/category/{cid}?top=1&var-{VID}={VVAL}"
 		).json()
 
 	TITLE: str = f"World Record: {GAME} - {CAT}" + (
@@ -101,14 +96,14 @@ def main() -> int:
 	)
 	try:
 		WR: dict = r["data"]["runs"][0]["run"]
+	except KeyError:
+		print(
+			f"Error: The category '{CAT}' is an IL category, not level.", file=stderr
+		)
+		return EXIT_FAILURE
 	except IndexError:
 		print(TITLE + "No runs have been set in this category.")
 		return EXIT_SUCCESS
-	except KeyError:
-		print(
-			"Error: This category is cursed. I have no idea why this doesn't work. Did you do `+wr stafftest Misc`?"
-		)
-		return EXIT_FAILURE
 
 	TIME: str = ptime(WR["times"]["primary_t"])
 	PLAYERS: str = ", ".join(
