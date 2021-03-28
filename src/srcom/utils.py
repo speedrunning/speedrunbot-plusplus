@@ -110,11 +110,12 @@ def subcatid(CID: str, SUBCAT: str) -> tuple[str, str]:
 	utils.SubcatError: Subcategory with label 'Gem Skips' not found.
 	"""
 	R: dict = requests.get(f"{API}/categories/{CID}/variables").json()
+	LSUBCAT: str = SUBCAT.lower()
 	try:
 		for var in R["data"]:
 			if var["is-subcategory"]:
 				for v in var["values"]["values"]:
-					if var["values"]["values"][v]["label"] == SUBCAT:
+					if var["values"]["values"][v]["label"].lower() == LSUBCAT:
 						return (var["id"], v)
 	except KeyError:
 		raise NotSupportedError(f"Subcategories are not yet supported for ILs.")
