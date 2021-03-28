@@ -80,7 +80,7 @@ class SRBpp(commands.Bot):
 		Code to run when the bot starts up.
 		"""
 		self.uptime: datetime = datetime.utcnow()
-		GAME: discord.Game = discord.Game("+help / !help")
+		GAME: discord.Game = discord.Game("+help / ;help")
 		await self.change_presence(activity=GAME)
 
 		print(
@@ -126,5 +126,5 @@ def get_prefix(bot: SRBpp, message: Message) -> list[str]:
 	Gets the list of prefixes that can be used to call the bot, including
 	pinging the bot.
 	"""
-	PREFIXES: tuple[str, ...] = ("+", "!")
+	PREFIXES: tuple[str, ...] = ("+", ";")
 	return commands.when_mentioned_or(*PREFIXES)(bot, message)
