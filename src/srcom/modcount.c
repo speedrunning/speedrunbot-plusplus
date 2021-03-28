@@ -39,7 +39,7 @@ int main(int argc, char **argv)
 	 * who in their right mind would moderate >200 games anyways? Only one
 	 * that comes to mind is April.
 	 */
-	static char uri[URIBUF];
+	char uri[URIBUF];
 	snprintf(uri, URIBUF,
 	         API "/games?moderator=%s&_bulk=yes&max=" STR(MAX_RECV_BULK),
 	         uid);
