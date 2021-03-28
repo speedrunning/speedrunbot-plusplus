@@ -50,7 +50,7 @@ def main() -> int:
 	try:
 		CAT = argv[2]
 		cid = getcid(CAT, r)
-		if not cid:
+		if not cid:  # No matching fullgame cat, so check ILs.
 			r = requests.get(f"{API}/games/{GID}/levels").json()
 			cid = getcid(CAT, r)
 			lflag = True
@@ -98,6 +98,11 @@ def main() -> int:
 	except IndexError:
 		print(TITLE + "No runs have been set in this category.")
 		return EXIT_SUCCESS
+	except KeyError:
+		print(
+			"Error: This category is cursed. I have no idea why this doesn't work. Did you do `+wr stafftest Misc`?"
+		)
+		return EXIT_FAILURE
 
 	TIME: str = ptime(WR["times"]["primary_t"])
 	PLAYERS: str = ", ".join(
