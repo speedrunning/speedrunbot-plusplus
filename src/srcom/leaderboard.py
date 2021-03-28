@@ -98,18 +98,11 @@ def main() -> int:
 		return EXIT_FAILURE
 
 	if lflag:  # ILs.
-		try:  # TEMPORARY FIX
-			r = requests.get(f"{API}/levels/{cid}/categories").json()
-			ILCID: str = r["data"][0]["id"]
-			r = requests.get(
-				f"{API}/leaderboards/{GID}/level/{cid}/{ILCID}?top=10"
-			).json()
-		except IndexError:
-			print(
-				"The API is having a stroke at the moment, and isn't retrieving IL data. Please try again later.",
-				file=stderr,
-			)
-			return EXIT_FAILURE
+		r = requests.get(f"{API}/levels/{cid}/categories").json()
+		ILCID: str = r["data"][0]["id"]
+		r = requests.get(
+			f"{API}/leaderboards/{GID}/level/{cid}/{ILCID}?top=10"
+		).json()
 	else:
 		r = requests.get(
 			f"{API}/leaderboards/{GID}/category/{cid}?top=10&var-{VID}={VVAL}"
@@ -131,7 +124,7 @@ def main() -> int:
 				for player in run["run"]["players"]
 			),
 		)
-		for run in r["data"]["runs"]
+		for run in r["data"]["runs"][:10]
 	)
 
 	TITLE: str = f"Top {len(ROWS)}: {GAME} - {CAT}" + (
@@ -145,6 +138,7 @@ def main() -> int:
 		print(TITLE + "No runs have been set in this category.")
 		return EXIT_SUCCESS
 
+	PSIZE: int = len(r["data"]["runs"])
 	print(
 		TITLE
 		+ "```"
@@ -152,6 +146,7 @@ def main() -> int:
 			f"{row[0].rjust(2).ljust(3)} {row[1].rjust(MAXLEN).ljust(MAXLEN + 1)} {row[2]}"
 			for row in ROWS
 		)
+		+ (f"\n + {PSIZE - 10} more" if PSIZE > 10 else "")
 		+ "```"
 	)
 	return EXIT_SUCCESS
