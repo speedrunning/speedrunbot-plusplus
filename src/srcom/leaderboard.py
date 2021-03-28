@@ -76,6 +76,7 @@ def main() -> int:
 	except IndexError:
 		try:
 			CAT = r["data"][0]["name"]
+			cid = r["data"][0]["id"]
 			if r["data"][0]["type"] == "per-level":
 				r = requests.get(f"{API}/games/{GID}/levels").json()
 				cid = r["data"][0]["id"]
