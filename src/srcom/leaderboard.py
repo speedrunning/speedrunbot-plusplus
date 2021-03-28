@@ -81,7 +81,7 @@ def main() -> int:
 				r = requests.get(f"{API}/games/{GID}/levels").json()
 				cid = r["data"][0]["id"]
 				lflag = True
-		except IndexError:  # I don't even know if this is possible, but sr.c staff are ghosting me.
+		except IndexError:
 			print(
 				f"Error: The game '{argv[1]}' does not have any categories.",
 				file=stderr,
@@ -127,21 +127,26 @@ def main() -> int:
 			", ".join(
 				username(player["id"])
 				if player["rel"] == "user"
-				else sub(
-					"^\[.*\]", "", player["name"]
-				)  # Regex to remove flags.
+				else sub("^\[.*\]", "", player["name"])  # Regex to remove flags.
 				for player in run["run"]["players"]
 			),
 		)
 		for run in r["data"]["runs"]
 	)
 
+	TITLE: str = f"Top {len(ROWS)}: {GAME} - {CAT}" + (
+		f" - {argv[3]}\n" if VID else "\n"
+	)
+
 	# Length of the longest run time, used for output padding.
-	MAXLEN: int = max(len(i[1]) for i in ROWS)
+	try:
+		MAXLEN: int = max(len(i[1]) for i in ROWS)
+	except ValueError:
+		print(TITLE + "No runs have been set in this category.")
+		return EXIT_SUCCESS
 
 	print(
-		f"Top {len(ROWS)}: {GAME} - {CAT}"
-		+ (f" - {argv[3]}\n" if VID else "\n")
+		TITLE
 		+ "```"
 		+ "\n".join(
 			f"{row[0].rjust(2).ljust(3)} {row[1].rjust(MAXLEN).ljust(MAXLEN + 1)} {row[2]}"

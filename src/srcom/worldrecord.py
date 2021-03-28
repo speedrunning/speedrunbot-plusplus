@@ -90,7 +90,15 @@ def main() -> int:
 			f"{API}/leaderboards/{GID}/category/{cid}?top=10&var-{VID}={VVAL}"
 		).json()
 
-	WR: dict = r["data"]["runs"][0]["run"]
+	TITLE: str = f"World Record: {GAME} - {CAT}" + (
+		f" - {argv[3]}\n" if VID else "\n"
+	)
+	try:
+		WR: dict = r["data"]["runs"][0]["run"]
+	except IndexError:
+		print(TITLE + "No runs have been set in this category.")
+		return EXIT_SUCCESS
+
 	TIME: str = ptime(WR["times"]["primary_t"])
 	PLAYERS: str = ", ".join(
 		username(player["id"])
@@ -98,14 +106,14 @@ def main() -> int:
 		else sub("^\[.*\]", "", player["name"])  # Regex to remove flags.
 		for player in WR["players"]
 	)
+
 	try:
 		VIDEOS = WR["videos"]["links"]
 	except TypeError:  # No video.
 		VIDEOS = None
 
 	print(
-		f"World Record: {GAME} - {CAT}"
-		+ (f" - {argv[3]}\n" if VID else "\n")
+		TITLE
 		+ f"{TIME}  {PLAYERS}\n"
 		+ (
 			"\n".join(f"<{r['uri']}>" for r in VIDEOS)
