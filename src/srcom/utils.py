@@ -41,7 +41,7 @@ def uid(USER: str) -> str:
 	'7j477kvj'
 	>>> uid("abc")
 	Traceback (most recent call last):
-		...
+			...
 	utils.UserError: User with username 'abc' not found.
 	"""
 
@@ -62,7 +62,7 @@ def username(UID: str) -> str:
 	'AnInternetTroll'
 	>>> username("Sesame Street")
 	Traceback (most recent call last):
-		...
+			...
 	utils.UserError: User with uid 'Sesame Street' not found.
 	"""
 	R: dict = requests.get(f"{API}/users/{UID}").json()
@@ -82,7 +82,7 @@ def game(ABR: str) -> tuple[str, str]:
 	('CELESTE Classic', '4d7e7z67')
 	>>> game("Fake Game")
 	Traceback (most recent call last):
-		...
+			...
 	utils.GameError: Game with abbreviation 'Fake Game' not found.
 	"""
 	R: dict = requests.get(f"{API}/games?abbreviation={ABR}").json()
@@ -106,15 +106,16 @@ def subcatid(CID: str, SUBCAT: str) -> tuple[str, str]:
 	('j84rwjl9', '81p4xxg1')
 	>>> subcatid("mkeoz98d", "Gem Skips")
 	Traceback (most recent call last):
-		...
+			...
 	utils.SubcatError: Subcategory with label 'Gem Skips' not found.
 	"""
 	R: dict = requests.get(f"{API}/categories/{CID}/variables").json()
+	LSUBCAT: str = SUBCAT.lower()
 	try:
 		for var in R["data"]:
 			if var["is-subcategory"]:
 				for v in var["values"]["values"]:
-					if var["values"]["values"][v]["label"] == SUBCAT:
+					if var["values"]["values"][v]["label"].lower() == LSUBCAT:
 						return (var["id"], v)
 	except KeyError:
 		raise NotSupportedError(f"Subcategories are not yet supported for ILs.")
@@ -159,7 +160,7 @@ def getcid(CAT: str, R: dict) -> Union[str, None]:
 	both fullgame and IL's, amongst other reasons.
 
 	>>> r: dict = requests.get(f"{API}/games/l3dxogdy/categories").json()
-	>>> getcid("Nitro Tracks", r)
+	>>> gecid("Nitro Tracks", r)
 	'7kj6mz23'
 	>>> getcid("Retro Tracks", r)
 	'xk9v3gd0'
