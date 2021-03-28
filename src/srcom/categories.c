@@ -86,6 +86,7 @@ int main(int argc, char **argv)
 	       "{\"data\":[{\"id\":\"%[^\"]\",\"names\":{\"international\":\"%["
 	       "^\"]",
 	       gid, gname);
+
 	if (*gid == '\0') {
 		fprintf(stderr,
 		        "Error: Game with abbreviation '%s' not found.\n",
@@ -118,13 +119,13 @@ int main(int argc, char **argv)
 		printf("Fullgame: %s", names.fullgame[0]);
 		for (unsigned int i = 1; i < counts.fullgame; i++)
 			printf(", %s", names.fullgame[i]);
-		puts("");
+		puts("\n");
 	}
 	if (counts.il > 0) {
 		printf("Individual Level: %s", names.il[0]);
 		for (unsigned int i = 1; i < counts.il; i++)
 			printf(", %s", names.il[i]);
-		puts("");
+		puts("\n");
 	}
 	if (counts.misc > 0) {
 		printf("Miscellaneous: %s", names.misc[0]);
