@@ -35,7 +35,6 @@ def pad(TIME: str, MS: bool) -> str:
 	"""
 	Pad a time with blank spaces if it doesnt contain milliseconds for
 	output formatting.
-
 	>>> pad("59:54.397", True)
 	'59:54.397'
 	>>> pad("3:42", True)
@@ -77,12 +76,14 @@ def main() -> int:
 	except IndexError:
 		try:
 			CAT = r["data"][0]["name"]
-			cid = r["data"][0]["id"]
 			if r["data"][0]["type"] == "per-level":
+				r = requests.get(f"{API}/games/{GID}/levels").json()
+				cid = r["data"][0]["id"]
 				lflag = True
 		except IndexError:  # I don't even know if this is possible, but sr.c staff are ghosting me.
 			print(
-				f"Error: The game '{argv[1]}' does not have any categories.", file=stderr
+				f"Error: The game '{argv[1]}' does not have any categories.",
+				file=stderr,
 			)
 			return EXIT_FAILURE
 
@@ -96,17 +97,18 @@ def main() -> int:
 		return EXIT_FAILURE
 
 	if lflag:  # ILs.
-		print(
-			"IL's are broken at the moment, but do not fret! I will fix this in a few hours.",
-			file=stderr,
-		)
-		return EXIT_FAILURE
-		# NOTREACHED
-		r = requests.get(f"{API}/games/{GID}/levels").json()
-		ILCID: str = r["data"][0]["id"]
-		r = requests.get(
-			f"{API}/leaderboards/{GID}/level/{cid}/{ILCID}?top=10"
-		).json()
+		try:  # TEMPORARY FIX
+			r = requests.get(f"{API}/levels/{cid}/categories").json()
+			ILCID: str = r["data"][0]["id"]
+			r = requests.get(
+				f"{API}/leaderboards/{GID}/level/{cid}/{ILCID}?top=10"
+			).json()
+		except IndexError:
+			print(
+				"The API is having a stroke at the moment, and isn't retrieving IL data. Please try again later.",
+				file=stderr,
+			)
+			return EXIT_FAILURE
 	else:
 		r = requests.get(
 			f"{API}/leaderboards/{GID}/category/{cid}?top=10&var-{VID}={VVAL}"
@@ -124,7 +126,9 @@ def main() -> int:
 			", ".join(
 				username(player["id"])
 				if player["rel"] == "user"
-				else sub("^\[.*\]", "", player["name"])  # Regex to remove flags.
+				else sub(
+					"^\[.*\]", "", player["name"]
+				)  # Regex to remove flags.
 				for player in run["run"]["players"]
 			),
 		)
