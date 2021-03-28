@@ -86,6 +86,12 @@ int main(int argc, char **argv)
 	       "{\"data\":[{\"id\":\"%[^\"]\",\"names\":{\"international\":\"%["
 	       "^\"]",
 	       gid, gname);
+	if (*gid == '\0') {
+		fprintf(stderr,
+		        "Error: Game with abbreviation '%s' not found.\n",
+		        argv[1]);
+		return EXIT_FAILURE;
+	}
 
 	snprintf(uri, URIBUF, API "/games/%s/categories", gid);
 	get_req(uri, &categories);

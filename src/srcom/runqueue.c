@@ -93,6 +93,13 @@ int main(int argc, char **argv)
 	       "^\"]",
 	       gid, gname);
 
+	if (*gid == '\0') {
+		fprintf(stderr,
+		        "Error: Game with abbreviation '%s' not found.\n",
+		        argv[1]);
+		return EXIT_FAILURE;
+	}
+
 	snprintf(uri_base, URIBUF,
 	         API "/runs?game=%s&status=new&max=" STR(MAX_RECV) "&offset=",
 	         gid);
