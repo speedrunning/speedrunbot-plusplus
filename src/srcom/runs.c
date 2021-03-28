@@ -30,9 +30,9 @@ void usage(void)
 
 void *routine(void *tnum)
 {
-	/* 
+	/*
 	 * Equivalant to `(int) tnum` but supresses compiler warnings that can
-	 * be safely ignored. 
+	 * be safely ignored.
 	 */
 	int s, i_tnum = *((int *) &tnum);
 	char uri[URIBUF], size[URIBUF];
@@ -89,9 +89,9 @@ int main(int argc, char **argv)
 		pthread_t threads[THREAD_COUNT];
 		for (int i = 0; i < THREAD_COUNT; i++) {
 			/*
-			* This cast is a could be replaced with a simple `(void *) i`
-			* cast, but the compiler doesn't like it when I do that.
-			*/
+			 * This cast is a could be replaced with a simple `(void *) i`
+			 * cast, but the compiler doesn't like it when I do that.
+			 */
 			if (pthread_create(&threads[i], NULL, &routine,
 			                   *((void **) &i))
 			    != 0) {
