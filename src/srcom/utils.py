@@ -108,7 +108,7 @@ def subcatid(CID: str, SUBCAT: str, LFLAG: bool = False) -> tuple[str, str]:
 	('ylqmdmvn', '810enwwq')
 	>>> subcatid("mkeoz98d", "Gem Skips")
 	Traceback (most recent call last):
-																																	...
+		...
 	utils.SubcatError: Subcategory with label 'Gem Skips' not found.
 	"""
 	R: dict = requests.get(
