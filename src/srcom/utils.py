@@ -41,7 +41,7 @@ def uid(USER: str) -> str:
 	'7j477kvj'
 	>>> uid("abc")
 	Traceback (most recent call last):
-			...
+					...
 	utils.UserError: User with username 'abc' not found.
 	"""
 
@@ -62,7 +62,7 @@ def username(UID: str) -> str:
 	'AnInternetTroll'
 	>>> username("Sesame Street")
 	Traceback (most recent call last):
-			...
+					...
 	utils.UserError: User with uid 'Sesame Street' not found.
 	"""
 	R: dict = requests.get(f"{API}/users/{UID}").json()
@@ -82,7 +82,7 @@ def game(ABR: str) -> tuple[str, str]:
 	('CELESTE Classic', '4d7e7z67')
 	>>> game("Fake Game")
 	Traceback (most recent call last):
-			...
+					...
 	utils.GameError: Game with abbreviation 'Fake Game' not found.
 	"""
 	R: dict = requests.get(f"{API}/games?abbreviation={ABR}").json()
@@ -104,11 +104,11 @@ def subcatid(CID: str, SUBCAT: str, LFLAG: bool = False) -> tuple[str, str]:
 	('5ly7759l', '5q804wk1')
 	>>> subcatid("wk68zp21", "Skips")
 	('j84rwjl9', '81p4xxg1')
-	>>> subcatid("xd130359", "Mobile", True) # New feature
+	>>> subcatid("xd130359", "Mobile", True)
 	('ylqmdmvn', '810enwwq')
 	>>> subcatid("mkeoz98d", "Gem Skips")
 	Traceback (most recent call last):
-			...
+					...
 	utils.SubcatError: Subcategory with label 'Gem Skips' not found.
 	"""
 	R: dict = requests.get(
@@ -121,10 +121,9 @@ def subcatid(CID: str, SUBCAT: str, LFLAG: bool = False) -> tuple[str, str]:
 				for v in var["values"]["values"]:
 					if var["values"]["values"][v]["label"].lower() == LSUBCAT:
 						return (var["id"], v)
-	except KeyError:
-		# raise NotSupportedError(f"Subcategories are not yet supported for ILs.")
-		# Idk what to put in here, so i duplicate SubcatError.
+	except KeyError:  # TODO: Test if this is still required after Ziro's PR.
 		raise SubcatError(f"Subcategory with label '{SUBCAT}' not found.")
+		# raise NotSupportedError(f"Subcategories are not yet supported for ILs.")
 	raise SubcatError(f"Subcategory with label '{SUBCAT}' not found.")
 
 
