@@ -47,8 +47,13 @@ int main(int argc, char **argv)
 	init_string(&runs);
 
 	/* Get players PRs. */
-	snprintf(uri, URIBUF, API "/users/%s/personal-bests?top=1&game=%s", uid,
-	         game->id);
+	if (game)
+		snprintf(uri, URIBUF,
+		         API "/users/%s/personal-bests?top=1&game=%s", uid,
+		         game->id);
+	else
+		snprintf(uri, URIBUF, API "/users/%s/personal-bests?top=1",
+		         uid);
 	get_req(uri, &runs);
 
 	/*
