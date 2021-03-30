@@ -69,6 +69,10 @@ class Admin(commands.Cog):
 	@commands.is_owner()
 	@commands.command(name="restart")
 	async def restart(self, ctx: Context) -> None:
+		"""
+		Restart the bot. This should only really be used when pulling changes to files
+		such as `bot.py` and `main.py`.
+		"""
 		await ctx.send("Restarting!")
 		os.execl(sys.executable, sys.executable, *sys.argv)
 
