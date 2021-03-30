@@ -112,16 +112,13 @@ class Src(commands.Cog):
 		await run_and_output(ctx, f"{PREFIX}/worldrecord", GAME, CAT, SUBCAT)
 
 	@commands.command(name="worldrecords", aliases=("wrs",))
-	async def worldrecords(_, ctx: Context, PLAYER: str = None) -> None:
+	async def worldrecords(
+		_, ctx: Context, PLAYER: str = None, GAME: str = None
+	) -> None:
 		"""
 		Get the number of world records a player currently holds.
 		"""
-		await run_and_output(
-			ctx,
-			f"{PREFIX}/worldrecords",
-			PLAYER,
-			TITLE=f"World Record Count: {PLAYER}",
-		)
+		await run_and_output(ctx, f"{PREFIX}/worldrecords", PLAYER, GAME)
 
 
 def setup(bot: SRBpp) -> None:
