@@ -7,7 +7,7 @@ from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.ext.commands.errors import CommandError
 
-from bot import SRBpp, execv
+from bot import SRBpp, run_and_output
 from cogs.src import RATE
 
 PREFIX: str = "admin/bin"
@@ -45,7 +45,7 @@ class Admin(commands.Cog):
 		"""
 		Run the bots Makefiles to update all the code.
 		"""
-		await execv(ctx, f"{PREFIX}/compile", TITLE="Compile")
+		await run_and_output(ctx, f"{PREFIX}/compile", TITLE="Compile")
 
 	@commands.is_owner()
 	@commands.command(name="pull")
