@@ -1,6 +1,7 @@
 from math import trunc
 from subprocess import CompletedProcess, run
 from sys import stderr
+from traceback import print_exception, format_exception
 
 import discord
 from discord.ext import commands
@@ -18,7 +19,7 @@ class Admin(commands.Cog):
 		self.bot: SRBpp = bot
 
 	@commands.Cog.listener()
-	async def on_command_error(_, ctx: Context, err: CommandError) -> None:
+	async def on_command_error(self, ctx: Context, err: CommandError) -> None:
 		"""
 		A simple error handler to avoid spamming my console with errors
 		I do not care about.
@@ -34,8 +35,17 @@ class Admin(commands.Cog):
 			await ctx.send(
 				f"You can only run {RATE} speedrun.com related commands per minute. Please wait {trunc(err.retry_after)} seconds."
 			)
+		elif type(err) == commands.errors.BadArgument: 
+			await ctx.send("Invalid argument, please check your input and try again")
 		else:  # TODO: Make it DM me the error maybe?
 			print(f"{type(err)}: {err}", file=stderr)
+
+			embed = discord.Embed(title=str(err), description=f"```py\n{''.join(format_exception(type(err), err, err.__traceback__))}```")
+			embed.add_field(name="Command invoked: ", value=ctx.invoked_with)
+			await ctx.author.send(f"{type(err)}", embed=embed)
+
+			# For debugging purposes uncomment the following line to enable detailed error printing
+			#print_exception(type(err), err, err.__traceback__, file=stderr)
 
 	@commands.is_owner()
 	@commands.command(name="compile", aliases=("make", "comp"))
