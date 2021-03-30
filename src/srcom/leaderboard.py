@@ -83,14 +83,14 @@ def main() -> int:
 				lflag = True
 		except IndexError:
 			print(
-				f"Error: The game '{argv[1]}' does not have any categories.",
+				f"Error: The game '{GAME}' does not have any categories.",
 				file=stderr,
 			)
 			return EXIT_FAILURE
 
 	# Get top 10.
 	try:
-		VID, VVAL = subcatid(cid, argv[3])
+		VID, VVAL = subcatid(cid, argv[3], lflag)
 	except IndexError:
 		VID, VVAL = "", ""
 	except (SubcatError, NotSupportedError) as e:
@@ -101,7 +101,7 @@ def main() -> int:
 		r = requests.get(f"{API}/levels/{cid}/categories").json()
 		ILCID: str = r["data"][0]["id"]
 		r = requests.get(
-			f"{API}/leaderboards/{GID}/level/{cid}/{ILCID}?top=10"
+			f"{API}/leaderboards/{GID}/level/{cid}/{ILCID}?top=10&var-{VID}={VVAL}"
 		).json()
 	else:
 		r = requests.get(
@@ -115,7 +115,8 @@ def main() -> int:
 		)
 	except KeyError:
 		print(
-			f"Error: The category '{CAT}' is an IL category, not level.", file=stderr
+			f"Error: The category '{CAT}' is an IL category, not level.",
+			file=stderr,
 		)
 		return EXIT_FAILURE
 
@@ -126,7 +127,9 @@ def main() -> int:
 			", ".join(
 				username(player["id"])
 				if player["rel"] == "user"
-				else sub("^\[.*\]", "", player["name"])  # Regex to remove flags.
+				else sub(
+					"^\[.*\]", "", player["name"]
+				)  # Regex to remove flags.
 				for player in run["run"]["players"]
 			),
 		)
