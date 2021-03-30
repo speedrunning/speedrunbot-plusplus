@@ -1,3 +1,5 @@
+import os
+import sys
 from math import trunc
 from subprocess import CompletedProcess, run
 from sys import stderr
@@ -63,6 +65,12 @@ class Admin(commands.Cog):
 
 		embed = discord.Embed(title="Git Pull", description=RET.stdout)
 		await ctx.send(embed=embed)
+
+	@commands.is_owner()
+	@commands.command(name="restart")
+	async def restart(self, ctx: Context) -> None:
+		await ctx.send("Restarting!")
+		os.execl(sys.executable, sys.executable, *sys.argv)
 
 	@commands.is_owner()
 	@commands.command(name="reload")
