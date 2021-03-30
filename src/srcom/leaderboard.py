@@ -115,7 +115,8 @@ def main() -> int:
 		)
 	except KeyError:
 		print(
-			f"Error: The category '{CAT}' is an IL category, not level.", file=stderr
+			f"Error: The category '{CAT}' is an IL category, not level.",
+			file=stderr,
 		)
 		return EXIT_FAILURE
 
@@ -126,7 +127,9 @@ def main() -> int:
 			", ".join(
 				username(player["id"])
 				if player["rel"] == "user"
-				else sub("^\[.*\]", "", player["name"])  # Regex to remove flags.
+				else sub(
+					"^\[.*\]", "", player["name"]
+				)  # Regex to remove flags.
 				for player in run["run"]["players"]
 			),
 		)

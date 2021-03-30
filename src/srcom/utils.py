@@ -41,7 +41,7 @@ def uid(USER: str) -> str:
 	'7j477kvj'
 	>>> uid("abc")
 	Traceback (most recent call last):
-		...
+			...
 	utils.UserError: User with username 'abc' not found.
 	"""
 
@@ -62,7 +62,7 @@ def username(UID: str) -> str:
 	'AnInternetTroll'
 	>>> username("Sesame Street")
 	Traceback (most recent call last):
-		...
+			...
 	utils.UserError: User with uid 'Sesame Street' not found.
 	"""
 	R: dict = requests.get(f"{API}/users/{UID}").json()
@@ -82,7 +82,7 @@ def game(ABR: str) -> tuple[str, str]:
 	('CELESTE Classic', '4d7e7z67')
 	>>> game("Fake Game")
 	Traceback (most recent call last):
-		...
+			...
 	utils.GameError: Game with abbreviation 'Fake Game' not found.
 	"""
 	R: dict = requests.get(f"{API}/games?abbreviation={ABR}").json()
@@ -108,10 +108,12 @@ def subcatid(CID: str, SUBCAT: str, LFLAG: bool = False) -> tuple[str, str]:
 	('ylqmdmvn', '810enwwq')
 	>>> subcatid("mkeoz98d", "Gem Skips")
 	Traceback (most recent call last):
-		...
+			...
 	utils.SubcatError: Subcategory with label 'Gem Skips' not found.
 	"""
-	R: dict = requests.get(f"{API}/{'levels' if LFLAG else 'categories'}/{CID}/variables").json()
+	R: dict = requests.get(
+		f"{API}/{'levels' if LFLAG else 'categories'}/{CID}/variables"
+	).json()
 	LSUBCAT: str = SUBCAT.lower()
 	try:
 		for var in R["data"]:

@@ -69,7 +69,8 @@ def main() -> int:
 				lflag = True
 		except IndexError:
 			print(
-				f"Error: The game '{argv[1]}' does not have any categories.", file=stderr
+				f"Error: The game '{argv[1]}' does not have any categories.",
+				file=stderr,
 			)
 			return EXIT_FAILURE
 
@@ -85,7 +86,9 @@ def main() -> int:
 	if lflag:  # ILs.
 		r = requests.get(f"{API}/levels/{cid}/categories").json()
 		ILCID: str = r["data"][0]["id"]
-		r = requests.get(f"{API}/leaderboards/{GID}/level/{cid}/{ILCID}?top=1&var-{VID}={VVAL}").json()
+		r = requests.get(
+			f"{API}/leaderboards/{GID}/level/{cid}/{ILCID}?top=1&var-{VID}={VVAL}"
+		).json()
 	else:
 		r = requests.get(
 			f"{API}/leaderboards/{GID}/category/{cid}?top=1&var-{VID}={VVAL}"
@@ -98,7 +101,8 @@ def main() -> int:
 		WR: dict = r["data"]["runs"][0]["run"]
 	except KeyError:
 		print(
-			f"Error: The category '{CAT}' is an IL category, not level.", file=stderr
+			f"Error: The category '{CAT}' is an IL category, not level.",
+			file=stderr,
 		)
 		return EXIT_FAILURE
 	except IndexError:
