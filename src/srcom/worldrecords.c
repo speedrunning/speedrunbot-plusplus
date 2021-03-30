@@ -27,29 +27,19 @@ int main(int argc, char **argv)
 	if (!uid) {
 		fprintf(stderr, "Error: User with username '%s' not found.\n",
 		        argv[1]);
-		return EXIT_FAILURE;
+		exit(EXIT_FAILURE);
 	}
 
-	char uri[URIBUF], gid[UIDBUF] = {0}, gname[BUFSIZ];
+	char uri[URIBUF];
+	struct game_t *game = NULL;
 	if (argc > 2) {
-		/* Get the games ID and name. */
-		string_t game;
-		init_string(&game);
-		snprintf(uri, URIBUF, API "/games?abbreviation=%s", argv[2]);
-		get_req(uri, &game);
-
-		sscanf(game.ptr,
-		       "{\"data\":[{\"id\":\"%[^\"]\",\"names\":{"
-		       "\"international\":\"%["
-		       "^\"]",
-		       gid, gname);
-
-		if (*gid == '\0') {
+		game = get_game(argv[2]);
+		if (!game) {
 			fprintf(stderr,
-			        "Error: Game with abbreviation '%s' not "
-			        "found.\n",
+			        "Error: Game with abbreviation '%s' not"
+			        " found.\n",
 			        argv[2]);
-			return EXIT_FAILURE;
+			exit(EXIT_FAILURE);
 		}
 	}
 
@@ -58,7 +48,7 @@ int main(int argc, char **argv)
 
 	/* Get players PRs. */
 	snprintf(uri, URIBUF, API "/users/%s/personal-bests?top=1&game=%s", uid,
-	         gid);
+	         game->id);
 	get_req(uri, &runs);
 
 	/*
@@ -72,7 +62,7 @@ int main(int argc, char **argv)
 	                                           LEVEL_KEY_LEN);
 
 	if (argc >= 3)
-		printf("World Record Count: %s - %s\n", argv[1], gname);
+		printf("World Record Count: %s - %s\n", argv[1], game->name);
 	else
 		printf("World Record Count: %s\n", argv[1]);
 

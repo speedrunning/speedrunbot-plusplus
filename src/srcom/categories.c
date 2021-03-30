@@ -73,28 +73,20 @@ int main(int argc, char **argv)
 	if (argc != 2)
 		usage();
 
-	string_t game, categories;
-	init_string(&game);
+	struct game_t *game;
+	string_t categories;
 	init_string(&categories);
 
 	/* Get the games ID and name. */
-	char gid[UIDBUF], gname[BUFSIZ], uri[URIBUF];
-	snprintf(uri, URIBUF, API "/games?abbreviation=%s", argv[1]);
-	get_req(uri, &game);
-
-	sscanf(game.ptr,
-	       "{\"data\":[{\"id\":\"%[^\"]\",\"names\":{\"international\":\"%["
-	       "^\"]",
-	       gid, gname);
-
-	if (*gid == '\0') {
+	if ((game = get_game(argv[1])) == NULL) {
 		fprintf(stderr,
 		        "Error: Game with abbreviation '%s' not found.\n",
 		        argv[1]);
-		return EXIT_FAILURE;
+		exit(EXIT_FAILURE);
 	}
 
-	snprintf(uri, URIBUF, API "/games/%s/categories", gid);
+	char uri[URIBUF];
+	snprintf(uri, URIBUF, API "/games/%s/categories", game->id);
 	get_req(uri, &categories);
 
 	/*
@@ -104,7 +96,7 @@ int main(int argc, char **argv)
 	json_t *root = NULL;
 	struct counts_t counts = {.fullgame = 0, .il = 0, .misc = 0};
 	struct names_t names = {.fullgame = NULL, .il = NULL, .misc = NULL};
-	printf("Categories - %s\n", gname);
+	printf("Categories - %s\n", game->name);
 
 	if (!get_categories(root, &counts, &names, &categories)) {
 		printf("No categories\n");
