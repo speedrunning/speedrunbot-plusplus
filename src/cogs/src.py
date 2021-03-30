@@ -19,6 +19,8 @@ class Src(commands.Cog):
 		"""
 		Fuck you Khalooody.
 		"""
+		if ctx.invoked_with == "help":
+			return True
 		bucket: Cooldown = self._cd.get_bucket(ctx.message)
 		retry_after: float = bucket.update_rate_limit()
 		if retry_after:
