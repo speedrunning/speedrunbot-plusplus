@@ -123,7 +123,9 @@ def subcatid(CID: str, SUBCAT: str, LFLAG: bool = False) -> tuple[str, str]:
 						return (var["id"], v)
 	except KeyError:
 		# raise NotSupportedError(f"Subcategories are not yet supported for ILs.")
+        # Idk what to put in here, so i duplicate SubcatError.
 		raise SubcatError(f"Subcategory with label '{SUBCAT}' not found.")
+	raise SubcatError(f"Subcategory with label '{SUBCAT}' not found.")
 
 
 def ptime(s: float) -> str:
