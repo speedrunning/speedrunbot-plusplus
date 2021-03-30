@@ -19,6 +19,8 @@ class Src(commands.Cog):
 		"""
 		Fuck you Khalooody.
 		"""
+		if ctx.invoked_with == "help":
+			return True
 		bucket: Cooldown = self._cd.get_bucket(ctx.message)
 		retry_after: float = bucket.update_rate_limit()
 		if retry_after:
@@ -49,7 +51,9 @@ class Src(commands.Cog):
 		"""
 		Get the number of unique games a player has submit runs to.
 		"""
-		await execv(ctx, f"{PREFIX}/games", PLAYER, TITLE=f"Games Played: {PLAYER}")
+		await execv(
+			ctx, f"{PREFIX}/games", PLAYER, TITLE=f"Games Played: {PLAYER}"
+		)
 
 	@commands.command(name="leaderboard", aliases=("lb",))
 	async def leaderboard(
@@ -66,7 +70,10 @@ class Src(commands.Cog):
 		Get the number of games and series a player moderates.
 		"""
 		await execv(
-			ctx, f"{PREFIX}/modcount", PLAYER, TITLE=f"Leaderboards Moderated {PLAYER}"
+			ctx,
+			f"{PREFIX}/modcount",
+			PLAYER,
+			TITLE=f"Leaderboards Moderated {PLAYER}",
 		)
 
 	@commands.command(name="runqueue", aliases=("queue",))
@@ -107,7 +114,10 @@ class Src(commands.Cog):
 		Get the number of world records a player currently holds.
 		"""
 		await execv(
-			ctx, f"{PREFIX}/worldrecords", PLAYER, TITLE=f"World Record Count: {PLAYER}"
+			ctx,
+			f"{PREFIX}/worldrecords",
+			PLAYER,
+			TITLE=f"World Record Count: {PLAYER}",
 		)
 
 
