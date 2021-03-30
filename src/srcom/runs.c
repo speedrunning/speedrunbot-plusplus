@@ -22,8 +22,8 @@ int fgcounts[THREAD_COUNT], ilcounts[THREAD_COUNT];
 
 void usage(void)
 {
-	fputs("Usage: `+runs [PLAYER NAME]`\n"
-	      "Example: `+runs AnInternetTroll`\n",
+	fputs("Usage: `+runs [PLAYER NAME] [GAME (Optional)]`\n"
+	      "Example: `+runs AnInternetTroll mkw`\n",
 	      stderr);
 	exit(EXIT_FAILURE);
 }
@@ -77,13 +77,25 @@ void *routine(void *tnum)
 
 int main(int argc, char **argv)
 {
-	if (argc != 2)
+	if (argc == 1)
 		usage();
+
+	struct game_t *game = NULL;
+	if (argc > 2) {
+		if ((game = get_game(argv[2])) == NULL) {
+			fprintf(stderr,
+			        "Error: Game with abbreviation '%s' not "
+			        "found.\n",
+			        argv[2]);
+			exit(EXIT_FAILURE);
+		}
+	}
 
 	/* Get the users ID and name. */
 	char *uid = get_uid(argv[1]);
 	snprintf(uri_base, URIBUF,
-	         API "/runs?user=%s&max=" STR(MAX_RECV) "&offset=", uid);
+	         API "/runs?user=%s&game=%s&max=" STR(MAX_RECV) "&offset=", uid,
+	         game ? game->id : "");
 
 	while (!done) {
 		pthread_t threads[THREAD_COUNT];
@@ -117,6 +129,11 @@ int main(int argc, char **argv)
 		fullgame += fgcounts[i];
 		il += ilcounts[i];
 	}
+
+	if (game)
+		printf("Run Count: %s - %s\n", argv[1], game->name);
+	else
+		printf("Run Count: %s\n", argv[1]);
 
 	printf("Fullgame: %d\n"
 	       "Individual Level: %d\n"

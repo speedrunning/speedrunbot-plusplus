@@ -85,13 +85,13 @@ class Src(commands.Cog):
 		await run_and_output(ctx, f"{PREFIX}/runqueue", GAME)
 
 	@commands.command(name="runs")
-	async def runs(_, ctx: Context, PLAYER: str = None) -> None:
+	async def runs(
+		_, ctx: Context, PLAYER: str = None, GAME: str = None
+	) -> None:
 		"""
 		Get the amount of runs a player has submit.
 		"""
-		await run_and_output(
-			ctx, f"{PREFIX}/runs", PLAYER, TITLE=f"Run Count: {PLAYER}"
-		)
+		await run_and_output(ctx, f"{PREFIX}/runs", PLAYER, GAME)
 
 	@commands.command(name="verified")
 	async def verified(_, ctx: Context, PLAYER: str = None) -> None:
