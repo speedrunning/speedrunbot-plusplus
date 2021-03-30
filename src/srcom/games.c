@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 	if (!uid) {
 		fprintf(stderr, "Error: User with username '%s' not found.\n",
 		        argv[1]);
-		return EXIT_FAILURE;
+		exit(EXIT_FAILURE);
 	}
 
 	string_t prs;
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 	if (!root) {
 		fputs("Error: Unable to parse sr.c reponse, try again later.\n",
 		      stderr);
-		return EXIT_FAILURE;
+		exit(EXIT_FAILURE);
 	}
 
 	/* Loop through PRs and find number of unique games. */

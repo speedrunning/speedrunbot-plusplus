@@ -107,7 +107,7 @@ int main(int argc, char **argv)
 			    != 0) {
 				fputs("Error: Failed to create thread.\n",
 				      stderr);
-				return EXIT_FAILURE;
+				exit(EXIT_FAILURE);
 			}
 		}
 
@@ -115,7 +115,7 @@ int main(int argc, char **argv)
 			if (pthread_join(threads[i], NULL) != 0) {
 				fputs("Error: Failed to join thread.\n",
 				      stderr);
-				return EXIT_FAILURE;
+				exit(EXIT_FAILURE);
 			}
 		}
 

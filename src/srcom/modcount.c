@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 	if (!uid) {
 		fprintf(stderr, "Error: User with username '%s' not found.\n",
 		        argv[1]);
-		return EXIT_FAILURE;
+		exit(EXIT_FAILURE);
 	}
 
 	string_t games, series;
