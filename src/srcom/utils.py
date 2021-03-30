@@ -94,7 +94,7 @@ def game(ABR: str) -> tuple[str, str]:
 		raise GameError(f"Game with abbreviation '{ABR}' not found.")
 
 
-def subcatid(CID: str, SUBCAT: str) -> tuple[str, str]:
+def subcatid(CID: str, SUBCAT: str, LFLAG: bool = False) -> tuple[str, str]:
 	"""
 	Get the subcategory ID and and value ID from the given category ID and
 	subcategory value label. Whoever decided to handle subcategories like
@@ -104,12 +104,14 @@ def subcatid(CID: str, SUBCAT: str) -> tuple[str, str]:
 	('5ly7759l', '5q804wk1')
 	>>> subcatid("wk68zp21", "Skips")
 	('j84rwjl9', '81p4xxg1')
+	>>> subcatid("xd130359", "Mobile", True) # New feature
+	('ylqmdmvn', '810enwwq')
 	>>> subcatid("mkeoz98d", "Gem Skips")
 	Traceback (most recent call last):
 		...
 	utils.SubcatError: Subcategory with label 'Gem Skips' not found.
 	"""
-	R: dict = requests.get(f"{API}/categories/{CID}/variables").json()
+	R: dict = requests.get(f"{API}/{'levels' if LFLAG else 'categories'}/{CID}/variables").json()
 	LSUBCAT: str = SUBCAT.lower()
 	try:
 		for var in R["data"]:
@@ -118,8 +120,8 @@ def subcatid(CID: str, SUBCAT: str) -> tuple[str, str]:
 					if var["values"]["values"][v]["label"].lower() == LSUBCAT:
 						return (var["id"], v)
 	except KeyError:
-		raise NotSupportedError(f"Subcategories are not yet supported for ILs.")
-	raise SubcatError(f"Subcategory with label '{SUBCAT}' not found.")
+		# raise NotSupportedError(f"Subcategories are not yet supported for ILs.")
+		raise SubcatError(f"Subcategory with label '{SUBCAT}' not found.")
 
 
 def ptime(s: float) -> str:
