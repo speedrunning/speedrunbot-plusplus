@@ -29,9 +29,7 @@ class General(commands.Cog):
 		"""
 		Get the bots discord invite link.
 		"""
-		INV: str = (
-			"https://discord.com/oauth2/authorize?client_id=644879546650198016&scope=bot"
-		)
+		INV: str = "https://discord.com/oauth2/authorize?client_id=644879546650198016&scope=bot"
 		await ctx.send(INV)
 
 

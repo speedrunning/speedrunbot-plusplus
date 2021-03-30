@@ -29,7 +29,9 @@ class Admin(commands.Cog):
 		):
 			pass
 		elif type(err) == commands.errors.NotOwner:
-			await ctx.send("You do not have permission to execute this command.")
+			await ctx.send(
+				"You do not have permission to execute this command."
+			)
 		elif type(err) == commands.CommandOnCooldown:
 			await ctx.send(
 				f"You can only run {RATE} speedrun.com related commands per minute. Please wait {trunc(err.retry_after)} seconds."
@@ -51,7 +53,9 @@ class Admin(commands.Cog):
 		"""
 		Pull any changes from the GitHub repository.
 		"""
-		RET: CompletedProcess = run(("git", "pull"), capture_output=True, text=True)
+		RET: CompletedProcess = run(
+			("git", "pull"), capture_output=True, text=True
+		)
 
 		if RET.returncode != 0:
 			await ctx.send(RET.stderr)

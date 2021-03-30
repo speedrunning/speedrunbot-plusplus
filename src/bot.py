@@ -22,7 +22,10 @@ EXTENSIONS: Iterable[str] = (
 
 
 async def execv(
-	ctx: Context, PROG: str, *ARGV: tuple[str, ...], TITLE: Union[str, None] = None
+	ctx: Context,
+	PROG: str,
+	*ARGV: tuple[str, ...],
+	TITLE: Union[str, None] = None,
 ) -> None:
 	"""
 	Run a program called PROG with the command line arguments ARGV as a
