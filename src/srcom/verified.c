@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 	if (!uid) {
 		fprintf(stderr, "Error: User with username '%s' not found.\n",
 		        argv[1]);
-		return EXIT_FAILURE;
+		exit(EXIT_FAILURE);
 	}
 	snprintf(uri_base, URIBUF,
 	         API "/runs?examiner=%s&max=" STR(MAX_RECV) "&offset=", uid);
@@ -78,7 +78,7 @@ int main(int argc, char **argv)
 			    != 0) {
 				fputs("Error: Failed to create thread.\n",
 				      stderr);
-				return EXIT_FAILURE;
+				exit(EXIT_FAILURE);
 			}
 		}
 
@@ -86,7 +86,7 @@ int main(int argc, char **argv)
 			if (pthread_join(threads[i], NULL) != 0) {
 				fputs("Error: Failed to join thread.\n",
 				      stderr);
-				return EXIT_FAILURE;
+				exit(EXIT_FAILURE);
 			}
 		}
 

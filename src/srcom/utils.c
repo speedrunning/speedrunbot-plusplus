@@ -30,6 +30,27 @@ void init_string(string_t *str)
 	return;
 }
 
+struct game_t *get_game(const char *abbrev)
+{
+	char uri[URIBUF];
+	static struct game_t game;
+	string_t json;
+	init_string(&json);
+
+	snprintf(uri, URIBUF, API "/games?abbreviation=%s", abbrev);
+	get_req(uri, &json);
+
+	sscanf(json.ptr,
+	       "{\"data\":[{\"id\":\"%[^\"]\",\"names\":{\"international\":\"%["
+	       "^\"]",
+	       game.id, game.name);
+
+	free(json.ptr);
+	if (game.id[0] == '\0')
+		return NULL;
+	return &game;
+}
+
 char *get_uid(const char *const username)
 {
 	char uri[URIBUF];
@@ -42,6 +63,7 @@ char *get_uid(const char *const username)
 	static char uid[UIDBUF];
 	sscanf(user.ptr, "{\"data\":[{\"id\":\"%[^\"]", uid);
 
+	free(user.ptr);
 	if (uid[0] == '\0')
 		return NULL;
 	return uid;

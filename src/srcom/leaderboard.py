@@ -35,6 +35,7 @@ def pad(TIME: str, MS: bool) -> str:
 	"""
 	Pad a time with blank spaces if it doesnt contain milliseconds for
 	output formatting.
+
 	>>> pad("59:54.397", True)
 	'59:54.397'
 	>>> pad("3:42", True)

@@ -80,29 +80,20 @@ int main(int argc, char **argv)
 	if (argc != 2)
 		usage();
 
+	struct game_t *game;
 	string_t json;
 	init_string(&json);
 
-	/* Get the games ID and name. */
-	char gid[UIDBUF], gname[BUFSIZ];
-	snprintf(uri_base, URIBUF, API "/games?abbreviation=%s", argv[1]);
-	get_req(uri_base, &json);
-
-	sscanf(json.ptr,
-	       "{\"data\":[{\"id\":\"%[^\"]\",\"names\":{\"international\":\"%["
-	       "^\"]",
-	       gid, gname);
-
-	if (*gid == '\0') {
+	if ((game = get_game(argv[1])) == NULL) {
 		fprintf(stderr,
-		        "Error: Game with abbreviation '%s' not found.\n",
+		        "Error: game with abbreviation '%s' not found.\n",
 		        argv[1]);
-		return EXIT_FAILURE;
+		exit(EXIT_FAILURE);
 	}
 
 	snprintf(uri_base, URIBUF,
 	         API "/runs?game=%s&status=new&max=" STR(MAX_RECV) "&offset=",
-	         gid);
+	         game->id);
 
 	while (!done) {
 		pthread_t threads[THREAD_COUNT];
@@ -116,7 +107,7 @@ int main(int argc, char **argv)
 			    != 0) {
 				fputs("Error: Failed to create thread.\n",
 				      stderr);
-				return EXIT_FAILURE;
+				exit(EXIT_FAILURE);
 			}
 		}
 
@@ -124,7 +115,7 @@ int main(int argc, char **argv)
 			if (pthread_join(threads[i], NULL) != 0) {
 				fputs("Error: Failed to join thread.\n",
 				      stderr);
-				return EXIT_FAILURE;
+				exit(EXIT_FAILURE);
 			}
 		}
 
@@ -141,6 +132,6 @@ int main(int argc, char **argv)
 	       "Fullgame: %d\n"
 	       "Individual Level: %d\n"
 	       "Total: %d\n",
-	       gname, fullgame, il, fullgame + il);
+	       game->name, fullgame, il, fullgame + il);
 	return EXIT_SUCCESS;
 }

@@ -38,6 +38,7 @@ if ! command -v clang-format &>/dev/null; then
 	fi
 fi
 
+# TODO: Find a way to make this POSIX compliant.
 shopt -s globstar nullglob
 
 SCR_PATH=$(cd "$(dirname "$0")" && pwd)
@@ -59,6 +60,9 @@ for FILE in "$SCR_PATH"/**/*; do
 		fi
 		mv temp "$FILE"
 		test $EFLAG -eq 1 && chmod +x "$FILE"
+
+		# '...' in docstrings causes some formatting issues.
+		sed -i 's/\t\(\t*\.\.\.\)/\1/' $FILE
 		;;
 	*.sh)
 		echo Formatting "$FILE"

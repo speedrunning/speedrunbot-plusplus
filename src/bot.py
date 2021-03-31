@@ -11,6 +11,10 @@ from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.message import Message
 
+RET: int
+STDOUT: bytes
+STDERR: bytes
+
 TITLE: str
 DESC: str
 
@@ -21,17 +25,11 @@ EXTENSIONS: Iterable[str] = (
 )
 
 
-async def execv(
-	ctx: Context,
-	PROG: str,
-	*ARGV: tuple[str, ...],
-	TITLE: Union[str, None] = None,
-) -> None:
+async def execv(PROG: str, *ARGV: tuple[str, ...]) -> tuple[int, bytes, bytes]:
 	"""
-	Run a program called PROG with the command line arguments ARGV as a
-	subprocess and return its output + exit code. If TITLE is supplied, it
-	will be used as the title of the embed that is sent to discord. If TITLE
-	is not supplied, then the first line of output from PROG will be used.
+	Run a program called PROG with the command line arguments ARGV. This returns
+	a tuple containing the processes returncode, as well as the encoded stdout and
+	stderr.
 	"""
 	# This is like `shlex.join()`, but it gets rid of any `None` values.
 	ARGS: str = " ".join(
@@ -44,17 +42,32 @@ async def execv(
 		stderr=asyncio.subprocess.PIPE,
 	)
 	STDOUT, STDERR = await RET.communicate()
+	return (RET.returncode, STDOUT, STDERR)
 
-	if RET.returncode != 0:
+
+async def run_and_output(
+	ctx: Context,
+	PROG: str,
+	*ARGV: tuple[str, ...],
+	TITLE: Union[str, None] = None,
+) -> None:
+	"""
+	Run a program called PROG with the command line arguments ARGV as a
+	subprocess and return its output + exit code. If TITLE is supplied, it
+	will be used as the title of the embed that is sent to discord. If TITLE
+	is not supplied, then the first line of output from PROG will be used.
+	"""
+	RETCODE, STDOUT, STDERR = await execv(PROG, *ARGV)
+	if RETCODE != 0:
 		await ctx.send(STDERR.decode())
 		return
 
 	if TITLE is not None:
-		embed = discord.Embed(title=TITLE, description=STDOUT.decode())
+		EMBED = discord.Embed(title=TITLE, description=STDOUT.decode())
 	else:
 		TITLE, DESC = STDOUT.decode().split("\n", 1)
-		embed = discord.Embed(title=TITLE, description=DESC)
-	await ctx.send(embed=embed)
+		EMBED = discord.Embed(title=TITLE, description=DESC)
+	await ctx.send(embed=EMBED)
 
 
 class SRBpp(commands.Bot):
