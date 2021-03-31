@@ -85,13 +85,14 @@ int main(int argc, char **argv)
 
 	/* Get the users ID and name. */
 	if ((uid = get_uid(argv[1])) == NULL) {
-		fprintf(stderr, "Error: User with name '%s' not found.\n", argv[1]);
+		fprintf(stderr, "Error: User with name '%s' not found.\n",
+		        argv[1]);
 		exit(EXIT_FAILURE);
 	}
 	if (argc > 2 && (game = get_game(argv[2])) == NULL) {
 		fprintf(stderr,
-			"Error: Game with abbreviation '%s' not found.\n",
-			argv[2]);
+		        "Error: Game with abbreviation '%s' not found.\n",
+		        argv[2]);
 		exit(EXIT_FAILURE);
 	}
 
