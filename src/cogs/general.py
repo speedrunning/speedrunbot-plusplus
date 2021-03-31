@@ -1,12 +1,14 @@
+import json
+from asyncio import TimeoutError
+from math import floor, trunc
+
+from discord import Attachment, Message
 from discord.ext import commands
-from discord.utils import oauth_url
 from discord.ext.commands.context import Context
-from discord import Message, Attachment
+from discord.utils import oauth_url
 
 from bot import SRBpp, execv
-import json
-from math import floor, trunc
-from asyncio import TimeoutError
+
 
 def time_format(time: float) -> str:
 	hours = floor(time / 3600)
@@ -19,10 +21,11 @@ def time_format(time: float) -> str:
 	retime += f"{minutes}:{'0' if seconds < 10 else ''}{round(seconds, 3)}"
 	return retime
 
+
 def _retime(start_time: float, end_time: float, framerate: int):
 	frames = (
-		(floor(end_time * framerate) / framerate) - 
-		(floor(start_time * framerate) / framerate)
+		(floor(end_time * framerate) / framerate)
+		- (floor(start_time * framerate) / framerate)
 	) * framerate
 
 	seconds = round(frames / framerate * 1000) / 1000
@@ -36,6 +39,7 @@ def _retime(start_time: float, end_time: float, framerate: int):
 	time = time_format(seconds)
 
 	return f"Mod Note: Retimed (Start Frame: {start_frame}, End Frame: {end_frame}, FPS: {framerate}, Total Time: {time}"
+
 
 class General(commands.Cog):
 	def __init__(self, bot: SRBpp) -> None:
@@ -62,9 +66,7 @@ class General(commands.Cog):
 		"""
 		Get the bots discord invite link.
 		"""
-		await ctx.send(
-			oauth_url(self.bot.user.id)
-		)
+		await ctx.send(oauth_url(self.bot.user.id))
 
 	@commands.command(name="retime")
 	async def retime(self, ctx: Context, framerate: int = 30, *, data1=None):
@@ -75,8 +77,12 @@ class General(commands.Cog):
 		"""
 
 		def check(msg: Message) -> bool:
-			return msg.author == ctx.author and msg.attachments[0] or len(msg.content) > 1000
-		
+			return (
+				msg.author == ctx.author
+				and msg.attachments[0]
+				or len(msg.content) > 1000
+			)
+
 		file1: Attachment
 		file2: Attachment
 		data2: str
@@ -85,15 +91,23 @@ class General(commands.Cog):
 		try:
 			if len(ctx.message.attachments) == 1 or data1:
 				# First attachment will be the starting frame
-				file1 = ctx.message.attachments[0] if len(ctx.message.attachments) else None
+				file1 = (
+					ctx.message.attachments[0]
+					if len(ctx.message.attachments)
+					else None
+				)
 				if data1 or file1 and file1.size < 4_000:
-					start_time = float(json.loads(data1 or await file1.read())["cmt"])
+					start_time = float(
+						json.loads(data1 or await file1.read())["cmt"]
+					)
 				else:
 					return await ctx.send("File is too large")
 
 				await ctx.send("Awaiting second attachment")
-				
-				file2 = (await self.bot.wait_for("message", check=check, timeout=60)).attachments[0]
+
+				file2 = (
+					await self.bot.wait_for("message", check=check, timeout=60)
+				).attachments[0]
 				if file2.size < 4_000:
 					end_time = float(json.loads(await file2.read())["cmt"])
 				else:
@@ -114,25 +128,35 @@ class General(commands.Cog):
 					return await ctx.send("File is too large")
 			else:
 				await ctx.send("Awaiting first attachment")
-				msg1: Message = await self.bot.wait_for("message", check=check, timeout=60)
+				msg1: Message = await self.bot.wait_for(
+					"message", check=check, timeout=60
+				)
 				file1 = msg1.attachments[0] or msg1.content
 				# First attachment will be the starting frame
 				if file1.size < 4_000:
-					start_time = float(json.loads(await file1.read() if type(file1 == "<class 'discord.message.Attachment'>") else file1)["cmt"])
+					start_time = float(
+						json.loads(
+							await file1.read()
+							if type(
+								file1 == "<class 'discord.message.Attachment'>"
+							)
+							else file1
+						)["cmt"]
+					)
 				else:
 					return await ctx.send("File is too large")
 
 				await ctx.send("Awaiting second attachment")
-				
-				file2 = (await self.bot.wait_for("message", check=check, timeout=60)).attachments[0]
+
+				file2 = (
+					await self.bot.wait_for("message", check=check, timeout=60)
+				).attachments[0]
 				if file2.size < 4_000:
 					end_time = float(json.loads(await file2.read())["cmt"])
 				else:
 					return await ctx.send("File is too large")
-			
-			await ctx.send(
-				_retime(start_time, end_time, framerate)
-			)
+
+			await ctx.send(_retime(start_time, end_time, framerate))
 		except TimeoutError:
 			await ctx.send("Waited for too long, aborting...")
 		except Exception as e:
@@ -143,7 +167,7 @@ class General(commands.Cog):
 		"""
 		Get the bot's prefixes
 		"""
-		prefixes = (await self.bot.get_prefix(ctx.message))
+		prefixes = await self.bot.get_prefix(ctx.message)
 		message = ""
 		for prefix in prefixes:
 			if "<@" in prefix:
@@ -151,6 +175,7 @@ class General(commands.Cog):
 			else:
 				message += f"`{prefix}`, "
 		await ctx.send(f"My prefixes are: {message[:len(message) - 2]}")
+
 
 def setup(bot: SRBpp) -> None:
 	bot.add_cog(General(bot))

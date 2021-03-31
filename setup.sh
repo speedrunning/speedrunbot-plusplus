@@ -79,12 +79,23 @@ else
 	fi
 fi
 
+# Check for OS via the package manager
+if command -v apt >/dev/null 2>&1; then
+    OS="debian"
+elif command -v pacman >/dev/null 2>&1; then
+    OS="arch"
+# etc.
+fi
+
 # Install dependencies
 echo Installing dependencies
 $PY -m pip install -r requirements.txt >/dev/null 2>&1
 
-# Assuming debian based, everyone else needs to deal with it.
-yes | $SU apt install libjansson-dev libcurl4-openssl-dev >/dev/null 2>&1
+if test "$OS" = "debian"; then
+	yes | $SU apt install libjansson-dev libcurl4-openssl-dev >/dev/null 2>&1
+elif test "$OS" = "arch"; then
+	yes | $SU pacman -S curl jansson 2>&1
+fi
 
 # Run the Makefiles.
 echo Building executables
