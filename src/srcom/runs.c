@@ -1,6 +1,6 @@
 /*
- * This program gets the number of runs in the verification queue of a given game
- * (argv[1]).
+ * This program gets the number of runs submit by a player (argv[1]). Optionally
+ * a game (argv[2]) can be specified.
  */
 
 #include <pthread.h>
@@ -80,19 +80,21 @@ int main(int argc, char **argv)
 	if (argc == 1)
 		usage();
 
+	char *uid;
 	struct game_t *game = NULL;
-	if (argc > 2) {
-		if ((game = get_game(argv[2])) == NULL) {
-			fprintf(stderr,
-			        "Error: Game with abbreviation '%s' not "
-			        "found.\n",
-			        argv[2]);
-			exit(EXIT_FAILURE);
-		}
-	}
 
 	/* Get the users ID and name. */
-	char *uid = get_uid(argv[1]);
+	if ((uid = get_uid(argv[1])) == NULL) {
+		fprintf(stderr, "Error: User with name '%s' not found.\n", argv[1]);
+		exit(EXIT_FAILURE);
+	}
+	if (argc > 2 && (game = get_game(argv[2])) == NULL) {
+		fprintf(stderr,
+			"Error: Game with abbreviation '%s' not found.\n",
+			argv[2]);
+		exit(EXIT_FAILURE);
+	}
+
 	snprintf(uri_base, URIBUF,
 	         API "/runs?user=%s&game=%s&max=" STR(MAX_RECV) "&offset=", uid,
 	         game ? game->id : "");
