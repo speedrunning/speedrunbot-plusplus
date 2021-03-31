@@ -131,7 +131,7 @@ class SRBpp(commands.Bot):
 		if message.author.bot:
 			return
 
-		COMMANDS: str = message.content.split(" && ")
+		COMMANDS: list[str] = message.content.split(" && ")
 		for command in COMMANDS:
 			message.content = command
 			await self.invoke(await self.get_context(message))
