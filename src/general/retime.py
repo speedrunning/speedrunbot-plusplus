@@ -24,7 +24,7 @@ def usage() -> None:
 def main() -> int:
 	if len(argv) != 4:
 		usage()
-		return EXIT_SUCCESS
+		exit(EXIT_SUCCESS)
 	else:
 		_, framerate, start_time, end_time = argv
 		try:
@@ -37,8 +37,8 @@ def main() -> int:
 			)
 		except Exception as e:
 			print(e)
-			return EXIT_FAILURE
-		return EXIT_SUCCESS
+			exit(EXIT_FAILURE)
+		exit(EXIT_SUCCESS)
 
 
 def convert(data: str) -> float:

@@ -56,43 +56,44 @@ class General(commands.Cog):
 		def check(msg: Message) -> bool:
 			return msg.author == ctx.author
 
-		if not (data1 and data2):
-			if len(ctx.message.attachments) == 0:
-				await ctx.send("Waiting first input...")
-				msg1: Message = await self.bot.wait_for(
-					"message", check=check, timeout=60
-				)
-				if len(msg1.attachments) == 1:
-					data1 = (await msg1.attachments[0].read()).decode("utf-8")
-				else:
-					data1 = msg1.content
-				await ctx.send("Waiting second input...")
-				msg2 = await self.bot.wait_for(
-					"message", check=check, timeout=60
-				)
-				if len(msg2.attachments) == 1:
-					data2 = (await msg2.attachments[0].read()).decode("utf-8")
-				else:
-					data2 = msg2.content
-			elif len(ctx.message.attachments) == 1:
-				data1 = (await ctx.message.attachments[0].read()).decode(
-					"utf-8"
-				)
-				await ctx.send("Waiting second input...")
-				msg2 = await self.bot.wait_for(
-					"message", check=check, timeout=60
-				)
-				if len(msg2.attachments) == 1:
-					data2 = (await msg2.attachments[0].read()).decode("utf-8")
-				else:
-					data2 = msg2.content
-			elif len(ctx.message.attachments) == 2:
-				data1 = (await ctx.message.attachments[0].read()).decode(
-					"utf-8"
-				)
-				data2 = (await ctx.message.attachments[1].read()).decode(
-					"utf-8"
-				)
+		try:
+			if not (data1 and data2):
+				if len(ctx.message.attachments) == 0:
+					await ctx.send("Waiting first input...")
+					msg1: Message = await self.bot.wait_for(
+						"message", check=check, timeout=60
+					)
+					if len(msg1.attachments) == 1:
+						data1 = (await msg1.attachments[0].read()).decode("utf-8")
+					else:
+						data1 = msg1.content
+					await ctx.send("Waiting second input...")
+					msg2 = await self.bot.wait_for(
+						"message", check=check, timeout=60
+					)
+					if len(msg2.attachments) == 1:
+						data2 = (await msg2.attachments[0].read()).decode("utf-8")
+					else:
+						data2 = msg2.content
+				elif len(ctx.message.attachments) == 1:
+					data1 = (await ctx.message.attachments[0].read()).decode(
+						"utf-8"
+					)
+					await ctx.send("Waiting second input...")
+					msg2 = await self.bot.wait_for(
+						"message", check=check, timeout=60
+					)
+					if len(msg2.attachments) == 1:
+						data2 = (await msg2.attachments[0].read()).decode("utf-8")
+					else:
+						data2 = msg2.content
+				elif len(ctx.message.attachments) == 2:
+					data1 = (await ctx.message.attachments[0].read()).decode(
+						"utf-8"
+					)
+					data2 = (await ctx.message.attachments[1].read()).decode(
+						"utf-8"
+					)
 			elif data1 and not data2:
 				await ctx.send("Waiting second input...")
 				msg2 = await self.bot.wait_for(
@@ -102,6 +103,8 @@ class General(commands.Cog):
 					data2 = (await msg2.attachments[0].read()).decode("utf-8")
 				else:
 					data2 = msg2.content
+		except Exception as e:
+			raise e
 
 		await run_and_output(
 			ctx,
