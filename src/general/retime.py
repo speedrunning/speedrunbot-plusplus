@@ -79,7 +79,7 @@ def _retime(start_time: float, end_time: float, framerate: int) -> str:
 
 	time = time_format(seconds)
 
-	return f"Mod Note: Retimed (Start Frame: {start_frame}, End Frame: {end_frame}, FPS: {framerate}, Total Time: {time}"
+	return f"Mod Note: Retimed (Start Frame: {start_frame}, End Frame: {end_frame}, FPS: {framerate}, Total Time: {time})"
 
 
 if __name__ == "__main__":

@@ -54,7 +54,7 @@ class General(commands.Cog):
 		"""
 
 		def check(msg: Message) -> bool:
-			return msg.author == ctx.author
+			return msg.author == ctx.author and msg.channel == ctx.channel
 
 		try:
 			if not (data1 and data2):
@@ -103,8 +103,8 @@ class General(commands.Cog):
 					data2 = (await msg2.attachments[0].read()).decode("utf-8")
 				else:
 					data2 = msg2.content
-		except Exception as e:
-			raise e
+		except TimeoutError:
+			return await ctx.send("Waited for too long. Aborting...")
 
 		await run_and_output(
 			ctx,
