@@ -7,38 +7,9 @@ from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.utils import oauth_url
 
-from bot import SRBpp, execv
+from bot import SRBpp, run_and_output
 
-
-def time_format(time: float) -> str:
-	hours = floor(time / 3600)
-	minutes = floor((time % 3600) / 60)
-	seconds = time % 60
-	retime = ""
-
-	if hours > 0:
-		retime += f"{hours}:{'0' if minutes < 10 else ''}"
-	retime += f"{minutes}:{'0' if seconds < 10 else ''}{round(seconds, 3)}"
-	return retime
-
-
-def _retime(start_time: float, end_time: float, framerate: int):
-	frames = (
-		(floor(end_time * framerate) / framerate)
-		- (floor(start_time * framerate) / framerate)
-	) * framerate
-
-	seconds = round(frames / framerate * 1000) / 1000
-
-	start_frame = trunc(start_time * framerate)
-	end_frame = trunc(end_time * framerate)
-
-	start_time = trunc(start_frame / framerate)
-	end_time = trunc(end_frame / framerate)
-
-	time = time_format(seconds)
-
-	return f"Mod Note: Retimed (Start Frame: {start_frame}, End Frame: {end_frame}, FPS: {framerate}, Total Time: {time}"
+PREFIX = "general/"
 
 
 class General(commands.Cog):
@@ -69,7 +40,13 @@ class General(commands.Cog):
 		await ctx.send(oauth_url(self.bot.user.id))
 
 	@commands.command(name="retime")
-	async def retime(self, ctx: Context, framerate: int = 30, *, data1=None):
+	async def retime(
+		self,
+		ctx: Context,
+		framerate: int = 30,
+		data1: str = None,
+		data2: str = None,
+	):
 		"""
 		**UNSTABLE**
 		Retime youtube videos using debugging data.
@@ -77,90 +54,63 @@ class General(commands.Cog):
 		"""
 
 		def check(msg: Message) -> bool:
-			return (
-				msg.author == ctx.author
-				and msg.attachments[0]
-				or len(msg.content) > 1000
-			)
+			return msg.author == ctx.author
 
-		file1: Attachment
-		file2: Attachment
-		data2: str
-		start_time: float
-		end_time: float
-		try:
-			if len(ctx.message.attachments) == 1 or data1:
-				# First attachment will be the starting frame
-				file1 = (
-					ctx.message.attachments[0]
-					if len(ctx.message.attachments)
-					else None
-				)
-				if data1 or file1 and file1.size < 4_000:
-					start_time = float(
-						json.loads(data1 or await file1.read())["cmt"]
-					)
-				else:
-					return await ctx.send("File is too large")
-
-				await ctx.send("Awaiting second attachment")
-
-				file2 = (
-					await self.bot.wait_for("message", check=check, timeout=60)
-				).attachments[0]
-				if file2.size < 4_000:
-					end_time = float(json.loads(await file2.read())["cmt"])
-				else:
-					return await ctx.send("File is too large")
-
-			elif len(ctx.message.attachments) == 2:
-				# First attachment will be the starting frame
-				file1 = ctx.message.attachments[0]
-				if file1.size < 4_000:
-					start_time = float(json.loads(await file1.read())["cmt"])
-				else:
-					return await ctx.send("File is too large")
-
-				file2 = ctx.message.attachments[2]
-				if file2.size < 4_000:
-					end_time = float(json.loads(await file2.read())["cmt"])
-				else:
-					return await ctx.send("File is too large")
-			else:
-				await ctx.send("Awaiting first attachment")
+		if not (data1 and data2):
+			if len(ctx.message.attachments) == 0:
+				await ctx.send("Waiting first input...")
 				msg1: Message = await self.bot.wait_for(
 					"message", check=check, timeout=60
 				)
-				file1 = msg1.attachments[0] or msg1.content
-				# First attachment will be the starting frame
-				if file1.size < 4_000:
-					start_time = float(
-						json.loads(
-							await file1.read()
-							if type(
-								file1 == "<class 'discord.message.Attachment'>"
-							)
-							else file1
-						)["cmt"]
-					)
+				if len(msg1.attachments) == 1:
+					data1 = (await msg1.attachments[0].read()).decode("utf-8")
 				else:
-					return await ctx.send("File is too large")
-
-				await ctx.send("Awaiting second attachment")
-
-				file2 = (
-					await self.bot.wait_for("message", check=check, timeout=60)
-				).attachments[0]
-				if file2.size < 4_000:
-					end_time = float(json.loads(await file2.read())["cmt"])
+					data1 = msg1.content
+				await ctx.send("Waiting second input...")
+				msg2 = await self.bot.wait_for(
+					"message", check=check, timeout=60
+				)
+				if len(msg2.attachments) == 1:
+					data2 = (await msg2.attachments[0].read()).decode("utf-8")
 				else:
-					return await ctx.send("File is too large")
+					data2 = msg2.content
+			elif len(ctx.message.attachments) == 1:
+				data1 = (await ctx.message.attachments[0].read()).decode(
+					"utf-8"
+				)
+				await ctx.send("Waiting second input...")
+				msg2 = await self.bot.wait_for(
+					"message", check=check, timeout=60
+				)
+				if len(msg2.attachments) == 1:
+					data2 = (await msg2.attachments[0].read()).decode("utf-8")
+				else:
+					data2 = msg2.content
+			elif len(ctx.message.attachments) == 2:
+				data1 = (await ctx.message.attachments[0].read()).decode(
+					"utf-8"
+				)
+				data2 = (await ctx.message.attachments[1].read()).decode(
+					"utf-8"
+				)
+			elif data1 and not data2:
+				await ctx.send("Waiting second input...")
+				msg2 = await self.bot.wait_for(
+					"message", check=check, timeout=60
+				)
+				if len(msg2.attachments) == 1:
+					data2 = (await msg2.attachments[0].read()).decode("utf-8")
+				else:
+					data2 = msg2.content
 
-			await ctx.send(_retime(start_time, end_time, framerate))
-		except TimeoutError:
-			await ctx.send("Waited for too long, aborting...")
-		except Exception as e:
-			raise e
+		await run_and_output(
+			ctx,
+			f"{PREFIX}/retime.py",
+			str(framerate),
+			data1,
+			data2,
+			TITLE="Retimed!",
+		)
 
 	@commands.command(name="prefix", aliases=["prefixes"])
 	async def prefix(self, ctx):
