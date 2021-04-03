@@ -6,3 +6,4 @@ objs/
 token
 test.json
 *.spec
+__build.sh
