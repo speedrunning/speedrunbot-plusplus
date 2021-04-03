@@ -41,7 +41,7 @@ class Admin(commands.Cog):
 			)
 		elif type(err) == commands.errors.BadArgument:
 			await ctx.send(
-				"Invalid argument, please check your input and try again"
+				"Invalid argument, please check your input and try again."
 			)
 		else:  # TODO: Make it DM me the error maybe?
 			print(f"{type(err)}: {err}", file=stderr)
@@ -83,7 +83,7 @@ class Admin(commands.Cog):
 
 	@commands.is_owner()
 	@commands.command(name="restart")
-	async def restart(self, ctx: Context) -> None:
+	async def restart(_, ctx: Context) -> None:
 		"""
 		Restart the bot. This should only really be used when pulling changes to files
 		such as `bot.py` and `main.py`.
