@@ -79,12 +79,30 @@ else
 	fi
 fi
 
+# Check for OS via the package manager
+if command -v apt >/dev/null 2>&1; then
+	OS="debian"
+elif command -v pacman >/dev/null 2>&1; then
+	OS="arch"
+fi
+
 # Install dependencies
 echo Installing dependencies
 $PY -m pip install -r requirements.txt >/dev/null 2>&1
 
-# Assuming debian based, everyone else needs to deal with it.
-yes | $SU apt install libjansson-dev libcurl4-openssl-dev >/dev/null 2>&1
+case $OS in
+arch)
+	yes | $SU pacman -S curl jansson 2>&1
+	;;
+debian)
+	yes | $SU apt install libjansson-dev libcurl4-openssl-dev >/dev/null 2>&1
+	;;
+*)
+	echo You do not have a supported OS. Please install jansson and libcurl \
+		manually
+	exit 1
+	;;
+esac
 
 # Run the Makefiles.
 echo Building executables
