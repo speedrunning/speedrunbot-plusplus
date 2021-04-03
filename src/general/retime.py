@@ -3,7 +3,7 @@
 from json import loads
 from math import floor, trunc
 from sys import argv, exit, stderr
-from typing import Literal
+from typing import Literal, Union
 
 EXIT_SUCCESS: Literal[0] = 0
 EXIT_FAILURE: Literal[1] = 1
@@ -20,67 +20,68 @@ def usage() -> None:
 	)
 	exit(EXIT_FAILURE)
 
+def convert(DATA: str) -> float:
+	TIME: float
+	# JSON files have { so safe to assume it can be loaded
+	if "{" in DATA:
+		TIME = float(loads(DATA)["cmt"])
+	else:
+		TIME = float(DATA)
+	return TIME
+
+
+def time_format(TIME: float) -> str:
+	HOURS: int = floor(TIME / 3600)
+	MINUTES: int = floor((TIME % 3600) / 60)
+	SECONDS: float = TIME % 60
+	retime: str = ""
+
+	if HOURS > 0:
+		retime += f"{HOURS}:{'0' if MINUTES < 10 else ''}"
+	retime += f"{MINUTES}:{'0' if SECONDS < 10 else ''}{round(SECONDS, 3)}"
+	return retime
+
+
+def _retime(START_TIME: float, END_TIME: float, FRAMERATE: int) -> str:
+	FRAMES: Union[int, float] = (
+		(floor(END_TIME * FRAMERATE) / FRAMERATE)
+		- (floor(START_TIME * FRAMERATE) / FRAMERATE)
+	) * FRAMERATE
+
+	SECONDS: float = round(FRAMES / FRAMERATE * 1000) / 1000
+
+	START_FRAME: int = trunc(START_TIME * FRAMERATE)
+	END_FRAME: int = trunc(END_TIME * FRAMERATE)
+
+	TIME: str = time_format(SECONDS)
+
+	return f"Mod Note: Retimed (Start Frame: {START_FRAME}, End Frame: {END_FRAME}, FPS: {FRAMERATE}, Total Time: {TIME})"
+
 
 def main() -> int:
+	FRAMERATE: str
+	START_TIME: str
+	END_TIME: str
+
 	if len(argv) != 4:
 		usage()
 		exit(EXIT_SUCCESS)
 	else:
-		_, framerate, start_time, end_time = argv
+		_, FRAMERATE, START_TIME, END_TIME = argv
 		try:
 			print(
 				_retime(
-					framerate=int(framerate),
-					start_time=convert(start_time),
-					end_time=convert(end_time),
+					FRAMERATE=int(FRAMERATE),
+					START_TIME=convert(START_TIME),
+					END_TIME=convert(END_TIME),
 				)
 			)
 		except Exception as e:
 			print(e)
 			exit(EXIT_FAILURE)
-		exit(EXIT_SUCCESS)
-
-
-def convert(data: str) -> float:
-	time: float
-	# JSON files have { so safe to assume it can be loaded
-	if "{" in data:
-		time = float(loads(data)["cmt"])
-	else:
-		time = float(data)
-	return time
-
-
-def time_format(time: float) -> str:
-	hours = floor(time / 3600)
-	minutes = floor((time % 3600) / 60)
-	seconds = time % 60
-	retime = ""
-
-	if hours > 0:
-		retime += f"{hours}:{'0' if minutes < 10 else ''}"
-	retime += f"{minutes}:{'0' if seconds < 10 else ''}{round(seconds, 3)}"
-	return retime
-
-
-def _retime(start_time: float, end_time: float, framerate: int) -> str:
-	frames = (
-		(floor(end_time * framerate) / framerate)
-		- (floor(start_time * framerate) / framerate)
-	) * framerate
-
-	seconds = round(frames / framerate * 1000) / 1000
-
-	start_frame = trunc(start_time * framerate)
-	end_frame = trunc(end_time * framerate)
-
-	start_time = trunc(start_frame / framerate)
-	end_time = trunc(end_frame / framerate)
-
-	time = time_format(seconds)
-
-	return f"Mod Note: Retimed (Start Frame: {start_frame}, End Frame: {end_frame}, FPS: {framerate}, Total Time: {time})"
+		return EXIT_SUCCESS
 
 
 if __name__ == "__main__":
-	main()
+	RET: int = main()
+	exit(RET)
