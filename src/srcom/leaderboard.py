@@ -26,7 +26,8 @@ def usage() -> None:
 	"""
 	print(
 		"Usage: `+leaderboard [GAME] [CATEGORY (Optional)] [SUBCATEGORY (Optional)]`\n"
-		+ 'Example: `+leaderboard mkw "Nitro Tracks"`'
+		+ 'Example: `+leaderboard mkw "Nitro Tracks"`',
+		file=stderr,
 	)
 	exit(EXIT_FAILURE)
 

@@ -16,7 +16,8 @@ def usage() -> None:
 	"""
 	print(
 		"Usage: `+retime [FRAMERATE] [STARTING_FRAME (Optional)]`\n"
-		+ 'Example: `+retime 30 \'{ "cmt": "16.200" }\' \'{ "cmt": "16.200" }\'`'
+		+ 'Example: `+retime 30 \'{ "cmt": "16.200" }\' \'{ "cmt": "16.200" }\'`',
+		file=stderr,
 	)
 	exit(EXIT_FAILURE)
 
@@ -112,7 +113,7 @@ def main() -> int:
 				)
 			)
 		except Exception as e:
-			print(e)
+			print(f"Error: {e}", file=stderr)
 			exit(EXIT_FAILURE)
 		return EXIT_SUCCESS
 

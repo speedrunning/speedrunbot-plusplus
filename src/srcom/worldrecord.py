@@ -26,7 +26,8 @@ def usage() -> None:
 	"""
 	print(
 		"Usage: `+worldrecord [GAME] [CATEGORY (Optional)] [SUBCATEGORY (Optional)]`\n"
-		+ 'Example: `+worldrecord mkw "Nitro Tracks"`'
+		+ 'Example: `+worldrecord mkw "Nitro Tracks"`',
+		file=stderr,
 	)
 	exit(EXIT_FAILURE)
 
