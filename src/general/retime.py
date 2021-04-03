@@ -20,7 +20,14 @@ def usage() -> None:
 	)
 	exit(EXIT_FAILURE)
 
+
 def convert(DATA: str) -> float:
+	"""
+	Extract the float value of the video timestamp from the given JSON.
+
+	>>> convert('{"cmt": "1.234"}')
+	1.234
+	"""
 	TIME: float
 	# JSON files have { so safe to assume it can be loaded
 	if "{" in DATA:
@@ -30,19 +37,47 @@ def convert(DATA: str) -> float:
 	return TIME
 
 
-def time_format(TIME: float) -> str:
-	HOURS: int = floor(TIME / 3600)
-	MINUTES: int = floor((TIME % 3600) / 60)
-	SECONDS: float = TIME % 60
-	retime: str = ""
+def ptime(s: float) -> str:
+	"""
+	Pretty print a time in the format H:M:S.ms. Empty leading fields are
+	disgarded with the exception of times under 60 seconds which show 0
+	minutes.
 
-	if HOURS > 0:
-		retime += f"{HOURS}:{'0' if MINUTES < 10 else ''}"
-	retime += f"{MINUTES}:{'0' if SECONDS < 10 else ''}{round(SECONDS, 3)}"
-	return retime
+	>>> ptime(234.2)
+	'3:54.200'
+	>>> ptime(23275.24)
+	'6:27:55.240'
+	>>> ptime(51)
+	'0:51'
+	>>> ptime(325)
+	'5:25'
+	"""
+	h: float
+	m: float
+
+	m, s = divmod(s, 60)
+	h, m = divmod(m, 60)
+	ms: int = int(round(s % 1 * 1000))
+
+	if not h:
+		if not ms:
+			return "{}:{:02d}".format(int(m), int(s))
+		return "{}:{:02d}.{:03d}".format(int(m), int(s), ms)
+	if not ms:
+		return "{}:{:02d}:{:02d}".format(int(h), int(m), int(s))
+	return "{}:{:02d}:{:02d}.{:03d}".format(int(h), int(m), int(s), ms)
 
 
 def _retime(START_TIME: float, END_TIME: float, FRAMERATE: int) -> str:
+	"""
+	Calculate the total duration of the run from the video endpoints and
+	framerate.
+
+	>>> _retime(23.692, 69.184, 30)
+	'Mod Note: Retimed (Start Frame: 710, End Frame: 2075, FPS: 30, Total Time: 0:45.500)'
+	>>> _retime(0, 2.534, 60)
+	'Mod Note: Retimed (Start Frame: 0, End Frame: 152, FPS: 60, Total Time: 0:02.533)'
+	"""
 	FRAMES: Union[int, float] = (
 		(floor(END_TIME * FRAMERATE) / FRAMERATE)
 		- (floor(START_TIME * FRAMERATE) / FRAMERATE)
@@ -53,7 +88,7 @@ def _retime(START_TIME: float, END_TIME: float, FRAMERATE: int) -> str:
 	START_FRAME: int = trunc(START_TIME * FRAMERATE)
 	END_FRAME: int = trunc(END_TIME * FRAMERATE)
 
-	TIME: str = time_format(SECONDS)
+	TIME: str = ptime(SECONDS)
 
 	return f"Mod Note: Retimed (Start Frame: {START_FRAME}, End Frame: {END_FRAME}, FPS: {FRAMERATE}, Total Time: {TIME})"
 
