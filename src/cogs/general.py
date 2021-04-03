@@ -2,14 +2,14 @@ import json
 from asyncio import TimeoutError
 from math import floor, trunc
 
-from discord import Attachment, Message
+from discord import Message
 from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.utils import oauth_url
 
 from bot import SRBpp, run_and_output
 
-PREFIX = "general/"
+PREFIX: str = "general/bin"
 
 
 class General(commands.Cog):
@@ -53,21 +53,24 @@ class General(commands.Cog):
 		This is a port of http://retime.mcbe.wtf/
 		"""
 
-		def check(msg: Message) -> bool:
-			return msg.author == ctx.author and msg.channel == ctx.channel
+		msg1: Message
+		msg2: Message
+		
+		def check(MSG: Message) -> bool:
+			return MSG.author == ctx.author and MSG.channel == ctx.channel
 
 		try:
 			if not (data1 and data2):
 				if len(ctx.message.attachments) == 0:
-					await ctx.send("Waiting first input...")
-					msg1: Message = await self.bot.wait_for(
+					await ctx.send("Waiting for first input...")
+					msg1 = await self.bot.wait_for(
 						"message", check=check, timeout=60
 					)
 					if len(msg1.attachments) == 1:
 						data1 = (await msg1.attachments[0].read()).decode("utf-8")
 					else:
 						data1 = msg1.content
-					await ctx.send("Waiting second input...")
+					await ctx.send("Waiting for second input...")
 					msg2 = await self.bot.wait_for(
 						"message", check=check, timeout=60
 					)
@@ -79,7 +82,7 @@ class General(commands.Cog):
 					data1 = (await ctx.message.attachments[0].read()).decode(
 						"utf-8"
 					)
-					await ctx.send("Waiting second input...")
+					await ctx.send("Waiting for second input...")
 					msg2 = await self.bot.wait_for(
 						"message", check=check, timeout=60
 					)
@@ -95,7 +98,7 @@ class General(commands.Cog):
 						"utf-8"
 					)
 			elif data1 and not data2:
-				await ctx.send("Waiting second input...")
+				await ctx.send("Waiting for second input...")
 				msg2 = await self.bot.wait_for(
 					"message", check=check, timeout=60
 				)
@@ -108,21 +111,21 @@ class General(commands.Cog):
 
 		await run_and_output(
 			ctx,
-			f"{PREFIX}/retime.py",
+			f"{PREFIX}/retime",
 			str(framerate),
 			data1,
 			data2,
 			TITLE="Retimed!",
 		)
 
-	@commands.command(name="prefix", aliases=["prefixes"])
+	@commands.command(name="prefix", aliases=("prefixes",))
 	async def prefix(self, ctx):
 		"""
-		Get the bot's prefixes
+		Get the bot's prefixes.
 		"""
-		prefixes = await self.bot.get_prefix(ctx.message)
-		message = ""
-		for prefix in prefixes:
+		PREFIXES = await self.bot.get_prefix(ctx.message)
+		message: str = ""
+		for prefix in PREFIXES:
 			if "<@" in prefix:
 				message = f"{prefix}, "
 			else:
