@@ -55,7 +55,7 @@ class General(commands.Cog):
 
 		msg1: Message
 		msg2: Message
-		
+
 		def check(MSG: Message) -> bool:
 			return MSG.author == ctx.author and MSG.channel == ctx.channel
 
@@ -67,7 +67,9 @@ class General(commands.Cog):
 						"message", check=check, timeout=60
 					)
 					if len(msg1.attachments) == 1:
-						data1 = (await msg1.attachments[0].read()).decode("utf-8")
+						data1 = (await msg1.attachments[0].read()).decode(
+							"utf-8"
+						)
 					else:
 						data1 = msg1.content
 					await ctx.send("Waiting for second input...")
@@ -75,7 +77,9 @@ class General(commands.Cog):
 						"message", check=check, timeout=60
 					)
 					if len(msg2.attachments) == 1:
-						data2 = (await msg2.attachments[0].read()).decode("utf-8")
+						data2 = (await msg2.attachments[0].read()).decode(
+							"utf-8"
+						)
 					else:
 						data2 = msg2.content
 				elif len(ctx.message.attachments) == 1:
@@ -87,7 +91,9 @@ class General(commands.Cog):
 						"message", check=check, timeout=60
 					)
 					if len(msg2.attachments) == 1:
-						data2 = (await msg2.attachments[0].read()).decode("utf-8")
+						data2 = (await msg2.attachments[0].read()).decode(
+							"utf-8"
+						)
 					else:
 						data2 = msg2.content
 				elif len(ctx.message.attachments) == 2:
