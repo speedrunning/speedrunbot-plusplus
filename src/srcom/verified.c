@@ -20,7 +20,7 @@ int counts[THREAD_COUNT] = {0};
 
 void usage(void)
 {
-	fputs("Usage: `+verified [PLAYER NAME] [GAME ABBREVIATION]`\n"
+	fputs("Usage: `+verified [PLAYER NAME] [GAME (Optional)]`\n"
 	      "Example: `+verified AnInternetTroll mkw`\n",
 	      stderr);
 	exit(EXIT_FAILURE);
