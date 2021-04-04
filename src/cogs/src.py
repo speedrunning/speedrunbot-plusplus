@@ -94,12 +94,18 @@ class Src(commands.Cog):
 		await run_and_output(ctx, f"{PREFIX}/runs", PLAYER, GAME)
 
 	@commands.command(name="verified")
-	async def verified(_, ctx: Context, PLAYER: str = None) -> None:
+	async def verified(
+		_, ctx: Context, PLAYER: str = None, GAME: str = None
+	) -> None:
 		"""
 		Get the amount of runs a player has verified or rejected.
 		"""
 		await run_and_output(
-			ctx, f"{PREFIX}/verified", PLAYER, TITLE=f"Runs Verified: {PLAYER}"
+			ctx,
+			f"{PREFIX}/verified",
+			PLAYER,
+			GAME,
+			TITLE=f"Runs Verified: {PLAYER}",
 		)
 
 	@commands.command(name="worldrecord", aliases=("wr",))
