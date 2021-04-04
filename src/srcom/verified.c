@@ -21,7 +21,7 @@ int counts[THREAD_COUNT] = {0};
 void usage(void)
 {
 	fputs("Usage: `+verified [PLAYER NAME] [GAME ABBREVIATION]`\n"
-	      "Example: `+verified AnInternetTroll mcbe`\n",
+	      "Example: `+verified AnInternetTroll mkw`\n",
 	      stderr);
 	exit(EXIT_FAILURE);
 }
@@ -57,22 +57,26 @@ int main(int argc, char **argv)
 	if (argc < 2)
 		usage();
 
-	const char *uid = get_uid(argv[1]);
-	//struct game_t *game = get_game(argv[2]);
-	if (!uid) {
+	char *uid;
+	struct game_t *game = NULL;
+
+	if ((uid = get_uid(argv[1])) == NULL) {
 		fprintf(stderr, "Error: User with username '%s' not found.\n",
 		        argv[1]);
 		exit(EXIT_FAILURE);
 	}
-	struct game_t *game = get_game(argv[2]);
-	if (!game && argv[2]) {
-		fprintf(stderr, "Error: Game with abbreviation '%s' not found.\n",
+
+	if (argc > 2 && (game = get_game(argv[2])) == NULL) {
+		fprintf(stderr,
+		        "Error: Game with abbreviation '%s' not "
+		        "found.\n",
 		        argv[2]);
 		exit(EXIT_FAILURE);
 	}
+
 	snprintf(uri_base, URIBUF,
 	         API "/runs?examiner=%s&game=%s&max=" STR(MAX_RECV) "&offset=",
-	         uid, game->id);
+	         uid, game ? game->id : "");
 
 	while (!done) {
 		pthread_t threads[THREAD_COUNT];
