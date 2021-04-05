@@ -126,6 +126,15 @@ class Src(commands.Cog):
 		"""
 		await run_and_output(ctx, f"{PREFIX}/worldrecords", PLAYER, GAME)
 
+	@commands.command(name="pending")
+	async def pending(_, ctx: Context, GAME: str = None) -> None:
+		"""
+		Get all pending runs for a game.
+		"""
+		await run_and_output(
+			ctx, f"{PREFIX}/pending", GAME, TITLE=f"Pending runs for {GAME}"
+		)
+
 
 def setup(bot: SRBpp) -> None:
 	bot.add_cog(Src(bot))
