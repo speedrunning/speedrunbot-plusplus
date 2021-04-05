@@ -25,6 +25,12 @@ EXTENSIONS: Iterable[str] = (
 )
 
 
+def divide_chunks(l: list, n: int):
+	# looping till length l
+	for i in range(0, len(l), n):
+		yield l[i : i + n]
+
+
 async def execv(PROG: str, *ARGV: tuple[str, ...]) -> tuple[int, bytes, bytes]:
 	"""
 	Run a program called PROG with the command line arguments ARGV. This returns
@@ -62,12 +68,29 @@ async def run_and_output(
 		await ctx.send(STDERR.decode())
 		return
 
-	if TITLE is not None:
-		EMBED = discord.Embed(title=TITLE, description=STDOUT.decode())
+	TITLE, DESC = (
+		STDOUT.decode().split("\n", 1)
+		if not TITLE
+		else [TITLE, STDOUT.decode()]
+	)
+	if len(DESC) > 2000:
+		LINES = list(divide_chunks(DESC.split("\n"), 15))
+		LINES_LENGTH: int = len(LINES)
+		try:
+			for line in range(LINES_LENGTH):
+				await ctx.author.send(
+					embed=discord.Embed(
+						title=f"{TITLE} Page: {line + 1}/{LINES_LENGTH}",
+						description="\n".join(LINES[line]),
+					)
+				)
+		except discord.Forbidden:
+			await ctx.send(
+				"You have blocked the bot and the message is too long to be sent in this channel. Please unblock me and try again. "
+			)
 	else:
-		TITLE, DESC = STDOUT.decode().split("\n", 1)
 		EMBED = discord.Embed(title=TITLE, description=DESC)
-	await ctx.send(embed=EMBED)
+		await ctx.send(embed=EMBED)
 
 
 class SRBpp(commands.Bot):

@@ -6,7 +6,7 @@ PY     := python3.9
 
 cprogs  := bin/categories bin/categoriesplayed bin/games bin/modcount \
 		bin/runqueue bin/runs bin/verified bin/worldrecords
-pyprogs := bin/categories bin/leaderboard bin/worldrecord bin/utils.py
+pyprogs := bin/categories bin/leaderboard bin/worldrecord bin/utils.py bin/pending
 
 all: $(pyprogs) $(cprogs)
 $(shell mkdir -p bin/ objs/)
