@@ -66,7 +66,10 @@ class General(commands.Cog):
 					msg1 = await self.bot.wait_for(
 						"message", check=check, timeout=60
 					)
-					if len(msg1.attachments) == 1 and msg1.attachments[0].size < 4_000_000:
+					if (
+						len(msg1.attachments) == 1
+						and msg1.attachments[0].size < 4_000_000
+					):
 						data1 = (await msg1.attachments[0].read()).decode(
 							"utf-8"
 						)
@@ -76,13 +79,19 @@ class General(commands.Cog):
 					msg2 = await self.bot.wait_for(
 						"message", check=check, timeout=60
 					)
-					if len(msg2.attachments) == 1 and msg2.attachments[0].size < 4_000_000:
+					if (
+						len(msg2.attachments) == 1
+						and msg2.attachments[0].size < 4_000_000
+					):
 						data2 = (await msg2.attachments[0].read()).decode(
 							"utf-8"
 						)
 					else:
 						data2 = msg2.content
-				elif len(ctx.message.attachments) == 1 and ctx.message.attachments[0].size < 4_000_000:
+				elif (
+					len(ctx.message.attachments) == 1
+					and ctx.message.attachments[0].size < 4_000_000
+				):
 					data1 = (await ctx.message.attachments[0].read()).decode(
 						"utf-8"
 					)
@@ -90,13 +99,20 @@ class General(commands.Cog):
 					msg2 = await self.bot.wait_for(
 						"message", check=check, timeout=60
 					)
-					if len(msg2.attachments) == 1 and msg2.attachments[0].size < 4_000_000:
+					if (
+						len(msg2.attachments) == 1
+						and msg2.attachments[0].size < 4_000_000
+					):
 						data2 = (await msg2.attachments[0].read()).decode(
 							"utf-8"
 						)
 					else:
 						data2 = msg2.content
-				elif len(ctx.message.attachments) == 2 and ctx.message.attachments[0].size < 4_000_000 and ctx.message.attachments[1].size < 4_000_000:
+				elif (
+					len(ctx.message.attachments) == 2
+					and ctx.message.attachments[0].size < 4_000_000
+					and ctx.message.attachments[1].size < 4_000_000
+				):
 					data1 = (await ctx.message.attachments[0].read()).decode(
 						"utf-8"
 					)
@@ -108,7 +124,10 @@ class General(commands.Cog):
 				msg2 = await self.bot.wait_for(
 					"message", check=check, timeout=60
 				)
-				if len(msg2.attachments) == 1 and msg2.attachments[0].size < 4_000_000:
+				if (
+					len(msg2.attachments) == 1
+					and msg2.attachments[0].size < 4_000_000
+				):
 					data2 = (await msg2.attachments[0].read()).decode("utf-8")
 				else:
 					data2 = msg2.content

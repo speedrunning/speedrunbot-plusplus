@@ -135,5 +135,6 @@ class Src(commands.Cog):
 			ctx, f"{PREFIX}/pending", GAME, TITLE=f"Pending runs for {GAME}"
 		)
 
+
 def setup(bot: SRBpp) -> None:
 	bot.add_cog(Src(bot))
