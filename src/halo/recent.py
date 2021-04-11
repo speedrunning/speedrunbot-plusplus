@@ -11,7 +11,7 @@ import requests
 from utils import *
 
 
-def usage():
+def usage() -> None:
 	"""
 	Print the commands usage and example if an invalid number of arguments
 	are given.
@@ -28,9 +28,10 @@ def main() -> int:
 	# if len(argv) < 2:
 	# 	usage()
 
-	runs: list[Run] = requests.get(
-		f"{API}/records/recent/{argv[1] if len(argv) > 1 else 10}"
-	).json()
+	if len(argv) == 1:
+		argv.append(10)
+
+	runs: list[Run] = requests.get(f"{API}/records/recent/{argv[1]}").json()
 	for index in range(len(runs)):
 		runs[index] = Run(runs[index])
 	print(
