@@ -1,8 +1,8 @@
 #!/usr/bin/env python3.9
 
 """
-This program gets the current world record for a given game (argv[1]) and
-optionally a specific category (argv[2]) and subcategories (argv[3..]).
+This program gets the list of recent world records, and optionally gets only the
+argv[1] most recent.
 """
 
 from sys import argv, exit, stderr, stdout
@@ -17,13 +17,13 @@ def usage():
 	are given.
 	"""
 	print(
-		"`+halo recent [AMMOUNT (Optional)]`\n" + "Example: `+halo recent 5`",
+		"`+halo recent [AMOUNT (Optional)]`\n" + "Example: `+halo recent 5`",
 		file=stderr,
 	)
 	exit(EXIT_FAILURE)
 
 
-def main():
+def main() -> int:
 	# There is only one argument so idk if I need this
 	# if len(argv) < 2:
 	# 	usage()
@@ -42,6 +42,8 @@ def main():
 		)
 	)
 
+	return EXIT_SUCCESS
+
 
 if __name__ == "__main__":
-	main()
+	exit(main())
