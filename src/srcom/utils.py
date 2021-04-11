@@ -5,6 +5,10 @@ This file contains all sorts of variables and utilities used in the sr.c
 related programs.
 """
 
+import asyncio
+import shlex
+from os import chdir, getcwd, system
+from os.path import dirname
 from typing import Union
 
 import requests
@@ -180,3 +184,22 @@ def getcid(CAT: str, R: dict) -> Union[str, None]:
 		if c["name"].lower() == LCAT:
 			return c["id"]
 	return None
+
+
+async def execv(PROG: str, *ARGV: tuple[str, ...]) -> tuple[int, bytes, bytes]:
+	"""
+	Run a program called PROG with the command line arguments ARGV. This returns
+	a tuple containing the processes returncode, as well as the encoded stdout and
+	stderr.
+	"""
+	# This is like `shlex.join()`, but it gets rid of any `None` values.
+	ARGS: str = " ".join(
+		shlex.quote(arg) for arg in tuple(filter(lambda x: x, ARGV))
+	)
+	RET = await asyncio.create_subprocess_shell(
+		f"cd {getcwd()} && ./{PROG} {ARGS}",
+		stdout=asyncio.subprocess.PIPE,
+		stderr=asyncio.subprocess.PIPE,
+	)
+	STDOUT, STDERR = await RET.communicate()
+	return (RET.returncode, STDOUT, STDERR)

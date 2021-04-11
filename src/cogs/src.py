@@ -1,3 +1,5 @@
+from typing import Union
+
 from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.ext.commands.cooldowns import Cooldown
@@ -133,6 +135,19 @@ class Src(commands.Cog):
 		"""
 		await run_and_output(
 			ctx, f"{PREFIX}/pending", GAME, TITLE=f"Pending runs for {GAME}"
+		)
+
+	@commands.command(name="verifierleaderboard", aliases=("vlb",))
+	async def verifierleaderboard(_, ctx, *, GAMES=None):
+		"""
+		Get a leaderboard of a game's verifier and how many runs each has verified
+		"""
+		GAMES = GAMES.split(" ") if GAMES else []
+		await run_and_output(
+			ctx,
+			f"{PREFIX}/verifierleaderboard",
+			*GAMES,
+			TITLE=f"Verifier Leaderboard for games: {', '.join(GAMES) if GAMES else GAMES}",
 		)
 
 
