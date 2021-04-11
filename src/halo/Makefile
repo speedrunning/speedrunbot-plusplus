@@ -1,4 +1,4 @@
-PY     := python3.9
+PY := python3.9
 
 pyprogs := bin/recent bin/utils.py
 
@@ -17,4 +17,4 @@ bin/%: %.py
 # Phony targets
 .PHONY: clean test
 clean:
-	rm -rf objs/ bin/ __pycache__/ ../__pycache__/
+	rm -rf bin/ __pycache__/ ../__pycache__/
