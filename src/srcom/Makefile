@@ -6,8 +6,8 @@ PY     := python3.9
 
 cprogs  := bin/categories bin/categoriesplayed bin/games bin/modcount \
 		bin/runqueue bin/runs bin/verified bin/worldrecords
-pyprogs := bin/categories bin/leaderboard bin/pending bin/worldrecord bin/verifierleaderboard \
-		bin/utils.py
+pyprogs := bin/categories bin/leaderboard bin/pending bin/worldrecord \
+		bin/verifierleaderboard bin/utils.py
 
 all: $(pyprogs) $(cprogs)
 $(shell mkdir -p bin/ objs/)
@@ -25,7 +25,7 @@ bin/%: %.py
 
 # The special rules for `bin/categoriesplayed`, `bin/games`, etc. comes first to
 # ensure that they don't get linked with incorrect libraries. Additionally,
-# `games` and `categoriesplayed` are almost identical, so they both use 
+# `games` and `categoriesplayed` are almost identical, so they both use
 # `games.c`, with preproccessor statements to create two seperate binaries.
 .PRECIOUS: objs/%.o
 objs/categoriesplayed.o: games.c

@@ -2,19 +2,21 @@
 
 import asyncio
 from sys import argv, exit, stderr
+from os import chdir, getcwd, system
+from os.path import dirname
 
 import requests
 from utils import *
 
 
-async def get_verified_runs(user, game) -> dict[str, int]:
-	return_code, STDOUT, STDERR = await execv("verified", user, game)
-	if return_code != 0:
+async def get_verified_runs(BASEDIR: str, USER: str, GAME: str) -> dict[str, int]:
+	RETURNCODE, STDOUT, STDERR = await execv(f"{BASEDIR}/verified", USER, GAME)
+	if RETURNCODE != EXIT_SUCCESS:
 		print(STDERR, file=stderr)
-		exit(return_code)
+		exit(RETURNCODE)
 	else:
 		return {
-			"user": user,
+			"user": USER,
 			"count": int(STDOUT.decode().replace("Verified: ", "")),
 		}
 
@@ -50,7 +52,11 @@ def usage() -> None:
 async def main():
 	if len(argv) < 2:
 		usage()
+
+	chdir(dirname(argv[0]))
+	BASEDIR = getcwd()
 	mods: list[dict] = []
+
 	argv.pop(0)
 	for game in argv:
 		# F one liner
@@ -71,7 +77,7 @@ async def main():
 			merge_mods(
 				await asyncio.gather(
 					*[
-						get_verified_runs(mod, game)
+						get_verified_runs(BASEDIR, mod, game)
 						for mod in [
 							mod["names"]["international"]
 							for mod in game_dict["data"][0]["moderators"][

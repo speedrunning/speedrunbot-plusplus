@@ -7,16 +7,14 @@ related programs.
 
 import asyncio
 import shlex
-from os import chdir, getcwd, system
-from os.path import dirname
-from typing import Union
+from typing import Union, Literal
 
 import requests
 
-API: str = "https://www.speedrun.com/api/v1"
+API: Literal[str] = "https://www.speedrun.com/api/v1"
 
-EXIT_SUCCESS: int = 0
-EXIT_FAILURE: int = 1
+EXIT_SUCCESS: Literal[int] = 0
+EXIT_FAILURE: Literal[int] = 1
 
 
 class UserError(Exception):
@@ -197,7 +195,7 @@ async def execv(PROG: str, *ARGV: tuple[str, ...]) -> tuple[int, bytes, bytes]:
 		shlex.quote(arg) for arg in tuple(filter(lambda x: x, ARGV))
 	)
 	RET = await asyncio.create_subprocess_shell(
-		f"cd {getcwd()} && ./{PROG} {ARGS}",
+		f"{PROG} {ARGS}",
 		stdout=asyncio.subprocess.PIPE,
 		stderr=asyncio.subprocess.PIPE,
 	)
