@@ -1,15 +1,17 @@
 #!/usr/bin/env python3.9
 
 import asyncio
-from sys import argv, exit, stderr
 from os import chdir, getcwd, system
 from os.path import dirname
+from sys import argv, exit, stderr
 
 import requests
 from utils import *
 
 
-async def get_verified_runs(BASEDIR: str, USER: str, GAME: str) -> dict[str, int]:
+async def get_verified_runs(
+	BASEDIR: str, USER: str, GAME: str
+) -> dict[str, int]:
 	RETURNCODE, STDOUT, STDERR = await execv(f"{BASEDIR}/verified", USER, GAME)
 	if RETURNCODE != EXIT_SUCCESS:
 		print(STDERR, file=stderr)

@@ -7,7 +7,7 @@ related programs.
 
 import asyncio
 import shlex
-from typing import Union, Literal
+from typing import Literal, Union
 
 import requests
 
