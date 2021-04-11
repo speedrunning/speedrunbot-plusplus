@@ -1,11 +1,13 @@
+from typing import Literal
+
 from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.ext.commands.cooldowns import Cooldown
 
 from bot import SRBpp, run_and_output
 
-PREFIX: str = "halo/bin"
-RATE: int = 5
+PREFIX: Literal[str] = "halo/bin"
+RATE: Literal[int] = 5
 
 
 class Halo(commands.Cog):
@@ -16,7 +18,7 @@ class Halo(commands.Cog):
 		)
 
 	@commands.group(name="halo", invoke_without_command=True)
-	async def halo(self, ctx: Context):
+	async def halo(self, ctx: Context) -> None:
 		await ctx.send_help(ctx.command)
 
 	@halo.command(name="recent", aliases=("cats",))

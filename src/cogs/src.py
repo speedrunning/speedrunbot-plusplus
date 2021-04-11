@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Literal, Union
 
 from discord.ext import commands
 from discord.ext.commands.context import Context
@@ -6,8 +6,8 @@ from discord.ext.commands.cooldowns import Cooldown
 
 from bot import SRBpp, run_and_output
 
-PREFIX: str = "srcom/bin"
-RATE: int = 5
+PREFIX: Literal[str] = "srcom/bin"
+RATE: Literal[int] = 5
 
 
 class Src(commands.Cog):

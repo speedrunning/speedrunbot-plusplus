@@ -6,11 +6,12 @@ related programs.
 """
 
 from json import loads
+from typing import Literal
 
-API: str = "https://haloruns.com/api"
+API: Literal[str] = "https://haloruns.com/api"
 
-EXIT_SUCCESS: int = 0
-EXIT_FAILURE: int = 1
+EXIT_SUCCESS: Literal[int] = 0
+EXIT_FAILURE: Literal[int] = 1
 
 
 class Run:
