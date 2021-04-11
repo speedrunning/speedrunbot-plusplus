@@ -43,7 +43,7 @@ shopt -s globstar nullglob
 
 SCR_PATH=$(cd "$(dirname "$0")" && pwd)
 
-for FILE in "$SCR_PATH"/src/**/*; do
+for FILE in "$SCR_PATH"/**/*; do
 	case $FILE in
 	*.[ch])
 		clang-format -i --verbose --sort-includes -style=file "$FILE"
