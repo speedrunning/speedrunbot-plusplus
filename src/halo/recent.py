@@ -17,7 +17,8 @@ def usage() -> None:
 	are given.
 	"""
 	print(
-		"`+halo recent [AMOUNT (Optional)]`\n" + "Example: `+halo recent 5`",
+		"Usage: `+halo recent [AMOUNT (Optional)]`\n"
+		+ "Example: `+halo recent 5`",
 		file=stderr,
 	)
 	exit(EXIT_FAILURE)
@@ -26,8 +27,11 @@ def usage() -> None:
 def main() -> int:
 	if len(argv) == 1:
 		argv.append(10)
-	elif type(argv[1]) != int:
-		usage()
+	else:
+		try:
+			int(argv[1])
+		except ValueError:
+			usage()
 
 	runs: list[Run] = requests.get(f"{API}/records/recent/{argv[1]}").json()
 	for index in range(len(runs)):
