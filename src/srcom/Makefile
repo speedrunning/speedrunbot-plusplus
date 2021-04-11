@@ -6,7 +6,7 @@ PY     := python3.9
 
 cprogs  := bin/categories bin/categoriesplayed bin/games bin/modcount \
 		bin/runqueue bin/runs bin/verified bin/worldrecords
-pyprogs := bin/categories bin/leaderboard bin/pending bin/worldrecord \
+pyprogs := bin/categories bin/leaderboard bin/pending bin/worldrecord bin/verifierleaderboard \
 		bin/utils.py
 
 all: $(pyprogs) $(cprogs)
@@ -19,7 +19,7 @@ bin/utils.py: utils.py
 	chmod +x $< && cp $< $@
 
 bin/%: %.py
-	chmod +x $< && cp $< $@
+	chmod +x $< && ln -b $< $@
 
 # C programs
 
