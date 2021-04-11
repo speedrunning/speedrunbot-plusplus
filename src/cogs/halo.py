@@ -22,14 +22,14 @@ class Halo(commands.Cog):
 		await ctx.send_help(ctx.command)
 
 	@halo.command(name="recent", aliases=("cats",))
-	async def recent(_, ctx: Context, COUNT: int = None) -> None:
+	async def recent(_, ctx: Context, COUNT: str = None) -> None:
 		"""
 		Get a list of recent runs.
 		"""
 		await run_and_output(
 			ctx,
 			f"{PREFIX}/recent",
-			str(COUNT),
+			COUNT,
 			TITLE="Recent World Records",
 		)
 

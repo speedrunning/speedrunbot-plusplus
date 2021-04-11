@@ -24,12 +24,10 @@ def usage() -> None:
 
 
 def main() -> int:
-	# There is only one argument so idk if I need this
-	# if len(argv) < 2:
-	# 	usage()
-
 	if len(argv) == 1:
 		argv.append(10)
+	elif type(argv[1]) != int:
+		usage()
 
 	runs: list[Run] = requests.get(f"{API}/records/recent/{argv[1]}").json()
 	for index in range(len(runs)):
