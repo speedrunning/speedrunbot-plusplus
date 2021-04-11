@@ -27,7 +27,7 @@ class Halo(commands.Cog):
 		await run_and_output(
 			ctx,
 			f"{PREFIX}/recent",
-			str(COUNT) if COUNT else None,
+			str(COUNT),
 			TITLE="Recent World Records",
 		)
 
