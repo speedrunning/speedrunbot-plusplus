@@ -16,8 +16,8 @@ class Halo(commands.Cog):
 		)
 
 	@commands.group(name="halo", invoke_without_command=True)
-	async def halo(self, ctx):
-		await ctx.send_help(self)
+	async def halo(self, ctx: Context):
+		await ctx.send_help(ctx.command)
 
 	@halo.command(name="recent", aliases=("cats",))
 	async def recent(_, ctx: Context, COUNT: int = None) -> None:
