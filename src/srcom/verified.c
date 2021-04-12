@@ -20,8 +20,9 @@ int counts[THREAD_COUNT] = {0};
 
 void usage(void)
 {
-	fputs("Usage: `+verified [PLAYER NAME] [GAME (Optional)]`\n"
-	      "Example: `+verified AnInternetTroll mkw`\n",
+	fputs("Usage: `+verified [PLAYER NAME] [GAME (Optional)] [GAME "
+	      "(Optional)]`\n"
+	      "Example: `+verified AnInternetTroll mkw mkwextracategories`\n",
 	      stderr);
 	exit(EXIT_FAILURE);
 }
@@ -52,25 +53,14 @@ void *routine(void *tnum)
 	return NULL;
 }
 
-int main(int argc, char **argv)
+void get_examined(const char *uid, const char *gname)
 {
-	if (argc < 2)
-		usage();
-
-	char *uid;
 	struct game_t *game = NULL;
-
-	if ((uid = get_uid(argv[1])) == NULL) {
-		fprintf(stderr, "Error: User with username '%s' not found.\n",
-		        argv[1]);
-		exit(EXIT_FAILURE);
-	}
-
-	if (argc > 2 && (game = get_game(argv[2])) == NULL) {
+	if (gname && (game = get_game(gname)) == NULL) {
 		fprintf(stderr,
 		        "Error: Game with abbreviation '%s' not "
 		        "found.\n",
-		        argv[2]);
+		        gname);
 		exit(EXIT_FAILURE);
 	}
 
@@ -104,10 +94,31 @@ int main(int argc, char **argv)
 
 		offset_start += THREAD_COUNT * MAX_RECV;
 	}
+}
+
+int main(int argc, char **argv)
+{
+	if (argc < 2)
+		usage();
+
+	char *uid;
+	if ((uid = get_uid(argv[1])) == NULL) {
+		fprintf(stderr, "Error: User with username '%s' not found.\n",
+		        argv[1]);
+		exit(EXIT_FAILURE);
+	}
+
+	get_examined(uid, argv[2]);
+	if (argc == 4) {
+		done = false;
+		offset_start = 0;
+		get_examined(uid, argv[3]);
+	}
 
 	int total = 0;
 	for (int i = 0; i < THREAD_COUNT; i++)
 		total += counts[i];
+
 	printf("Verified: %d\n", total);
 	return EXIT_SUCCESS;
 }

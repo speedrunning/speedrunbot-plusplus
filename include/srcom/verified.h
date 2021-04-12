@@ -13,12 +13,14 @@ void usage(void) __attribute__((noreturn));
 /**
  * @brief The routine executed by all the threads. It performs a GET request to
  * the sr.c API, and adds the number of runs recieved to the `counts` array.
- * 
+ *
  * @param tnum The threads number which can range from 0 to THEAD_COUNT - 1.
  * It's a void pointer, but the binary representation is identical to that of an
  * int holding the threads number.
  * @return void* NULL.
  */
 void *routine(void *tnum);
+
+void get_examined(const char *uid, const char *game);
 
 #endif /* !__VERIFIED_H_ */
