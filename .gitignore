@@ -4,6 +4,8 @@ bin/
 objs/
 
 token
+tags
 test.json
-*.spec
 __mbuild.sh
+
+*.spec
