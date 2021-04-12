@@ -1,6 +1,6 @@
 /*
  * This program gets the number of runs that a given player (argv[1]) has
- * verified or rejected.
+ * verified or rejected. Optionally 1 or 2 games can be specified.
  */
 
 #include <pthread.h>

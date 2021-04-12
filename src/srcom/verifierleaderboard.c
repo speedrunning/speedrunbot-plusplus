@@ -1,3 +1,9 @@
+/*
+ * This program outputs a leaderboard of all moderators for a given game
+ * (argv[1]) and optionally a given second game (argv[2]). The mods are ranked
+ * based on how many runs they have examined.
+ */
+
 #include <libgen.h>
 #include <pthread.h>
 #include <stdio.h>
