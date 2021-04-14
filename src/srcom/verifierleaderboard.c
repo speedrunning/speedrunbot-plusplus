@@ -50,48 +50,72 @@ int sort(const void *v1, const void *v2)
 	return m2.examined - m1.examined;
 }
 
-void *routine(void *vdata)
-{
-	FILE *fp;
-	struct data_t *data = (struct data_t *) vdata;
-
-	if ((fp = popen(data->cmd, "r")) == NULL) {
-		fputs("Error: Failed to open pipe", stderr);
-		exit(EXIT_FAILURE);
-	}
-
-	fscanf(fp, "Verified: %d", &data->mod->examined);
-
-	if (pclose(fp) == -1) {
-		fputs("Error: Failed to close pipe", stderr);
-		exit(EXIT_FAILURE);
-	}
-
-	return NULL;
-}
+//void *routine(void *vdata)
+//{
+//	FILE *fp;
+//	struct data_t *data = (struct data_t *) vdata;
+//
+//	if ((fp = popen(data->cmd, "r")) == NULL) {
+//		fputs("Error: Failed to open pipe", stderr);
+//		exit(EXIT_FAILURE);
+//	}
+//
+//	fscanf(fp, "Verified: %d", &data->mod->examined);
+//
+//	if (pclose(fp) == -1) {
+//		fputs("Error: Failed to close pipe", stderr);
+//		exit(EXIT_FAILURE);
+//	}
+//
+//	return NULL;
+//}
+//
+//void get_verified(struct mod_t *mods, char **argv)
+//{
+//	struct data_t data[num_mods];
+//	pthread_t threads[num_mods];
+//
+//	argv++;
+//	for (int i = 0; i < num_mods; i++, mods++) {
+//		/* Construct data to send to thread. */
+//		data[i].mod = mods;
+//		snprintf(data[i].cmd, CMDBUF, "./verified %s %s %s", mods->name,
+//		         *argv, *(argv + 1) ? *(argv + 1) : "");
+//
+//		if (pthread_create(&threads[i], NULL, &routine, &data[i])
+//		    != 0) {
+//			fputs("Error: Failed to create thread\n", stderr);
+//			exit(EXIT_FAILURE);
+//		}
+//	}
+//
+//	for (int i = 0; i < num_mods; i++) {
+//		if (pthread_join(threads[i], NULL) != 0) {
+//			fputs("Error: Failed to join thread\n", stderr);
+//			exit(EXIT_FAILURE);
+//		}
+//	}
+//}
 
 void get_verified(struct mod_t *mods, char **argv)
 {
-	struct data_t data[num_mods];
-	pthread_t threads[num_mods];
+	char cmd[CMDBUF];
+	FILE *fp;
 
 	argv++;
-	for (int i = 0; i < num_mods; i++, mods++) {
-		/* Construct data to send to thread. */
-		data[i].mod = mods;
-		snprintf(data[i].cmd, CMDBUF, "./verified %s %s %s", mods->name,
-		         *argv, *(argv + 1) ? *(argv + 1) : "");
+	for (int i = 0; i < num_mods; i++) {
+		snprintf(cmd, CMDBUF, "./verified %s %s %s", mods[i].name,
+			 *argv, *(argv + 1) ? *(argv + 1) : "");
 
-		if (pthread_create(&threads[i], NULL, &routine, &data[i])
-		    != 0) {
-			fputs("Error: Failed to create thread\n", stderr);
+		if ((fp = popen(cmd, "r")) == NULL) {
+			fputs("Error: Failed to open pipe", stderr);
 			exit(EXIT_FAILURE);
 		}
-	}
 
-	for (int i = 0; i < num_mods; i++) {
-		if (pthread_join(threads[i], NULL) != 0) {
-			fputs("Error: Failed to join thread\n", stderr);
+		fscanf(fp, "Verified: %d", &mods[i].examined);
+
+		if (pclose(fp) == -1) {
+			fputs("Error: Failed to close pipe", stderr);
 			exit(EXIT_FAILURE);
 		}
 	}
