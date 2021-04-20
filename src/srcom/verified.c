@@ -1,3 +1,9 @@
+/*
+ * This program gets the number of runs verified and rejected by a given user
+ * (argv[1]) and optionally limits the count to runs from 1 or 2 given games
+ * (argv[2] and argv[3]).
+ */
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,7 +33,7 @@ static unsigned int count_examined(bool *done, string_t *json)
 	while ((ptr = strstr(ptr + strlen(SIZE_KEY), SIZE_KEY)) != NULL) {
 		sscanf(ptr, SIZE_KEY "%u", &tmp);
 
-		if (tmp < 200)
+		if (tmp < MAX_RECV)
 			*done = true;
 		count += tmp;
 	}
@@ -45,18 +51,19 @@ static void perform_requests(char *uri_base, unsigned int offset,
 	CURLM *mhandle;
 
 	if ((mhandle = curl_multi_init()) == NULL) {
-		fputs("Error: Unable to initialize curl handle", stderr);
+		fputs("Error: Unable to initialize curl multi handle.", stderr);
 		exit(EXIT_FAILURE);
 	}
 
 	for (int i = 0; i < REQUEST_COUNT; i++) {
 		if ((handles[i] = curl_easy_init()) == NULL) {
-			fputs("Error: Unable to initialize curl.\n", stderr);
+			fputs("Error: Unable to initialize curl handle.\n",
+			      stderr);
 			exit(EXIT_FAILURE);
 		}
 
 		snprintf(uri, URIBUF, "%s%u", uri_base, offset);
-		offset += 200;
+		offset += MAX_RECV;
 
 		/* Load the contents of the API request to `json`. */
 		curl_easy_setopt(handles[i], CURLOPT_URL, uri);
@@ -110,7 +117,7 @@ static unsigned int get_examined(const char *uid, const char *gname)
 
 		perform_requests(uri_base, offset, &json);
 		examined += count_examined(&done, &json);
-		offset += 200 * REQUEST_COUNT;
+		offset += MAX_RECV * REQUEST_COUNT;
 
 		free(json.ptr);
 	}
