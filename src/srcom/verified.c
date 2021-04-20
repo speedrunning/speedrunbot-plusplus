@@ -30,7 +30,7 @@ static unsigned int count_examined(bool *done, string_t *json)
 	char *ptr = json->ptr;
 	unsigned int count = 0, tmp;
 
-	while ((ptr = strstr(ptr + strlen(SIZE_KEY), SIZE_KEY)) != NULL) {
+	while ((ptr = strstr(ptr + KEY_LEN, SIZE_KEY)) != NULL) {
 		sscanf(ptr, SIZE_KEY "%u", &tmp);
 
 		if (tmp < MAX_RECV)

@@ -20,7 +20,7 @@ char uri_base[URIBUF];
 int offset_start = 0;
 int fgcounts[THREAD_COUNT], ilcounts[THREAD_COUNT];
 
-void usage(void)
+static void usage(void)
 {
 	fputs("Usage: `+runqueue [GAME]`\n"
 	      "Example: `+runqueue mkw`\n",
@@ -28,14 +28,14 @@ void usage(void)
 	exit(EXIT_FAILURE);
 }
 
-void *routine(void *tnum)
+static void *routine(void *tnum)
 {
 	/*
 	 * Equivalant to `(int) tnum` but supresses compiler warnings that can
 	 * be safely ignored.
 	 */
-	int s, i_tnum = *((int *) &tnum);
-	char uri[URIBUF], size[URIBUF];
+	int size, i_tnum = *((int *) &tnum);
+	char uri[URIBUF];
 	string_t json;
 
 	/* Make a GET request. */
@@ -44,10 +44,10 @@ void *routine(void *tnum)
 	init_string(&json);
 	get_req(uri, &json);
 
-	char *size_key = last_substr(json.ptr, "\"size\":", 7);
-	sscanf(size_key, "\"size\":%[^,]", size);
+	char *size_key = last_substr(json.ptr, SIZE_KEY, KEY_LEN);
+	sscanf(size_key, SIZE_KEY "%d", &size);
 
-	if ((s = atoi(size)) < MAX_RECV)
+	if (size < MAX_RECV)
 		done = true;
 
 	/* Loop through each pending run and tally the fullgame and IL runs. */

@@ -10,7 +10,7 @@
 #include "srcom/modcount.h"
 #include "srcom/utils.h"
 
-void usage(void)
+static void usage(void)
 {
 	fputs("Usage: `+modcount [PLAYER NAME]`\n"
 	      "Example: `+modcount AnInternetTroll`\n",
@@ -53,9 +53,8 @@ int main(int argc, char **argv)
 	 * quick and easy way to get the number of games/series without the need
 	 * of parsing the JSON.
 	 */
-	const unsigned int gcount = count_substr(games.ptr, "\"id\":", KEY_LEN);
-	const unsigned int scount = count_substr(series.ptr,
-	                                         "\"id\":", KEY_LEN);
+	const unsigned int gcount = count_substr(games.ptr, ID_KEY, KEY_LEN);
+	const unsigned int scount = count_substr(series.ptr, ID_KEY, KEY_LEN);
 
 	printf("Games: %u\n"
 	       "Series: %u\n"

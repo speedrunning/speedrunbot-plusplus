@@ -19,7 +19,7 @@
 
 int num_mods = 0, max_name = 0;
 
-void usage(void)
+static void usage(void)
 {
 	fputs("Usage: `+verifierleaderboard [GAME] [GAME (Optional)]`\n"
 	      "Example: `+verifierleaderboard mkw mkwextracategories`\n",
@@ -27,7 +27,7 @@ void usage(void)
 	exit(EXIT_FAILURE);
 }
 
-int ilen(const int n)
+static int ilen(const int n)
 {
 	if (n >= 100000)
 		return 6;
@@ -42,7 +42,7 @@ int ilen(const int n)
 	return 1;
 }
 
-int sort(const void *v1, const void *v2)
+static int sort(const void *v1, const void *v2)
 {
 	struct mod_t m1 = *(struct mod_t *) v1;
 	struct mod_t m2 = *(struct mod_t *) v2;
@@ -50,54 +50,7 @@ int sort(const void *v1, const void *v2)
 	return m2.examined - m1.examined;
 }
 
-//void *routine(void *vdata)
-//{
-//	FILE *fp;
-//	struct data_t *data = (struct data_t *) vdata;
-//
-//	if ((fp = popen(data->cmd, "r")) == NULL) {
-//		fputs("Error: Failed to open pipe", stderr);
-//		exit(EXIT_FAILURE);
-//	}
-//
-//	fscanf(fp, "Verified: %d", &data->mod->examined);
-//
-//	if (pclose(fp) == -1) {
-//		fputs("Error: Failed to close pipe", stderr);
-//		exit(EXIT_FAILURE);
-//	}
-//
-//	return NULL;
-//}
-//
-//void get_verified(struct mod_t *mods, char **argv)
-//{
-//	struct data_t data[num_mods];
-//	pthread_t threads[num_mods];
-//
-//	argv++;
-//	for (int i = 0; i < num_mods; i++, mods++) {
-//		/* Construct data to send to thread. */
-//		data[i].mod = mods;
-//		snprintf(data[i].cmd, CMDBUF, "./verified %s %s %s", mods->name,
-//		         *argv, *(argv + 1) ? *(argv + 1) : "");
-//
-//		if (pthread_create(&threads[i], NULL, &routine, &data[i])
-//		    != 0) {
-//			fputs("Error: Failed to create thread\n", stderr);
-//			exit(EXIT_FAILURE);
-//		}
-//	}
-//
-//	for (int i = 0; i < num_mods; i++) {
-//		if (pthread_join(threads[i], NULL) != 0) {
-//			fputs("Error: Failed to join thread\n", stderr);
-//			exit(EXIT_FAILURE);
-//		}
-//	}
-//}
-
-void get_verified(struct mod_t *mods, char **argv)
+static void get_verified(struct mod_t *mods, char **argv)
 {
 	char cmd[CMDBUF];
 	FILE *fp;
@@ -121,7 +74,7 @@ void get_verified(struct mod_t *mods, char **argv)
 	}
 }
 
-void add_mod(char *name, struct mod_t *mod)
+static void add_mod(char *name, struct mod_t *mod)
 {
 	size_t len;
 
@@ -141,7 +94,7 @@ void add_mod(char *name, struct mod_t *mod)
 	}
 }
 
-void get_mods(char *game, struct mod_t *mods_array)
+static void get_mods(char *game, struct mod_t *mods_array)
 {
 	char uri[URIBUF];
 	string_t json;
@@ -181,7 +134,7 @@ void get_mods(char *game, struct mod_t *mods_array)
 	free(json.ptr);
 }
 
-void check_args(int argc, char **argv)
+static void check_args(int argc, char **argv)
 {
 	argv++;
 	if (argc == 1)

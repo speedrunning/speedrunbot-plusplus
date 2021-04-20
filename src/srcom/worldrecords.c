@@ -10,7 +10,7 @@
 #include "srcom/utils.h"
 #include "srcom/worldrecords.h"
 
-void usage(void)
+static void usage(void)
 {
 	fputs("Usage: `+worldrecords [PLAYER NAME] [GAME (OPTIONAL)]`\n"
 	      "Example: `+worldrecords AnInternetTroll mkw`\n",
@@ -56,8 +56,8 @@ int main(int argc, char **argv)
 	 * to get the number of runs without the need of parsing the JSON.
 	 */
 	const unsigned int total = count_substr(runs.ptr,
-	                                        "\"level\":", TOTAL_KEY_LEN);
-	const unsigned int fullgame = count_substr(runs.ptr, "\"level\":null",
+TOTAL_KEY, TOTAL_KEY_LEN);
+	const unsigned int fullgame = count_substr(runs.ptr, LEVEL_KEY,
 	                                           LEVEL_KEY_LEN);
 
 	if (argc >= 3)

@@ -14,7 +14,7 @@
 #include "srcom/categories.h"
 #include "srcom/utils.h"
 
-void usage(void)
+static void usage(void)
 {
 	fputs("Usage: `+categories [GAME]`\n"
 	      "Example: `+categories mkw`\n",
@@ -22,7 +22,7 @@ void usage(void)
 	exit(EXIT_FAILURE);
 }
 
-bool get_categories(json_t *root, struct counts_t *counts,
+static bool get_categories(json_t *root, struct counts_t *counts,
                     struct names_t *names, string_t *json)
 {
 	json_t *data;

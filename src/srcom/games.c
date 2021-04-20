@@ -9,13 +9,12 @@
 
 #include <jansson.h>
 
-#include "srcom/games.h"
 #include "srcom/utils.h"
 
 /* Who in their right mind would play this many games? Besides Cytruss. */
 char unique[8196][UIDBUF];
 
-void usage(void)
+static void usage(void)
 {
 #ifdef CATEGORIES
 	fputs("Usage: `+categoriesplayed [PLAYER NAME]`\n"
@@ -29,7 +28,7 @@ void usage(void)
 	exit(EXIT_FAILURE);
 }
 
-bool in_unique(char *id)
+static bool in_unique(char *id)
 {
 	int i = 0;
 	for (; unique[i][0] != '\0'; i++)
