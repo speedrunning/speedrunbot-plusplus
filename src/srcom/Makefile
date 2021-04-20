@@ -44,9 +44,6 @@ bin/categoriesplayed: objs/categoriesplayed.o objs/utils.o
 bin/games: objs/games.o objs/utils.o
 	$(CCMP) $(CFLAGS) -o $@ $^ -lcurl -ljansson
 
-bin/verified: objs/verified.o objs/utils.o
-	$(CCMP) $(CFLAGS) -o $@ $^ -lcurl -pthread
-
 bin/runqueue: objs/runqueue.o objs/utils.o
 	$(CCMP) $(CFLAGS) -o $@ $^ -lcurl -ljansson -pthread
 

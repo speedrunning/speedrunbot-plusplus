@@ -105,7 +105,7 @@ void get_verified(struct mod_t *mods, char **argv)
 	argv++;
 	for (int i = 0; i < num_mods; i++) {
 		snprintf(cmd, CMDBUF, "./verified %s %s %s", mods[i].name,
-			 *argv, *(argv + 1) ? *(argv + 1) : "");
+		         *argv, *(argv + 1) ? *(argv + 1) : "");
 
 		if ((fp = popen(cmd, "r")) == NULL) {
 			fputs("Error: Failed to open pipe", stderr);

@@ -1,24 +1,16 @@
-/*
- * This program gets the number of runs that a given player (argv[1]) has
- * verified or rejected. Optionally 1 or 2 games can be specified.
- */
-
-#include <pthread.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+
+#include <curl/curl.h>
 
 #include "defines.h"
 #include "srcom/utils.h"
 #include "srcom/verified.h"
 
-bool done = false;
-char uri_base[URIBUF];
-int offset_start = 0;
-int counts[THREAD_COUNT] = {0};
-
-void usage(void)
+static void usage(void)
 {
 	fputs("Usage: `+verified [PLAYER NAME] [GAME (Optional)] [GAME "
 	      "(Optional)]`\n"
@@ -27,39 +19,83 @@ void usage(void)
 	exit(EXIT_FAILURE);
 }
 
-void *routine(void *tnum)
+static unsigned int count_examined(bool *done, string_t *json)
 {
-	/*
-	 * Equivalant to `(int) tnum` but supresses compiler warnings that can
-	 * be safely ignored.
-	 */
-	int s, i_tnum = *((int *) &tnum);
-	char uri[URIBUF], size[URIBUF];
-	string_t json;
+	char *ptr = json->ptr;
+	unsigned int count = 0, tmp;
 
-	snprintf(uri, URIBUF, "%s%d", uri_base,
-	         offset_start + MAX_RECV * i_tnum);
-	init_string(&json);
-	get_req(uri, &json);
+	while ((ptr = strstr(ptr + strlen(SIZE_KEY), SIZE_KEY)) != NULL) {
+		sscanf(ptr, SIZE_KEY "%u", &tmp);
 
-	char *size_key = last_substr(json.ptr, "\"size\":", KEY_LEN);
-	sscanf(size_key, "\"size\":%[^,]", size);
+		if (tmp < 200)
+			*done = true;
+		count += tmp;
+	}
 
-	if ((s = atoi(size)) < MAX_RECV)
-		done = true;
-	counts[i_tnum] += s;
-
-	free(json.ptr);
-	return NULL;
+	return count;
 }
 
-void get_examined(const char *uid, const char *gname)
+static void perform_requests(char *uri_base, unsigned int offset,
+                             string_t *json)
 {
+	char uri[URIBUF];
+	int running = 0, numfds;
+	CURLcode mc;
+	CURL *handles[REQUEST_COUNT];
+	CURLM *mhandle;
+
+	if ((mhandle = curl_multi_init()) == NULL) {
+		fputs("Error: Unable to initialize curl handle", stderr);
+		exit(EXIT_FAILURE);
+	}
+
+	for (int i = 0; i < REQUEST_COUNT; i++) {
+		if ((handles[i] = curl_easy_init()) == NULL) {
+			fputs("Error: Unable to initialize curl.\n", stderr);
+			exit(EXIT_FAILURE);
+		}
+
+		snprintf(uri, URIBUF, "%s%u", uri_base, offset);
+		offset += 200;
+
+		/* Load the contents of the API request to `json`. */
+		curl_easy_setopt(handles[i], CURLOPT_URL, uri);
+		curl_easy_setopt(handles[i], CURLOPT_WRITEFUNCTION,
+		                 write_callback);
+		curl_easy_setopt(handles[i], CURLOPT_WRITEDATA, json);
+
+		curl_multi_add_handle(mhandle, handles[i]);
+	}
+
+	do {
+		mc = curl_multi_perform(mhandle, &running);
+		if (mc == CURLM_OK)
+			mc = curl_multi_poll(mhandle, NULL, 0, 1000, &numfds);
+
+		if (mc != CURLM_OK) {
+			fprintf(stderr, "Error: curl_multi failed, code %d.\n",
+			        mc);
+			exit(EXIT_FAILURE);
+		}
+	} while (running);
+
+	/* Cleanup */
+	curl_multi_cleanup(mhandle);
+	for (int i = 0; i < REQUEST_COUNT; i++)
+		curl_easy_cleanup(handles[i]);
+}
+
+static unsigned int get_examined(const char *uid, const char *gname)
+{
+	bool done = false;
+	char uri_base[URIBUF];
+	unsigned int examined = 0, offset = 0;
+	string_t json;
 	struct game_t *game = NULL;
+
 	if (gname && (game = get_game(gname)) == NULL) {
 		fprintf(stderr,
-		        "Error: Game with abbreviation '%s' not "
-		        "found.\n",
+		        "Error: Game with abbreviation '%s' not found.\n",
 		        gname);
 		exit(EXIT_FAILURE);
 	}
@@ -68,32 +104,18 @@ void get_examined(const char *uid, const char *gname)
 	         API "/runs?examiner=%s&game=%s&max=" STR(MAX_RECV) "&offset=",
 	         uid, game ? game->id : "");
 
+	/* Every loop `json` is cleared */
 	while (!done) {
-		pthread_t threads[THREAD_COUNT];
-		for (int i = 0; i < THREAD_COUNT; i++) {
-			/*
-			 * This cast is a could be replaced with a simple `(void *) i`
-			 * cast, but the compiler doesn't like it when I do that.
-			 */
-			if (pthread_create(&threads[i], NULL, &routine,
-			                   *((void **) &i))
-			    != 0) {
-				fputs("Error: Failed to create thread.\n",
-				      stderr);
-				exit(EXIT_FAILURE);
-			}
-		}
+		init_string(&json);
 
-		for (int i = 0; i < THREAD_COUNT; i++) {
-			if (pthread_join(threads[i], NULL) != 0) {
-				fputs("Error: Failed to join thread.\n",
-				      stderr);
-				exit(EXIT_FAILURE);
-			}
-		}
+		perform_requests(uri_base, offset, &json);
+		examined += count_examined(&done, &json);
+		offset += 200 * REQUEST_COUNT;
 
-		offset_start += THREAD_COUNT * MAX_RECV;
+		free(json.ptr);
 	}
+
+	return examined;
 }
 
 int main(int argc, char **argv)
@@ -102,23 +124,19 @@ int main(int argc, char **argv)
 		usage();
 
 	char *uid;
+	unsigned int examined;
+
 	if ((uid = get_uid(argv[1])) == NULL) {
 		fprintf(stderr, "Error: User with username '%s' not found.\n",
 		        argv[1]);
 		exit(EXIT_FAILURE);
 	}
 
-	get_examined(uid, argv[2]);
-	if (argc == 4) {
-		done = false;
-		offset_start = 0;
-		get_examined(uid, argv[3]);
-	}
+	examined = get_examined(uid, argv[2]);
+	/* Check for the case where the same game is given twice */
+	if (argc > 3 && strcmp(argv[2], argv[3]) != 0)
+		examined += get_examined(uid, argv[3]);
 
-	int total = 0;
-	for (int i = 0; i < THREAD_COUNT; i++)
-		total += counts[i];
-
-	printf("Verified: %d\n", total);
+	printf("Verified: %u\n", examined);
 	return EXIT_SUCCESS;
 }
