@@ -23,7 +23,7 @@ static void usage(void)
 }
 
 static bool get_categories(json_t *root, struct counts_t *counts,
-                    struct names_t *names, string_t *json)
+                           struct names_t *names, string_t *json)
 {
 	json_t *data;
 	root = json_loads(json->ptr, 0, NULL);
