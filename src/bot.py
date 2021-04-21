@@ -63,34 +63,37 @@ async def run_and_output(
 	will be used as the title of the embed that is sent to discord. If TITLE
 	is not supplied, then the first line of output from PROG will be used.
 	"""
-	RETCODE, STDOUT, STDERR = await execv(PROG, *ARGV)
-	if RETCODE != 0:
-		await ctx.send(STDERR.decode())
-		return
+	async with ctx.typing():
+		RETCODE, STDOUT, STDERR = await execv(PROG, *ARGV)
+		if RETCODE != 0:
+			await ctx.send(STDERR.decode())
+			return
 
-	TITLE, DESC = (
-		STDOUT.decode().split("\n", 1)
-		if not TITLE
-		else [TITLE, STDOUT.decode()]
-	)
-	if len(DESC) > 2000:
-		LINES = list(divide_chunks(DESC.split("\n"), 15))
-		LINES_LENGTH: int = len(LINES)
-		try:
-			for line in range(LINES_LENGTH):
-				await ctx.author.send(
-					embed=discord.Embed(
-						title=f"{TITLE} Page: {line + 1}/{LINES_LENGTH}",
-						description="\n".join(LINES[line]),
-					)
+		TITLE, DESC = (
+			STDOUT.decode().split("\n", 1)
+			if not TITLE
+			else [TITLE, STDOUT.decode()]
+		)
+		if len(DESC) > 2000:
+			LINES = list(divide_chunks(DESC.split("\n"), 15))
+			LINES_LENGTH: int = len(LINES)
+			try:
+				await ctx.reply("The contents of this message are too long and as such they will be sent in DMs")
+				async with ctx.author.typing():
+					for line in range(LINES_LENGTH):
+						await ctx.author.send(
+							embed=discord.Embed(
+								title=f"{TITLE} Page: {line + 1}/{LINES_LENGTH}",
+								description="\n".join(LINES[line]),
+							)
+						)
+			except discord.Forbidden:
+				await ctx.reply(
+					"You have blocked the bot and the message is too long to be sent in this channel. Please unblock me and try again. "
 				)
-		except discord.Forbidden:
-			await ctx.send(
-				"You have blocked the bot and the message is too long to be sent in this channel. Please unblock me and try again. "
-			)
-	else:
-		EMBED = discord.Embed(title=TITLE, description=DESC)
-		await ctx.send(embed=EMBED)
+		else:
+			EMBED = discord.Embed(title=TITLE, description=DESC)
+			await ctx.reply(embed=EMBED)
 
 
 class SRBpp(commands.Bot):
