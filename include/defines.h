@@ -23,6 +23,6 @@
 #define MAX_RECV_BULK 1000
 
 /* Maximum length of a speedrun.com username */
-#define SRC_MAX_USERNAME 15
+#define SRC_MAX_USERNAME 30
 
 #endif /* !__DEFINES_H_ */
