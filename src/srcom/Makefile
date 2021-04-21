@@ -1,7 +1,8 @@
 CCMP   ?= clang
 CFLAGS := -O3 -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes \
 		-Wno-unused-result
-CURL   := $(shell curl-config --libs)
+# This might be not very good, look into this!!
+CURL   := $(shell curl-config --libs) -Wl,-rpath $(shell curl-config --prefix)/lib
 INC    := -I../../include
 PY     := python3.9
 
