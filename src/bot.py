@@ -78,7 +78,9 @@ async def run_and_output(
 			LINES = list(divide_chunks(DESC.split("\n"), 15))
 			LINES_LENGTH: int = len(LINES)
 			try:
-				await ctx.reply("The contents of this message are too long and as such they will be sent in DMs")
+				await ctx.reply(
+					"The contents of this message are too long and as such they will be sent in DMs"
+				)
 				async with ctx.author.typing():
 					for line in range(LINES_LENGTH):
 						await ctx.author.send(
