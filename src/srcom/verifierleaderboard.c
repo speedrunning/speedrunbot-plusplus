@@ -5,6 +5,7 @@
  */
 
 #include <libgen.h>
+#include <limits.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -50,26 +51,90 @@ static int sort(const void *v1, const void *v2)
 	return m2.examined - m1.examined;
 }
 
+static void *routine(void *raw_data)
+{
+	FILE *fp;
+	struct data_t data = *(struct data_t *) raw_data;
+
+	if ((fp = popen(data.cmd, "r")) == NULL) {
+		fputs("Error: Failed to open pipe.\n", stderr);
+		exit(EXIT_FAILURE);
+	}
+
+	fscanf(fp, "Verified: %d", &(data.mods[data.index].examined));
+	if (data.mods[data.index].examined == INT_MAX) {
+		fputs("Error: Something went wrong while getting the "
+		      "verification counts. The site is likely under "
+		      "pressure.\n",
+		      stderr);
+		exit(EXIT_FAILURE);
+	}
+
+	if (pclose(fp) == -1) {
+		fputs("Error: Failed to close pipe.\n", stderr);
+		exit(EXIT_FAILURE);
+	}
+
+	return NULL;
+}
+
+static unsigned int get_threads(void)
+{
+	char line[512];
+	unsigned int num_threads = 0;
+	FILE *fp;
+
+	if ((fp = fopen("/proc/cpuinfo", "r")) == NULL) {
+		fputs("Error: Unable to read cpuinfo.\n", stderr);
+		exit(EXIT_FAILURE);
+	}
+
+	while (fgets(line, sizeof(line), fp))
+		if (sscanf(line, "siblings\t: %u", &num_threads) != 0)
+			break;
+
+	fclose(fp);
+	return num_threads - 1; /* The current process is using a thread */
+}
+
 static void get_verified(struct mod_t *mods, char **argv)
 {
-	char cmd[CMDBUF];
-	FILE *fp;
+	unsigned int processed = 0;
+	const unsigned int num_threads = get_threads();
+	pthread_t threads[num_threads];
+	struct data_t data[num_mods];
 
 	argv++;
 	for (int i = 0; i < num_mods; i++) {
-		snprintf(cmd, CMDBUF, "./verified %s %s %s", mods[i].name,
-		         *argv, *(argv + 1) ? *(argv + 1) : "");
+		snprintf(data[i].cmd, CMDBUF, "./verified %s %s %s",
+		         mods[i].name, *argv, *(argv + 1) ? *(argv + 1) : "");
+		data[i].index = i;
+		data[i].mods = mods;
+		data[i].mods[i].examined = INT_MAX;
+	}
 
-		if ((fp = popen(cmd, "r")) == NULL) {
-			fputs("Error: Failed to open pipe", stderr);
-			exit(EXIT_FAILURE);
+	while (processed != (unsigned int) num_mods) {
+		unsigned int i;
+
+		for (i = 0;
+		     i < num_threads && processed != (unsigned int) num_mods;
+		     i++) {
+			if (pthread_create(&threads[processed], NULL, &routine,
+			                   &data[processed])
+			    != 0) {
+				fputs("Error: Failed to create thread.\n",
+				      stderr);
+				exit(EXIT_FAILURE);
+			}
+			processed++;
 		}
 
-		fscanf(fp, "Verified: %d", &mods[i].examined);
-
-		if (pclose(fp) == -1) {
-			fputs("Error: Failed to close pipe", stderr);
-			exit(EXIT_FAILURE);
+		for (; i > 0; i--) {
+			if (pthread_join(threads[i - 1], NULL) != 0) {
+				fputs("Error: Failed to join thread.\n",
+				      stderr);
+				exit(EXIT_FAILURE);
+			}
 		}
 	}
 }
@@ -157,6 +222,8 @@ static void check_args(int argc, char **argv)
 int main(int argc, char **argv)
 {
 	check_args(argc, argv);
+
+	int max_len;
 	struct mod_t mods[MODBUF] = {0};
 
 	for (int i = 1; i < argc; i++)
@@ -179,7 +246,7 @@ int main(int argc, char **argv)
 	get_verified(mods, argv);
 	qsort(mods, num_mods, sizeof(struct mod_t), sort);
 
-	int max_len = ilen(mods[0].examined);
+	max_len = ilen(mods[0].examined);
 	puts("```");
 	for (int i = 0; i < num_mods; i++)
 		printf("%*d   %-*s %*d\n", 2, i + 1, max_name + 1, mods[i].name,

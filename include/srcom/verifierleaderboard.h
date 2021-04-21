@@ -1,7 +1,7 @@
 #ifndef __VERIFIERLEADERBOARD_H_
 #define __VERIFIERLEADERBOARD_H_
 
-#define CMDBUF (16 + SRC_MAX_USERNAME * 2)
+#define CMDBUF 256
 #define MODBUF 128
 
 struct mod_t {
@@ -11,7 +11,8 @@ struct mod_t {
 
 struct data_t {
 	char cmd[CMDBUF];
-	struct mod_t *mod;
+	int index;
+	struct mod_t *mods;
 };
 
 #endif /* __VERIFIERLEADERBOARD_H_ */
