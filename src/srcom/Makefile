@@ -1,6 +1,7 @@
 CCMP   ?= clang
 CFLAGS := -O3 -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes \
 		-Wno-unused-result
+CURL   := $(shell curl-config --libs)
 INC    := -I../../include
 PY     := python3.9
 
@@ -36,25 +37,25 @@ objs/%.o: %.c
 	$(CCMP) $(CFLAGS) $(INC) -o $@ -c $<
 
 bin/categories: objs/categories.o objs/utils.o
-	$(CCMP) $(CFLAGS) -o $@ $^ -lcurl -ljansson
+	$(CCMP) -o $@ $^ $(CURL) -ljansson
 
 bin/categoriesplayed: objs/categoriesplayed.o objs/utils.o
-	$(CCMP) $(CFLAGS) -o $@ $^ -lcurl -ljansson
+	$(CCMP) -o $@ $^ $(CURL) -ljansson
 
 bin/games: objs/games.o objs/utils.o
-	$(CCMP) $(CFLAGS) -o $@ $^ -lcurl -ljansson
+	$(CCMP) -o $@ $^ $(CURL) -ljansson
 
 bin/runqueue: objs/runqueue.o objs/utils.o
-	$(CCMP) $(CFLAGS) -o $@ $^ -lcurl -ljansson -pthread
+	$(CCMP) -o $@ $^ $(CURL) -ljansson -pthread
 
 bin/runs: objs/runs.o objs/utils.o
-	$(CCMP) $(CFLAGS) -o $@ $^ -lcurl -ljansson -pthread
+	$(CCMP) -o $@ $^ $(CURL) -ljansson -pthread
 
 bin/verifierleaderboard: objs/verifierleaderboard.o objs/utils.o
-	$(CCMP) $(CFLAGS) -o $@ $^ -lcurl -ljansson -pthread
+	$(CCMP) -o $@ $^ $(CURL) -ljansson -pthread
 
 bin/%: objs/%.o objs/utils.o
-	$(CCMP) $(CFLAGS) -o $@ $^ -lcurl
+	$(CCMP) -o $@ $^ $(CURL)
 
 # Phony targets
 .PHONY: clean test
