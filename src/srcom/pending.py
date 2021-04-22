@@ -3,15 +3,13 @@
 from datetime import timedelta
 from sys import argv, exit, stderr
 from traceback import print_exception
+from typing import NoReturn
 
 import requests
 from utils import *
 
-GAME: str
-GID: str
 
-
-def usage() -> None:
+def usage() -> NoReturn:
 	"""
 	Print the commands usage and example if an invalid number of arguments
 	are given.
@@ -23,47 +21,61 @@ def usage() -> None:
 	exit(EXIT_FAILURE)
 
 
-def main() -> int:
-	if not (1 < len(argv) <= 4):
-		usage()
-
+def get_pending(game: str) -> list[dict]:
 	try:
-		GAME, GID = getgame(argv[1])
+		_, gid = getgame(game)
 	except GameError as e:
-		print(f"Error: {e}", file=stderr)
-		return EXIT_FAILURE
-	runs = []
-	temp = requests.get(
+		error_and_die(e)
+
+	r = requests.get(
 		f"{API}/runs",
 		params={
-			"game": GID,
+			"game": gid,
 			"status": "new",
 			"max": 200,
 			"embed": "category,players,level",
 			"orderby": "submitted",
 		},
 	)
+
+	if r.status_code not in (200, 204):
+		error_and_die(f"{r.json()['message']} (Error code {r.status_code})")
+
+	runs: list[dict] = []
 	while True:
-		temp_json = temp.json()
-		runs.extend(temp_json["data"])
-		if (
-			"pagination" not in temp_json
-			or temp_json["pagination"]["size"] < 200
-		):
+		r_json = r.json()
+		runs.extend(r_json["data"])
+		if "pagination" not in r_json or r_json["pagination"]["size"] < 200:
 			break
-		temp = requests.get(
+
+		r = requests.get(
 			{
 				item["rel"]: item["uri"]
-				for item in temp_json["pagination"]["links"]
+				for item in r_json["pagination"]["links"]
 			}["next"],
 		)
-	if len(runs) == 0:
+
+	return runs
+
+
+def main() -> int:
+	if not (1 < len(argv) < 4):
+		usage()
+
+	runs: list[dict] = []
+	for game in argv[1:]:
+		runs.extend(get_pending(game))
+
+	if not runs:
 		print("No pending runs found")
 		return EXIT_SUCCESS
-	for run in runs:
-		print(
+
+	print(
+		"\n".join(
 			f"[{run['level']['data']['name'] + ': ' + run['category']['data']['name'] if run['level']['data'] else run['category']['data']['name']}]({run['weblink']}) in `{str(timedelta(seconds=run['times']['primary_t'])).replace('000','')}` by {' and '.join([ player['name'] if player['rel'] == 'guest' else player['names']['international'] for player in run['players']['data']])}"
+			for run in runs
 		)
+	)
 
 	return EXIT_SUCCESS
 
