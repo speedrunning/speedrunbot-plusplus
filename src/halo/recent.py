@@ -6,12 +6,13 @@ argv[1] most recent.
 """
 
 from sys import argv, exit, stderr, stdout
+from typing import NoReturn
 
 import requests
 from utils import *
 
 
-def usage() -> None:
+def usage() -> NoReturn:
 	"""
 	Print the commands usage and example if an invalid number of arguments
 	are given.
@@ -25,23 +26,20 @@ def usage() -> None:
 
 
 def main() -> int:
-	if len(argv) == 1:
+	try:
+		int(argv[1])
+	except IndexError:
 		argv.append(10)
-	else:
-		try:
-			int(argv[1])
-		except ValueError:
-			usage()
+	except ValueError:
+		usage()
 
-	runs: list[Run] = requests.get(f"{API}/records/recent/{argv[1]}").json()
-	for index in range(len(runs)):
-		runs[index] = Run(runs[index])
+	r = requests.get(f"{API}/records/recent/{argv[1]}").json()
+	runs = (Run(run) for run in r)
+
 	print(
 		"\n".join(
-			[
-				f"`{run.game_name}, {run.level_name}` [{run.time}]({run.vid}) by {', '.join([player for player in run.runners])}"
-				for run in runs
-			]
+			f"`{run.game_name}, {run.level_name}` [{run.time}]({run.vid}) by {', '.join([player for player in run.runners])}"
+			for run in runs
 		)
 	)
 

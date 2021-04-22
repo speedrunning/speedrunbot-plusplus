@@ -18,6 +18,7 @@ class Run:
 	def __init__(self, data) -> None:
 		if type(data) == str:
 			data = loads(data)
+
 		self.id: int = data["id"]
 		self.run_time: int = data["run_time"]
 		self.timestamp: int = data["timestamp"]
