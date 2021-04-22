@@ -1,5 +1,10 @@
 #!/usr/bin/env python3.9
 
+"""
+This program returns a complete list of all the runs awaiting verificaiton for
+a given game (argv[1]) and optionally a second given game (argv[2]).
+"""
+
 from datetime import timedelta
 from sys import argv, exit, stderr
 from traceback import print_exception
@@ -15,7 +20,8 @@ def usage() -> NoReturn:
 	are given.
 	"""
 	print(
-		"Usage: `+pending [GAME]`\n" + "Example: `+pending mkw`",
+		"Usage: `+pending [GAME] [GAME (Optional)]`\n" +
+		"Example: `+pending mkw mkwextracategories`",
 		file=stderr,
 	)
 	exit(EXIT_FAILURE)
