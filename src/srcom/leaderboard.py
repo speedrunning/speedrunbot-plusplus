@@ -55,7 +55,7 @@ def main() -> int:
 
 	# Get the games categories.
 	try:
-		GAME, GID = game(argv[1])
+		GAME, GID = getgame(argv[1])
 	except GameError as e:
 		print(f"Error: {e}", file=stderr)
 		return EXIT_FAILURE

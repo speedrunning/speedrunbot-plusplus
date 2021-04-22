@@ -7,7 +7,7 @@ related programs.
 
 import asyncio
 import shlex
-from typing import Literal, Union
+from typing import Literal, Optional
 
 import requests
 
@@ -33,28 +33,28 @@ class NotSupportedError(Exception):
 	"""Raised when trying to use a feature that is not yet supported."""
 
 
-def uid(USER: str) -> str:
+def getuid(user: str) -> str:
 	"""
 	Get a users user ID from their username.
 
-	>>> uid("1")
+	>>> getuid("1")
 	'zx7gd1yx'
-	>>> uid("AnInternetTroll")
+	>>> getuid("AnInternetTroll")
 	'7j477kvj'
-	>>> uid("abc")
+	>>> getuid("abc")
 	Traceback (most recent call last):
 		...
 	utils.UserError: User with username 'abc' not found.
 	"""
 
-	R: dict = requests.get(f"{API}/users/{USER}").json()
+	r = requests.get(f"{API}/users/{user}").json()
 	try:
-		return R["data"]["id"]
+		return r["data"]["id"]
 	except KeyError:
-		raise UserError(f"User with username '{USER}' not found.")
+		raise UserError(f"User with username '{user}' not found.")
 
 
-def username(UID: str) -> str:
+def username(uid: str) -> str:
 	"""
 	Get a users username from their user ID.
 
@@ -67,36 +67,36 @@ def username(UID: str) -> str:
 		...
 	utils.UserError: User with uid 'Sesame Street' not found.
 	"""
-	R: dict = requests.get(f"{API}/users/{UID}").json()
+	r = requests.get(f"{API}/users/{uid}").json()
 	try:
-		return R["data"]["names"]["international"]
+		return r["data"]["names"]["international"]
 	except KeyError:
-		raise UserError(f"User with uid '{UID}' not found.")
+		raise UserError(f"User with uid '{uid}' not found.")
 
 
-def game(ABR: str) -> tuple[str, str]:
+def getgame(abbrev: str) -> tuple[str, str]:
 	"""
 	Get a games name and game ID from their abbreviation.
 
-	>>> game("mkw")
+	>>> getgame("mkw")
 	('Mario Kart Wii', 'l3dxogdy')
-	>>> game("celestep8")
+	>>> getgame("celestep8")
 	('CELESTE Classic', '4d7e7z67')
-	>>> game("Fake Game")
+	>>> getgame("Fake Game")
 	Traceback (most recent call last):
 		...
 	utils.GameError: Game with abbreviation 'Fake Game' not found.
 	"""
-	R: dict = requests.get(f"{API}/games?abbreviation={ABR}").json()
+	r = requests.get(f"{API}/games?abbreviation={abbrev}").json()
 	try:
-		GID: str = R["data"][0]["id"]
-		GAME: str = R["data"][0]["names"]["international"]
-		return (GAME, GID)
+		gid: str = r["data"][0]["id"]
+		gname: str = r["data"][0]["names"]["international"]
+		return (gname, gid)
 	except IndexError:
-		raise GameError(f"Game with abbreviation '{ABR}' not found.")
+		raise GameError(f"Game with abbreviation '{abbrev}' not found.")
 
 
-def subcatid(CID: str, SUBCAT: str, LFLAG: bool = False) -> tuple[str, str]:
+def subcatid(cid: str, subcat: str, lflag: bool = False) -> tuple[str, str]:
 	"""
 	Get the subcategory ID and and value ID from the given category ID and
 	subcategory value label. Whoever decided to handle subcategories like
@@ -113,15 +113,15 @@ def subcatid(CID: str, SUBCAT: str, LFLAG: bool = False) -> tuple[str, str]:
 		...
 	utils.SubcatError: Subcategory with label 'Gem Skips' not found.
 	"""
-	R: dict = requests.get(
+	r = requests.get(
 		f"{API}/{'levels' if LFLAG else 'categories'}/{CID}/variables"
 	).json()
-	LSUBCAT: str = SUBCAT.lower()
+	lsubcat = subcat.lower()
 	try:
-		for var in R["data"]:
+		for var in r["data"]:
 			if var["is-subcategory"]:
 				for v in var["values"]["values"]:
-					if var["values"]["values"][v]["label"].lower() == LSUBCAT:
+					if var["values"]["values"][v]["label"].lower() == lsubcat:
 						return (var["id"], v)
 	except KeyError:  # TODO: Test if this is still required after Ziro's PR.
 		raise SubcatError(f"Subcategory with label '{SUBCAT}' not found.")
@@ -144,12 +144,9 @@ def ptime(s: float) -> str:
 	>>> ptime(325)
 	'5:25'
 	"""
-	h: float
-	m: float
-
 	m, s = divmod(s, 60)
 	h, m = divmod(m, 60)
-	ms: int = int(round(s % 1 * 1000))
+	ms = int(round(s % 1 * 1000))
 
 	if not h:
 		if not ms:
@@ -160,7 +157,7 @@ def ptime(s: float) -> str:
 	return "{}:{:02d}:{:02d}.{:03d}".format(int(h), int(m), int(s), ms)
 
 
-def getcid(CAT: str, R: dict) -> Union[str, None]:
+def getcid(cat: str, r: dict) -> Optional[str]:
 	"""
 	Get the category ID with the name `CAT` from the request `R`. This
 	function doesn't do the request itself, since it's meant to work with
@@ -177,27 +174,8 @@ def getcid(CAT: str, R: dict) -> Union[str, None]:
 	>>> getcid("100m", r)
 	'rdn25e5d'
 	"""
-	LCAT: str = CAT.lower()
-	for c in R["data"]:
-		if c["name"].lower() == LCAT:
+	lcat = cat.lower()
+	for c in r["data"]:
+		if c["name"].lower() == lcat:
 			return c["id"]
 	return None
-
-
-async def execv(PROG: str, *ARGV: tuple[str, ...]) -> tuple[int, bytes, bytes]:
-	"""
-	Run a program called PROG with the command line arguments ARGV. This returns
-	a tuple containing the processes returncode, as well as the encoded stdout and
-	stderr.
-	"""
-	# This is like `shlex.join()`, but it gets rid of any `None` values.
-	ARGS: str = " ".join(
-		shlex.quote(arg) for arg in tuple(filter(lambda x: x, ARGV))
-	)
-	RET = await asyncio.create_subprocess_shell(
-		f"{PROG} {ARGS}",
-		stdout=asyncio.subprocess.PIPE,
-		stderr=asyncio.subprocess.PIPE,
-	)
-	STDOUT, STDERR = await RET.communicate()
-	return (RET.returncode, STDOUT, STDERR)
