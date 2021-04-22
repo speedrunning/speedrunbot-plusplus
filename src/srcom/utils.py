@@ -7,7 +7,8 @@ related programs.
 
 import asyncio
 import shlex
-from typing import Literal, Optional
+from sys import exit, stderr
+from typing import Literal, NoReturn, Optional, Type, Union
 
 import requests
 
@@ -31,6 +32,14 @@ class SubcatError(Exception):
 
 class NotSupportedError(Exception):
 	"""Raised when trying to use a feature that is not yet supported."""
+
+
+def error_and_die(e: Union[Type[Exception], str]) -> NoReturn:
+	"""
+	Print an error message to the stderr and then exit.
+	"""
+	print(f"Error: {e}", file=stderr)
+	exit(EXIT_FAILURE)
 
 
 def getuid(user: str) -> str:

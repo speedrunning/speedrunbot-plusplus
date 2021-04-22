@@ -7,19 +7,13 @@ optional category (argv[2]) and optional subcategory (argv[3]).
 
 from re import sub
 from sys import argv, exit, stderr
-from typing import Iterable
+from typing import NoReturn, Type, Union
 
 import requests
 from utils import *
 
-CAT: str
-GAME: str
-GID: str
-VID: str
-VVAL: str
 
-
-def usage() -> None:
+def usage() -> NoReturn:
 	"""
 	Print the commands usage and example if an invalid number of arguments
 	are given.
@@ -32,7 +26,7 @@ def usage() -> None:
 	exit(EXIT_FAILURE)
 
 
-def pad(TIME: str, MS: bool) -> str:
+def pad(time: str, ms: bool) -> str:
 	"""
 	Pad a time with blank spaces if it doesnt contain milliseconds for
 	output formatting.
@@ -44,9 +38,9 @@ def pad(TIME: str, MS: bool) -> str:
 	>>> pad("1:39", False)
 	'1:39'
 	"""
-	if not MS:
-		return TIME
-	return f"{TIME}    " if "." not in TIME else TIME
+	if not ms:
+		return time
+	return f"{time}    " if "." not in time else time
 
 
 def main() -> int:
@@ -55,77 +49,65 @@ def main() -> int:
 
 	# Get the games categories.
 	try:
-		GAME, GID = getgame(argv[1])
+		game, gid = getgame(argv[1])
 	except GameError as e:
-		print(f"Error: {e}", file=stderr)
-		return EXIT_FAILURE
+		error_and_die(e)
 
-	r: dict = requests.get(f"{API}/games/{GID}/categories").json()
-	cid: str = None
-	lflag: bool = False
+	r = requests.get(f"{API}/games/{gid}/categories").json()
+	cid = ""
+	lflag = False
 
 	try:
-		CAT = argv[2]
+		cat = argv[2]
 		cid = getcid(CAT, r)
 		if not cid:
 			r = requests.get(f"{API}/games/{GID}/levels").json()
 			cid = getcid(CAT, r)
 			lflag = True
 		if not cid:
-			print(f"Error: Category with name '{CAT}' not found.", file=stderr)
-			return EXIT_FAILURE
-	# Get default category if none supplied.
-	except IndexError:
+			error_and_die(f"Category with name '{cat}' not found.")
+	except IndexError:  # Get default category if none supplied.
 		try:
-			CAT = r["data"][0]["name"]
+			cat = r["data"][0]["name"]
 			cid = r["data"][0]["id"]
 			if r["data"][0]["type"] == "per-level":
-				r = requests.get(f"{API}/games/{GID}/levels").json()
+				r = requests.get(f"{API}/games/{gid}/levels").json()
 				cid = r["data"][0]["id"]
 				lflag = True
 		except IndexError:
-			print(
-				f"Error: The game '{GAME}' does not have any categories.",
-				file=stderr,
-			)
-			return EXIT_FAILURE
+			error_and_die("The game '{game}' does not have any categories.")
 
 	# Get top 10.
 	try:
-		VID, VVAL = subcatid(cid, argv[3], lflag)
+		vid, vval = subcatid(cid, argv[3], lflag)
 	except IndexError:
-		VID, VVAL = "", ""
+		vid, vval = "", ""
 	except (SubcatError, NotSupportedError) as e:
-		print(f"Error: {e}", file=stderr)
-		return EXIT_FAILURE
+		error_and_die(e)
 
 	if lflag:  # ILs.
 		r = requests.get(f"{API}/levels/{cid}/categories").json()
-		ILCID: str = r["data"][0]["id"]
+		ilcid: str = r["data"][0]["id"]
 		r = requests.get(
-			f"{API}/leaderboards/{GID}/level/{cid}/{ILCID}?top=10&var-{VID}={VVAL}"
+			f"{API}/leaderboards/{gid}/level/{cid}/{ilcid}?top=10&var-{vid}={vval}"
 		).json()
 	else:
 		r = requests.get(
-			f"{API}/leaderboards/{GID}/category/{cid}?top=10&var-{VID}={VVAL}"
+			f"{API}/leaderboards/{gid}/category/{cid}?top=10&var-{vid}={vval}"
 		).json()
 
 	# Set this flag if atleast one run has milliseconds.
 	try:
-		MS: bool = "." in "".join(
+		ms = "." in "".join(
 			ptime(run["run"]["times"]["primary_t"]) for run in r["data"]["runs"]
 		)
 	except KeyError:
-		print(
-			f"Error: The category '{CAT}' is an IL category, not level.",
-			file=stderr,
-		)
-		return EXIT_FAILURE
+		error_and_die("The category '{CAT}' is an IL category, not level.")
 
-	ROWS: tuple[Iterable[str], ...] = tuple(
+	rows = tuple(
 		(
 			str(run["place"]),
-			pad(ptime(run["run"]["times"]["primary_t"]), MS),
+			pad(ptime(run["run"]["times"]["primary_t"]), ms),
 			", ".join(
 				username(player["id"])
 				if player["rel"] == "user"
@@ -138,31 +120,30 @@ def main() -> int:
 		for run in r["data"]["runs"][:10]
 	)
 
-	TITLE: str = f"Top {len(ROWS)}: {GAME} - {CAT}" + (
-		f" - {argv[3]}\n" if VID else "\n"
+	title = f"Top {len(rows)}: {game} - {cat}" + (
+		f" - {argv[3]}\n" if vid else "\n"
 	)
 
 	# Length of the longest run time, used for output padding.
 	try:
-		MAXLEN: int = max(len(i[1]) for i in ROWS)
+		maxlen = max(len(i[1]) for i in rows)
 	except ValueError:
-		print(TITLE + "No runs have been set in this category.")
+		print(title + "No runs have been set in this category.")
 		return EXIT_SUCCESS
 
-	PSIZE: int = len(r["data"]["runs"])
+	psize = len(r["data"]["runs"])
 	print(
-		TITLE
+		title
 		+ "```"
 		+ "\n".join(
-			f"{row[0].rjust(2).ljust(3)} {row[1].rjust(MAXLEN).ljust(MAXLEN + 1)} {row[2]}"
-			for row in ROWS
+			f"{row[0].rjust(2).ljust(3)} {row[1].rjust(maxlen).ljust(maxlen + 1)} {row[2]}"
+			for row in rows
 		)
-		+ (f"\n + {PSIZE - 10} more" if PSIZE > 10 else "")
+		+ (f"\n + {psize - 10} more" if psize > 10 else "")
 		+ "```"
 	)
 	return EXIT_SUCCESS
 
 
 if __name__ == "__main__":
-	RET: int = main()
-	exit(RET)
+	exit(main())

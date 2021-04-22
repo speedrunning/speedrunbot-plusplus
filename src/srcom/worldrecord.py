@@ -7,19 +7,13 @@ optionally a specific category (argv[2]) and subcategories (argv[3..]).
 
 from re import sub
 from sys import argv, exit, stderr
+from typing import NoReturn, Union
 
 import requests
 from utils import *
 
-GAME: str
-CAT: str
-GID: str
-VID: str
-VVAL: str
-VIDEOS: Union[list[dict[str, str]], None]
 
-
-def usage() -> None:
+def usage() -> NoReturn:
 	"""
 	Print the commands usage and example if an invalid number of arguments
 	are given.
@@ -38,97 +32,86 @@ def main() -> int:
 
 	# Get the game ID and name.
 	try:
-		GAME, GID = getgame(argv[1])
+		game, gid = getgame(argv[1])
 	except GameError as e:
-		print(f"Error: {e}", file=stderr)
-		return EXIT_FAILURE
+		error_and_die(e)
 
 	# Get the games categories.
 	r = requests.get(f"{API}/games/{GID}/categories").json()
-	cid: str = None
-	lflag: bool = False
+	cid = ""
+	lflag = False
 
 	try:
-		CAT = argv[2]
-		cid = getcid(CAT, r)
+		cat = argv[2]
+		cid = getcid(cat, r)
 		if not cid:  # No matching fullgame cat, so check ILs.
-			r = requests.get(f"{API}/games/{GID}/levels").json()
-			cid = getcid(CAT, r)
+			r = requests.get(f"{API}/games/{gid}/levels").json()
+			cid = getcid(cat, r)
 			lflag = True
 		if not cid:
-			print(f"Error: Category with name '{CAT}' not found.", file=stderr)
-			return EXIT_FAILURE
-	# Get default category if none supplied.
-	except IndexError:
+			error_and_die(f"Category with name '{cat}' not found.")
+	except IndexError:  # Get default category if none supplied.
 		try:
-			CAT = r["data"][0]["name"]
+			cat = r["data"][0]["name"]
 			cid = r["data"][0]["id"]
 			if r["data"][0]["type"] == "per-level":
-				r = requests.get(f"{API}/games/{GID}/levels").json()
-				CAT = r["data"][0]["name"]
+				r = requests.get(f"{API}/games/{gid}/levels").json()
+				cat = r["data"][0]["name"]
 				cid = r["data"][0]["id"]
 				lflag = True
 		except IndexError:
-			print(
-				f"Error: The game '{argv[1]}' does not have any categories.",
-				file=stderr,
-			)
-			return EXIT_FAILURE
+			error_and_die(f"The game '{argv[1]}' does not have any categories.")
 
 	# Get WR.
 	try:
-		VID, VVAL = subcatid(cid, argv[3], lflag)
+		vid, vval = subcatid(cid, argv[3], lflag)
 	except IndexError:
-		VID, VVAL = "", ""
+		vid, vval = "", ""
 	except (SubcatError, NotSupportedError) as e:
-		print(f"Error: {e}", file=stderr)
-		return EXIT_FAILURE
+		error_and_die(e)
 
 	if lflag:  # ILs.
 		r = requests.get(f"{API}/levels/{cid}/categories").json()
-		ILCID: str = r["data"][0]["id"]
+		ilcid: str = r["data"][0]["id"]
 		r = requests.get(
-			f"{API}/leaderboards/{GID}/level/{cid}/{ILCID}?top=1&var-{VID}={VVAL}"
+			f"{API}/leaderboards/{gid}/level/{cid}/{ilcid}?top=1&var-{vid}={vval}"
 		).json()
 	else:
 		r = requests.get(
-			f"{API}/leaderboards/{GID}/category/{cid}?top=1&var-{VID}={VVAL}"
+			f"{API}/leaderboards/{gid}/category/{cid}?top=1&var-{vid}={vval}"
 		).json()
 
-	TITLE: str = f"World Record: {GAME} - {CAT}" + (
-		f" - {argv[3]}\n" if VID else "\n"
+	title = f"World Record: {game} - {cat}" + (
+		f" - {argv[3]}\n" if vid else "\n"
 	)
 	try:
-		WR: dict = r["data"]["runs"][0]["run"]
+		wr: dict = r["data"]["runs"][0]["run"]
 	except KeyError:
-		print(
-			f"Error: The category '{CAT}' is an IL category, not level.",
-			file=stderr,
-		)
-		return EXIT_FAILURE
+		error_and_die(f"The category '{cat}' is an IL category, not level.")
 	except IndexError:
-		print(TITLE + "No runs have been set in this category.")
+		print(title + "No runs have been set in this category.")
 		return EXIT_SUCCESS
 
-	TIME: str = ptime(WR["times"]["primary_t"])
-	PLAYERS: str = ", ".join(
+	time = ptime(wr["times"]["primary_t"])
+	players = ", ".join(
 		username(player["id"])
 		if player["rel"] == "user"
 		else sub("^\[.*\]", "", player["name"])  # Regex to remove flags.
-		for player in WR["players"]
+		for player in wr["players"]
 	)
 
+	videos: Union[list[dict[str, str]], None]
 	try:
-		VIDEOS = WR["videos"]["links"]
+		videos = wr["videos"]["links"]
 	except TypeError:  # No video.
-		VIDEOS = None
+		videos = None
 
 	print(
-		TITLE
-		+ f"{TIME}  {PLAYERS}\n"
+		title
+		+ f"{time}  {players}\n"
 		+ (
-			"\n".join(f"<{r['uri']}>" for r in VIDEOS)
-			if type(VIDEOS) == list
+			"\n".join(f"<{r['uri']}>" for r in videos)
+			if type(videos) == list
 			else "No video available."
 		)
 	)
