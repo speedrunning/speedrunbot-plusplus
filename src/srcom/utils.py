@@ -8,9 +8,10 @@ related programs.
 import asyncio
 import shlex
 from sys import exit, stderr
-from typing import Literal, NoReturn, Optional, Type, Union
+from typing import Any, Literal, NoReturn, Optional, Type, Union
 
 import requests
+from requests.exceptions import ConnectionError
 
 API: Literal[str] = "https://www.speedrun.com/api/v1"
 
@@ -18,28 +19,37 @@ EXIT_SUCCESS: Literal[int] = 0
 EXIT_FAILURE: Literal[int] = 1
 
 
-class UserError(Exception):
-	"""Raised when trying to access a user that does not exist."""
-
-
-class GameError(Exception):
-	"""Raised when trying to access a game that does not exist."""
-
-
-class SubcatError(Exception):
-	"""Raised when trying to get a subcategory that does not exist."""
-
-
-class NotSupportedError(Exception):
-	"""Raised when trying to use a feature that is not yet supported."""
+def usage(usage: str) -> NoReturn:
+	"""
+	Print the commands usage and example if an invalid number of arguments
+	are given to stderr.
+	"""
+	print(usage, file=stderr)
+	exit(EXIT_FAILURE)
 
 
 def error_and_die(e: Union[Type[Exception], str]) -> NoReturn:
 	"""
-	Print an error message to the stderr and then exit.
+	Print an error message to stderr and then exit.
 	"""
 	print(f"Error: {e}", file=stderr)
 	exit(EXIT_FAILURE)
+
+
+def api_get(uri: str, params: Optional[dict[str, Any]] = {}) -> dict:
+	"""
+	This is a wrapper around `requests.get()` that does error checking for
+	status codes.
+	"""
+	try:
+		r = requests.get(uri, params=params)
+	except ConnectionError as e:
+		err_and_die(e)
+
+	if r.status_code not in (200, 204):
+		error_and_die(r.json()["message"])
+
+	return r.json()
 
 
 def getuid(user: str) -> str:
@@ -53,14 +63,14 @@ def getuid(user: str) -> str:
 	>>> getuid("abc")
 	Traceback (most recent call last):
 		...
-	utils.UserError: User with username 'abc' not found.
+	SystemExit: 1
 	"""
 
-	r = requests.get(f"{API}/users/{user}").json()
+	r = api_get(f"{API}/users", params={"lookup": user})
 	try:
-		return r["data"]["id"]
-	except KeyError:
-		raise UserError(f"User with username '{user}' not found.")
+		return r["data"][0]["id"]
+	except IndexError:
+		error_and_die(f"User with username '{user}' not found.")
 
 
 def username(uid: str) -> str:
@@ -74,13 +84,10 @@ def username(uid: str) -> str:
 	>>> username("Sesame Street")
 	Traceback (most recent call last):
 		...
-	utils.UserError: User with uid 'Sesame Street' not found.
+	SystemExit: 1
 	"""
-	r = requests.get(f"{API}/users/{uid}").json()
-	try:
-		return r["data"]["names"]["international"]
-	except KeyError:
-		raise UserError(f"User with uid '{uid}' not found.")
+	r = api_get(f"{API}/users/{uid}")
+	return r["data"]["names"]["international"]
 
 
 def getgame(abbrev: str) -> tuple[str, str]:
@@ -94,15 +101,15 @@ def getgame(abbrev: str) -> tuple[str, str]:
 	>>> getgame("Fake Game")
 	Traceback (most recent call last):
 		...
-	utils.GameError: Game with abbreviation 'Fake Game' not found.
+	SystemExit: 1
 	"""
-	r = requests.get(f"{API}/games?abbreviation={abbrev}").json()
+	r = api_get(f"{API}/games", params={"abbreviation": abbrev})
 	try:
 		gid: str = r["data"][0]["id"]
 		gname: str = r["data"][0]["names"]["international"]
 		return (gname, gid)
 	except IndexError:
-		raise GameError(f"Game with abbreviation '{abbrev}' not found.")
+		error_and_die(f"Game with abbreviation '{abbrev}' not found.")
 
 
 def subcatid(cid: str, subcat: str, lflag: bool = False) -> tuple[str, str]:
@@ -120,11 +127,9 @@ def subcatid(cid: str, subcat: str, lflag: bool = False) -> tuple[str, str]:
 	>>> subcatid("mkeoz98d", "Gem Skips")
 	Traceback (most recent call last):
 		...
-	utils.SubcatError: Subcategory with label 'Gem Skips' not found.
+	SystemExit: 1
 	"""
-	r = requests.get(
-		f"{API}/{'levels' if LFLAG else 'categories'}/{CID}/variables"
-	).json()
+	r = api_get(f"{API}/{'levels' if lflag else 'categories'}/{cid}/variables")
 	lsubcat = subcat.lower()
 	try:
 		for var in r["data"]:
@@ -133,9 +138,9 @@ def subcatid(cid: str, subcat: str, lflag: bool = False) -> tuple[str, str]:
 					if var["values"]["values"][v]["label"].lower() == lsubcat:
 						return (var["id"], v)
 	except KeyError:  # TODO: Test if this is still required after Ziro's PR.
-		raise SubcatError(f"Subcategory with label '{SUBCAT}' not found.")
+		error_and_die(f"Subcategory with label '{subcat}' not found.")
 		# raise NotSupportedError(f"Subcategories are not yet supported for ILs.")
-	raise SubcatError(f"Subcategory with label '{SUBCAT}' not found.")
+	error_and_die(f"Subcategory with label '{subcat}' not found.")
 
 
 def ptime(s: float) -> str:
@@ -172,14 +177,14 @@ def getcid(cat: str, r: dict) -> Optional[str]:
 	function doesn't do the request itself, since it's meant to work with
 	both fullgame and IL's, amongst other reasons.
 
-	>>> r: dict = requests.get(f"{API}/games/l3dxogdy/categories").json()
+	>>> r = api_get(f"{API}/games/l3dxogdy/categories")
 	>>> getcid("Nitro Tracks", r)
 	'7kj6mz23'
 	>>> getcid("Retro Tracks", r)
 	'xk9v3gd0'
-	>>> r = requests.get(f"{API}/games/l3dxogdy/levels").json()
+	>>> r = api_get(f"{API}/games/l3dxogdy/levels")
 	>>> getcid("This game has no levels", r)
-	>>> r = requests.get(f"{API}/games/4d7e7z67/levels").json()
+	>>> r = api_get(f"{API}/games/4d7e7z67/levels")
 	>>> getcid("100m", r)
 	'rdn25e5d'
 	"""

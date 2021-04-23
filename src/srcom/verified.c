@@ -70,6 +70,7 @@ static void perform_requests(char *uri_base, unsigned int offset,
 		curl_easy_setopt(handles[i], CURLOPT_WRITEFUNCTION,
 		                 write_callback);
 		curl_easy_setopt(handles[i], CURLOPT_WRITEDATA, json);
+		curl_easy_setopt(handles[i], CURLOPT_FAILONERROR, 1L);
 
 		curl_multi_add_handle(mhandle, handles[i]);
 	}
@@ -78,6 +79,12 @@ static void perform_requests(char *uri_base, unsigned int offset,
 		mc = curl_multi_perform(mhandle, &running);
 		if (mc == CURLM_OK)
 			mc = curl_multi_poll(mhandle, NULL, 0, 1000, &numfds);
+		else {
+			fprintf(stderr,
+			        "Error: curl_multi_perform failed, code %d.\n",
+			        mc);
+			exit(EXIT_FAILURE);
+		}
 
 		if (mc != CURLM_OK) {
 			fprintf(stderr, "Error: curl_multi failed, code %d.\n",

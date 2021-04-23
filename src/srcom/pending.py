@@ -8,32 +8,20 @@ a given game (argv[1]) and optionally a second given game (argv[2]).
 from datetime import timedelta
 from sys import argv, exit, stderr
 from traceback import print_exception
-from typing import NoReturn
+from typing import Literal
 
-import requests
 from utils import *
 
-
-def usage() -> NoReturn:
-	"""
-	Print the commands usage and example if an invalid number of arguments
-	are given.
-	"""
-	print(
-		"Usage: `+pending [GAME] [GAME (Optional)]`\n" +
-		"Example: `+pending mkw mkwextracategories`",
-		file=stderr,
-	)
-	exit(EXIT_FAILURE)
+USAGE: Literal[str] = (
+	"Usage: `+pending [GAME] [GAME (Optional)]`\n"
+	+ "Example: `+pending mkw mkwextracategories`"
+)
 
 
 def get_pending(game: str) -> list[dict]:
-	try:
-		_, gid = getgame(game)
-	except GameError as e:
-		error_and_die(e)
+	_, gid = getgame(game)
 
-	r = requests.get(
+	r = api_get(
 		f"{API}/runs",
 		params={
 			"game": gid,
@@ -44,21 +32,16 @@ def get_pending(game: str) -> list[dict]:
 		},
 	)
 
-	if r.status_code not in (200, 204):
-		error_and_die(f"{r.json()['message']} (Error code {r.status_code})")
-
 	runs: list[dict] = []
 	while True:
-		r_json = r.json()
-		runs.extend(r_json["data"])
-		if "pagination" not in r_json or r_json["pagination"]["size"] < 200:
+		runs.extend(r["data"])
+		if "pagination" not in r or r["pagination"]["size"] < 200:
 			break
 
-		r = requests.get(
-			{
-				item["rel"]: item["uri"]
-				for item in r_json["pagination"]["links"]
-			}["next"],
+		r = api_get(
+			{item["rel"]: item["uri"] for item in r["pagination"]["links"]}[
+				"next"
+			],
 		)
 
 	return runs
@@ -66,7 +49,7 @@ def get_pending(game: str) -> list[dict]:
 
 def main() -> int:
 	if not (1 < len(argv) < 4):
-		usage()
+		usage(USAGE)
 
 	runs: list[dict] = []
 	for game in argv[1:]:

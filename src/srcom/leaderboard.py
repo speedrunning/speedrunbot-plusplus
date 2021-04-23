@@ -7,24 +7,11 @@ optional category (argv[2]) and optional subcategory (argv[3]).
 
 from re import sub
 from sys import argv, exit, stderr
-from typing import NoReturn, Type, Union
+from typing import Literal
 
-import requests
 from utils import *
 
-
-def usage() -> NoReturn:
-	"""
-	Print the commands usage and example if an invalid number of arguments
-	are given.
-	"""
-	print(
-		"Usage: `+leaderboard [GAME] [CATEGORY (Optional)] [SUBCATEGORY (Optional)]`\n"
-		+ 'Example: `+leaderboard mkw "Nitro Tracks"`',
-		file=stderr,
-	)
-	exit(EXIT_FAILURE)
-
+USAGE: Literal[str] = "Usage: `+leaderboard [GAME] [CATEGORY (Optional)] [SUBCATEGORY (Optional)]`\n" + 'Example: `+leaderboard mkw "Nitro Tracks"`'
 
 def pad(time: str, ms: bool) -> str:
 	"""
@@ -45,24 +32,20 @@ def pad(time: str, ms: bool) -> str:
 
 def main() -> int:
 	if not (1 < len(argv) <= 4):
-		usage()
+		usage(USAGE)
 
-	# Get the games categories.
-	try:
-		game, gid = getgame(argv[1])
-	except GameError as e:
-		error_and_die(e)
+	game, gid = getgame(argv[1])
 
-	r = requests.get(f"{API}/games/{gid}/categories").json()
+	r = api_get(f"{API}/games/{gid}/categories")
 	cid = ""
 	lflag = False
 
 	try:
 		cat = argv[2]
-		cid = getcid(CAT, r)
+		cid = getcid(cat, r)
 		if not cid:
-			r = requests.get(f"{API}/games/{GID}/levels").json()
-			cid = getcid(CAT, r)
+			r = api_get(f"{API}/games/{gid}/levels")
+			cid = getcid(cat, r)
 			lflag = True
 		if not cid:
 			error_and_die(f"Category with name '{cat}' not found.")
@@ -71,7 +54,7 @@ def main() -> int:
 			cat = r["data"][0]["name"]
 			cid = r["data"][0]["id"]
 			if r["data"][0]["type"] == "per-level":
-				r = requests.get(f"{API}/games/{gid}/levels").json()
+				r = api_get(f"{API}/games/{gid}/levels")
 				cid = r["data"][0]["id"]
 				lflag = True
 		except IndexError:
@@ -82,19 +65,19 @@ def main() -> int:
 		vid, vval = subcatid(cid, argv[3], lflag)
 	except IndexError:
 		vid, vval = "", ""
-	except (SubcatError, NotSupportedError) as e:
-		error_and_die(e)
 
 	if lflag:  # ILs.
-		r = requests.get(f"{API}/levels/{cid}/categories").json()
+		r = api_get(f"{API}/levels/{cid}/categories")
 		ilcid: str = r["data"][0]["id"]
-		r = requests.get(
-			f"{API}/leaderboards/{gid}/level/{cid}/{ilcid}?top=10&var-{vid}={vval}"
-		).json()
+		r = api_get(
+			f"{API}/leaderboards/{gid}/level/{cid}/{ilcid}",
+			params={
+				"top": 10,
+				f"var-{vid}": vval
+			}
+		)
 	else:
-		r = requests.get(
-			f"{API}/leaderboards/{gid}/category/{cid}?top=10&var-{vid}={vval}"
-		).json()
+		r = api_get(f"{API}/leaderboards/{gid}/category/{cid}", params={"top": 10, f"var-{vid}": vval})
 
 	# Set this flag if atleast one run has milliseconds.
 	try:
@@ -102,7 +85,7 @@ def main() -> int:
 			ptime(run["run"]["times"]["primary_t"]) for run in r["data"]["runs"]
 		)
 	except KeyError:
-		error_and_die("The category '{CAT}' is an IL category, not level.")
+		error_and_die("The category '{cat}' is an IL category, not level.")
 
 	rows = tuple(
 		(

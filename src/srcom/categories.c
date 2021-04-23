@@ -54,7 +54,8 @@ static bool get_categories(json_t *root, struct counts_t *counts,
 		if (misc->type == JSON_TRUE) {
 			names->misc[counts->misc++] =
 			        (char *) json_string_value(name);
-		} else {
+		}
+		else {
 			type = json_object_get(obj, "type");
 			if (json_string_length(type) == 8) /* "per-game" */
 				names->fullgame[counts->fullgame++] =

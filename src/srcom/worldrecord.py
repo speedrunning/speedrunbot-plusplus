@@ -7,37 +7,24 @@ optionally a specific category (argv[2]) and subcategories (argv[3..]).
 
 from re import sub
 from sys import argv, exit, stderr
-from typing import NoReturn, Union
+from typing import Literal, Optional
 
-import requests
 from utils import *
 
-
-def usage() -> NoReturn:
-	"""
-	Print the commands usage and example if an invalid number of arguments
-	are given.
-	"""
-	print(
-		"Usage: `+worldrecord [GAME] [CATEGORY (Optional)] [SUBCATEGORY (Optional)]`\n"
-		+ 'Example: `+worldrecord mkw "Nitro Tracks"`',
-		file=stderr,
-	)
-	exit(EXIT_FAILURE)
+USAGE: Literal[str] = (
+	"Usage: `+worldrecord [GAME] [CATEGORY (Optional)] [SUBCATEGORY (Optional)]`\n"
+	+ 'Example: `+worldrecord mkw "Nitro Tracks"`'
+)
 
 
 def main() -> int:
 	if not (1 < len(argv) <= 4):
-		usage()
+		usage(USAGE)
 
-	# Get the game ID and name.
-	try:
-		game, gid = getgame(argv[1])
-	except GameError as e:
-		error_and_die(e)
+	game, gid = getgame(argv[1])
 
 	# Get the games categories.
-	r = requests.get(f"{API}/games/{GID}/categories").json()
+	r = api_get(f"{API}/games/{gid}/categories")
 	cid = ""
 	lflag = False
 
@@ -45,7 +32,7 @@ def main() -> int:
 		cat = argv[2]
 		cid = getcid(cat, r)
 		if not cid:  # No matching fullgame cat, so check ILs.
-			r = requests.get(f"{API}/games/{gid}/levels").json()
+			r = api_get(f"{API}/games/{gid}/levels")
 			cid = getcid(cat, r)
 			lflag = True
 		if not cid:
@@ -55,7 +42,7 @@ def main() -> int:
 			cat = r["data"][0]["name"]
 			cid = r["data"][0]["id"]
 			if r["data"][0]["type"] == "per-level":
-				r = requests.get(f"{API}/games/{gid}/levels").json()
+				r = api_get(f"{API}/games/{gid}/levels")
 				cat = r["data"][0]["name"]
 				cid = r["data"][0]["id"]
 				lflag = True
@@ -67,19 +54,19 @@ def main() -> int:
 		vid, vval = subcatid(cid, argv[3], lflag)
 	except IndexError:
 		vid, vval = "", ""
-	except (SubcatError, NotSupportedError) as e:
-		error_and_die(e)
 
 	if lflag:  # ILs.
-		r = requests.get(f"{API}/levels/{cid}/categories").json()
+		r = api_get(f"{API}/levels/{cid}/categories")
 		ilcid: str = r["data"][0]["id"]
-		r = requests.get(
-			f"{API}/leaderboards/{gid}/level/{cid}/{ilcid}?top=1&var-{vid}={vval}"
-		).json()
+		r = api_get(
+			f"{API}/leaderboards/{gid}/level/{cid}/{ilcid}",
+			params={"top": 1, f"var-{vid}": vval},
+		)
 	else:
-		r = requests.get(
-			f"{API}/leaderboards/{gid}/category/{cid}?top=1&var-{vid}={vval}"
-		).json()
+		r = api_get(
+			f"{API}/leaderboards/{gid}/category/{cid}",
+			params={"top": 1, f"var-{vid}": vval},
+		)
 
 	title = f"World Record: {game} - {cat}" + (
 		f" - {argv[3]}\n" if vid else "\n"
@@ -100,7 +87,7 @@ def main() -> int:
 		for player in wr["players"]
 	)
 
-	videos: Union[list[dict[str, str]], None]
+	videos: Optional[list[dict[str, str]]]
 	try:
 		videos = wr["videos"]["links"]
 	except TypeError:  # No video.
@@ -119,5 +106,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-	RET: int = main()
-	exit(RET)
+	exit(main())

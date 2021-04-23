@@ -7,10 +7,9 @@ INC    := -I../../include
 PY     := python3.9
 
 cprogs  := bin/categories bin/categoriesplayed bin/games bin/modcount \
-		bin/runqueue bin/runs bin/verified bin/worldrecords \
-		bin/verifierleaderboard
-pyprogs := bin/categories bin/leaderboard bin/pending bin/worldrecord \
-		bin/utils.py
+		bin/runqueue bin/runs bin/verified bin/worldrecords
+pyprogs := bin/categories bin/leaderboard bin/pending bin/verifierleaderboard \
+		bin/worldrecord bin/utils.py
 
 all: $(pyprogs) $(cprogs)
 $(shell mkdir -p bin/ objs/)
@@ -52,9 +51,6 @@ bin/runqueue: objs/runqueue.o objs/utils.o
 bin/runs: objs/runs.o objs/utils.o
 	$(CCMP) -o $@ $^ $(CURL) -ljansson -pthread
 
-bin/verifierleaderboard: objs/verifierleaderboard.o objs/utils.o
-	$(CCMP) -o $@ $^ $(CURL) -ljansson -pthread
-
 bin/%: objs/%.o objs/utils.o
 	$(CCMP) -o $@ $^ $(CURL)
 
@@ -65,4 +61,4 @@ clean:
 
 test:
 	$(PY) -m doctest leaderboard.py
-	$(PY) -m doctest utils.py
+	$(PY) -m doctest utils.py 2>/dev/null
