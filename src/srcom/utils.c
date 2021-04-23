@@ -104,7 +104,7 @@ void get_req(const char *uri, string_t *json)
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, json);
 
 	CURLcode res;
-	if ((res = curl_easy_perform(curl)) != 0) {
+	if ((res = curl_easy_perform(curl)) != CURLE_OK) {
 		curl_easy_cleanup(curl);
 		fputs("Error: Unable to retrieve data from the sr.c API.\n",
 		      stderr);
