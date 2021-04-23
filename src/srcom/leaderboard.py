@@ -11,7 +11,11 @@ from typing import Literal
 
 from utils import *
 
-USAGE: Literal[str] = "Usage: `+leaderboard [GAME] [CATEGORY (Optional)] [SUBCATEGORY (Optional)]`\n" + 'Example: `+leaderboard mkw "Nitro Tracks"`'
+USAGE: Literal[str] = (
+	"Usage: `+leaderboard [GAME] [CATEGORY (Optional)] [SUBCATEGORY (Optional)]`\n"
+	+ 'Example: `+leaderboard mkw "Nitro Tracks"`'
+)
+
 
 def pad(time: str, ms: bool) -> str:
 	"""
@@ -71,13 +75,13 @@ def main() -> int:
 		ilcid: str = r["data"][0]["id"]
 		r = api_get(
 			f"{API}/leaderboards/{gid}/level/{cid}/{ilcid}",
-			params={
-				"top": 10,
-				f"var-{vid}": vval
-			}
+			params={"top": 10, f"var-{vid}": vval},
 		)
 	else:
-		r = api_get(f"{API}/leaderboards/{gid}/category/{cid}", params={"top": 10, f"var-{vid}": vval})
+		r = api_get(
+			f"{API}/leaderboards/{gid}/category/{cid}",
+			params={"top": 10, f"var-{vid}": vval},
+		)
 
 	# Set this flag if atleast one run has milliseconds.
 	try:
