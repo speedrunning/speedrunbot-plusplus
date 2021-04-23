@@ -4,6 +4,7 @@ from math import trunc
 from subprocess import CompletedProcess, run
 from sys import stderr
 from traceback import format_exception, print_exception
+from typing import Literal
 
 import discord
 from discord.ext import commands
@@ -13,12 +14,12 @@ from discord.ext.commands.errors import CommandError
 from bot import SRBpp, run_and_output
 from cogs.src import RATE
 
-PREFIX: str = "admin/bin"
+PREFIX: Literal[str] = "admin/bin"
 
 
 class Admin(commands.Cog):
 	def __init__(self, bot: SRBpp) -> None:
-		self.bot: SRBpp = bot
+		self.bot = bot
 
 	@commands.Cog.listener()
 	async def on_command_error(self, ctx: Context, err: CommandError) -> None:
@@ -62,7 +63,7 @@ class Admin(commands.Cog):
 		"""
 		Run the bots Makefiles to update all the code.
 		"""
-		await run_and_output(ctx, f"{PREFIX}/compile", TITLE="Compile")
+		await run_and_output(ctx, f"{PREFIX}/compile", title="Compile")
 
 	@commands.is_owner()
 	@commands.command(name="pull")
@@ -70,15 +71,13 @@ class Admin(commands.Cog):
 		"""
 		Pull any changes from the GitHub repository.
 		"""
-		RET: CompletedProcess = run(
-			("git", "pull"), capture_output=True, text=True
-		)
+		ret = run(("git", "pull"), capture_output=True, text=True)
 
-		if RET.returncode != 0:
-			await ctx.send(RET.stderr)
+		if ret.returncode != 0:
+			await ctx.send(ret.stderr)
 			return
 
-		embed = discord.Embed(title="Git Pull", description=RET.stdout)
+		embed = discord.Embed(title="Git Pull", description=ret.stdout)
 		await ctx.send(embed=embed)
 
 	@commands.is_owner()
@@ -93,70 +92,70 @@ class Admin(commands.Cog):
 
 	@commands.is_owner()
 	@commands.command(name="reload")
-	async def reload(self, ctx: Context, EXT: str) -> None:
+	async def reload(self, ctx: Context, ext: str) -> None:
 		"""
 		Reloads an extension.
 		"""
 		try:
-			self.bot.reload_extension(f"cogs.{EXT}")
-			await ctx.send(f"The extension {EXT} was reloaded.")
+			self.bot.reload_extension(f"cogs.{ext}")
+			await ctx.send(f"The extension {ext} was reloaded.")
 		except commands.ExtensionNotFound:
-			await ctx.send(f"The extension {EXT} doesn't exist.")
+			await ctx.send(f"The extension {ext} doesn't exist.")
 		except commands.ExtensionNotLoaded:
-			await ctx.send(f"The extension {EXT} is not loaded.")
+			await ctx.send(f"The extension {ext} is not loaded.")
 		except commands.NoEntryPointError:
 			await ctx.send(
-				f"The extension {EXT} doesn't have an entry point. (Try adding the setup function)"
+				f"The extension {ext} doesn't have an entry point. (Try adding the setup function)"
 			)
 		except commands.ExtensionFailed as e:
 			await ctx.send(
-				f"Some unknown error happened while trying to reload extension {EXT}."
+				f"Some unknown error happened while trying to reload extension {ext}."
 			)
 			print(e, file=stderr)
 
 	@commands.is_owner()
 	@commands.command(name="load")
-	async def load(self, ctx: Context, EXT: str) -> None:
+	async def load(self, ctx: Context, ext: str) -> None:
 		"""
 		Loads an extension.
 		"""
 		try:
-			self.bot.load_extension(f"cogs.{EXT}")
-			await ctx.send(f"The extension {EXT} was loaded.")
+			self.bot.load_extension(f"cogs.{ext}")
+			await ctx.send(f"The extension {ext} was loaded.")
 		except commands.ExtensionNotFound:
-			await ctx.send(f"The extension {EXT} doesn't exist.")
+			await ctx.send(f"The extension {ext} doesn't exist.")
 		except commands.ExtensionAlreadyLoaded:
-			await ctx.send(f"The extension {EXT} is already loaded.")
+			await ctx.send(f"The extension {ext} is already loaded.")
 		except commands.NoEntryPointError:
 			await ctx.send(
-				f"The extension {EXT} doesn't have an entry point. (Try adding the setup function)"
+				f"The extension {ext} doesn't have an entry point. (Try adding the setup function)"
 			)
 		except commands.ExtensionFailed as e:
 			await ctx.send(
-				f"Some unknown error happened while trying to reload extension {EXT}."
+				f"Some unknown error happened while trying to reload extension {ext}."
 			)
 			print(e, file=stderr)
 
 	@commands.is_owner()
 	@commands.command(name="unload")
-	async def unload(self, ctx: Context, EXT: str) -> None:
+	async def unload(self, ctx: Context, ext: str) -> None:
 		"""
 		Unloads an extension.
 		"""
 		try:
-			self.bot.unload_extension(f"cogs.{EXT}")
-			await ctx.send(f"The extension {EXT} was unloaded.")
+			self.bot.unload_extension(f"cogs.{ext}")
+			await ctx.send(f"The extension {ext} was unloaded.")
 		except commands.ExtensionNotFound:
-			await ctx.send(f"The extension {EXT} doesn't exist.")
+			await ctx.send(f"The extension {ext} doesn't exist.")
 		except commands.ExtensionAlreadyLoaded:
-			await ctx.send(f"The extension {EXT} is already loaded.")
+			await ctx.send(f"The extension {ext} is already loaded.")
 		except commands.NoEntryPointError:
 			await ctx.send(
-				f"The extension {EXT} doesn't have an entry point. (Try adding the setup function)"
+				f"The extension {ext} doesn't have an entry point. (Try adding the setup function)"
 			)
 		except commands.ExtensionFailed as e:
 			await ctx.send(
-				f"Some unknown error happened while trying to reload extension {EXT}."
+				f"Some unknown error happened while trying to reload extension {ext}."
 			)
 			print(e, file=stderr)
 

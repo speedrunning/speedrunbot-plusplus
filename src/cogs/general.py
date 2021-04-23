@@ -1,6 +1,7 @@
 import json
 from asyncio import TimeoutError
 from math import floor, trunc
+from typing import Literal
 
 from discord import Message
 from discord.ext import commands
@@ -9,28 +10,26 @@ from discord.utils import oauth_url
 
 from bot import SRBpp, run_and_output
 
-PREFIX: str = "general/bin"
+PREFIX: Literal[str] = "general/bin"
 
 
 class General(commands.Cog):
 	def __init__(self, bot: SRBpp) -> None:
-		self.bot: SRBpp = bot
+		self.bot = bot
 
 	@commands.command(name="source")
 	async def source(_, ctx: Context) -> None:
 		"""
 		Link the bots GitHub repository.
 		"""
-		SRC: str = "https://www.github.com/Mango0x45/speedrunbot-plusplus"
-		await ctx.send(SRC)
+		await ctx.send("https://www.github.com/Mango0x45/speedrunbot-plusplus")
 
 	@commands.command(name="ping")
 	async def ping(self, ctx: Context) -> None:
 		"""
 		Ping the bot, because why not?
 		"""
-		LATENCY: int = round(self.bot.latency * 1000)
-		await ctx.send(f"Pong! {LATENCY}ms")
+		await ctx.send(f"Pong! {round(self.bot.latency * 1000)}ms")
 
 	@commands.command(name="invite")
 	async def invite(self, ctx: Context) -> None:
@@ -56,8 +55,8 @@ class General(commands.Cog):
 		msg1: Message
 		msg2: Message
 
-		def check(MSG: Message) -> bool:
-			return MSG.author == ctx.author and MSG.channel == ctx.channel
+		def check(msg: Message) -> bool:
+			return msg.author == ctx.author and msg.channel == ctx.channel
 
 		try:
 			if not (data1 and data2):
@@ -140,7 +139,7 @@ class General(commands.Cog):
 			str(framerate),
 			data1,
 			data2,
-			TITLE="Retimed!",
+			title="Retimed!",
 		)
 
 	@commands.command(name="prefix", aliases=("prefixes",))
@@ -148,9 +147,9 @@ class General(commands.Cog):
 		"""
 		Get the bot's prefixes.
 		"""
-		PREFIXES = await self.bot.get_prefix(ctx.message)
-		message: str = ""
-		for prefix in PREFIXES:
+		prefixes = await self.bot.get_prefix(ctx.message)
+		message = ""
+		for prefix in prefixes:
 			if "<@" in prefix:
 				message = f"{prefix}, "
 			else:

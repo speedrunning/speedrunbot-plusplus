@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Optional
 
 from discord.ext import commands
 from discord.ext.commands.context import Context
@@ -12,25 +12,25 @@ RATE: Literal[int] = 5
 
 class Halo(commands.Cog):
 	def __init__(self, bot: SRBpp) -> None:
-		self.bot: SRBpp = bot
+		self.bot = bot
 		self._cd = commands.CooldownMapping.from_cooldown(
 			RATE, 60, commands.BucketType.user
 		)
 
 	@commands.group(name="halo", invoke_without_command=True)
-	async def halo(self, ctx: Context) -> None:
+	async def halo(_, ctx: Context) -> None:
 		await ctx.send_help(ctx.command)
 
 	@halo.command(name="recent", aliases=("cats",))
-	async def recent(_, ctx: Context, COUNT: str = None) -> None:
+	async def recent(_, ctx: Context, count: Optional[str] = None) -> None:
 		"""
 		Get a list of recent runs.
 		"""
 		await run_and_output(
 			ctx,
 			f"{PREFIX}/recent",
-			COUNT,
-			TITLE="Recent World Records",
+			count,
+			title="Recent World Records",
 		)
 
 

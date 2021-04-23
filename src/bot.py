@@ -4,89 +4,101 @@ import shlex
 from datetime import datetime
 from pathlib import Path
 from sys import stderr
-from typing import Iterable, Union
+from typing import Generator, Literal, Optional
 
 import discord
 from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.message import Message
 
-RET: int
-STDOUT: bytes
-STDERR: bytes
-
-TITLE: str
-DESC: str
-
-PREFIX: Path = Path(__file__).parent
-ROOT_DIR: str = f"{PREFIX}/.."
-EXTENSIONS: Iterable[str] = (
+PREFIX: Literal[Path] = Path(__file__).parent
+ROOT_DIR: Literal[str] = f"{PREFIX}/.."
+EXTENSIONS: Generator[str, None, None] = (
 	f"cogs.{f[:-3]}" for f in os.listdir(f"{PREFIX}/cogs") if f.endswith(".py")
 )
 
 
-def divide_chunks(l: list, n: int):
-	# looping till length l
+class Executed:
+	def __init__(self, returncode: int, stdout: bytes, stderr: bytes) -> None:
+		self.returncode = returncode
+		self._stdout = stdout
+		self._stderr = stderr
+
+	@property
+	def stdout(self) -> str:
+		return self._stdout.decode()
+
+	@property
+	def stderr(self) -> str:
+		return self._stderr.decode()
+
+
+def divide_chunks(l: list[str], n: int) -> Generator[list[str], None, None]:
+	"""
+	Take a list of strings and return a generator which yields the same list
+	of strings but in chunks of `n` strings.
+	"""
 	for i in range(0, len(l), n):
 		yield l[i : i + n]
 
 
-async def execv(PROG: str, *ARGV: tuple[str, ...]) -> tuple[int, bytes, bytes]:
+async def execv(prog: str, *argv: tuple[str, ...]) -> Executed:
 	"""
 	Run a program called PROG with the command line arguments ARGV. This returns
 	a tuple containing the processes returncode, as well as the encoded stdout and
 	stderr.
 	"""
 	# This is like `shlex.join()`, but it gets rid of any `None` values.
-	ARGS: str = " ".join(
-		shlex.quote(arg) for arg in tuple(filter(lambda x: x, ARGV))
+	args = " ".join(
+		shlex.quote(arg) for arg in tuple(filter(lambda x: x, argv))
 	)
 
-	RET = await asyncio.create_subprocess_shell(
-		f"{PREFIX}/{PROG} {ARGS}",
+	ret = await asyncio.create_subprocess_shell(
+		f"{PREFIX}/{prog} {args}",
 		stdout=asyncio.subprocess.PIPE,
 		stderr=asyncio.subprocess.PIPE,
 	)
-	STDOUT, STDERR = await RET.communicate()
-	return (RET.returncode, STDOUT, STDERR)
+	stdout, stderr = await ret.communicate()
+	return Executed(ret.returncode, stdout, stderr)
 
 
 async def run_and_output(
 	ctx: Context,
-	PROG: str,
-	*ARGV: tuple[str, ...],
-	TITLE: Union[str, None] = None,
+	prog: str,
+	*argv: tuple[str, ...],
+	title: Optional[str] = None,
 ) -> None:
 	"""
-	Run a program called PROG with the command line arguments ARGV as a
-	subprocess and return its output + exit code. If TITLE is supplied, it
-	will be used as the title of the embed that is sent to discord. If TITLE
-	is not supplied, then the first line of output from PROG will be used.
+	Run a program called `prog` with the command line arguments `argv` as a
+	subprocess and return its output + exit code. If `title` is supplied, it
+	will be used as the title of the embed that is sent to discord. If
+	`title` is not supplied, then the first line of output from `prog` will
+	be used.
 	"""
 	async with ctx.typing():
-		RETCODE, STDOUT, STDERR = await execv(PROG, *ARGV)
-		if RETCODE != 0:
-			await ctx.send(STDERR.decode())
+		process = await execv(prog, *argv)
+		if process.returncode != 0:
+			await ctx.send(process.stderr)
 			return
 
-		TITLE, DESC = (
-			STDOUT.decode().split("\n", 1)
-			if not TITLE
-			else [TITLE, STDOUT.decode()]
+		title, desc = (
+			process.stdout.split("\n", 1)
+			if not title
+			else [title, process.stdout]
 		)
-		if len(DESC) > 2000:
-			LINES = list(divide_chunks(DESC.split("\n"), 15))
-			LINES_LENGTH: int = len(LINES)
+		if len(desc) > 2000:
+			lines = list(divide_chunks(desc.split("\n"), 15))
+			lines_length = len(lines)
 			try:
 				await ctx.reply(
 					"The contents of this message are too long and as such they will be sent in DMs"
 				)
 				async with ctx.author.typing():
-					for line in range(LINES_LENGTH):
+					for line in range(lines_length):
 						await ctx.author.send(
 							embed=discord.Embed(
-								title=f"{TITLE} Page: {line + 1}/{LINES_LENGTH}",
-								description="\n".join(LINES[line]),
+								title=f"{title} Page: {line + 1}/{lines_length}",
+								description="\n".join(lines[line]),
 							)
 						)
 			except discord.Forbidden:
@@ -94,8 +106,8 @@ async def run_and_output(
 					"You have blocked the bot and the message is too long to be sent in this channel. Please unblock me and try again. "
 				)
 		else:
-			EMBED = discord.Embed(title=TITLE, description=DESC)
-			await ctx.reply(embed=EMBED)
+			embed = discord.Embed(title=title, description=desc)
+			await ctx.reply(embed=embed)
 
 
 class SRBpp(commands.Bot):
@@ -123,9 +135,9 @@ class SRBpp(commands.Bot):
 		"""
 		Code to run when the bot starts up.
 		"""
-		self.uptime: datetime = datetime.utcnow()
-		GAME: discord.Game = discord.Game("+help / ;help")
-		await self.change_presence(activity=GAME)
+		self.uptime = datetime.utcnow()
+		game = discord.Game("+help / ;help")
+		await self.change_presence(activity=game)
 
 		print(
 			f"Bot Name\t\t{self.user.name}\n"
@@ -159,8 +171,8 @@ class SRBpp(commands.Bot):
 		if message.author.bot:
 			return
 
-		COMMANDS: list[str] = message.content.split(" && ")
-		for command in COMMANDS:
+		commands = message.content.split(" && ")
+		for command in commands:
 			message.content = command
 			await self.invoke(await self.get_context(message))
 
