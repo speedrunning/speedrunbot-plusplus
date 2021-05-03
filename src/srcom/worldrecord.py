@@ -1,8 +1,8 @@
 #!/usr/bin/env python3.9
 
 """
-This program gets the current world record for a given game (argv[1]) and
-optionally a specific category (argv[2]) and subcategories (argv[3..]).
+This program gets the current world record for a given game (argv[1]) and optionally a specific
+category (argv[2]) and subcategories (argv[3..]).
 """
 
 from re import sub
@@ -68,9 +68,7 @@ def main() -> int:
 			params={"top": 1, f"var-{vid}": vval},
 		)
 
-	title = f"World Record: {game} - {cat}" + (
-		f" - {argv[3]}\n" if vid else "\n"
-	)
+	title = f"World Record: {game} - {cat}" + (f" - {argv[3]}\n" if vid else "\n")
 	try:
 		wr: dict = r["data"]["runs"][0]["run"]
 	except KeyError:

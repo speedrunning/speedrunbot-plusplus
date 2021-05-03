@@ -12,13 +12,21 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "admin/compile.h"
 #include "defines.h"
+
+#ifdef clang
+#	define CC "CCMP=clang"
+#elif defined gcc
+#	define CC "CCMP=gcc"
+#else
+#	define CC "CCMP=cc"
+#endif
 
 /* These directories are excluded by the program. */
 const char *const MAKE_EXCLUDES[] = {".", "..", "__pycache__", "cogs", NULL};
 
-bool in_excludes(const char *dname)
+static bool
+in_excludes(const char *dname)
 {
 	for (int i = 0; MAKE_EXCLUDES[i] != NULL; i++)
 		if (strcmp(dname, MAKE_EXCLUDES[i]) == 0)
@@ -26,7 +34,8 @@ bool in_excludes(const char *dname)
 	return false;
 }
 
-void make(const char *dname)
+static void
+make(const char *dname)
 {
 	pid_t pid = fork();
 	switch (pid) {
@@ -45,7 +54,8 @@ void make(const char *dname)
 	}
 }
 
-int main(int UNUSED(argc), char **argv)
+int
+main(int UNUSED(argc), char **argv)
 {
 	/*
 	 * Since this will only be run by people that know what they're doing,

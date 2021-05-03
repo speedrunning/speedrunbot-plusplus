@@ -1,8 +1,8 @@
 #!/usr/bin/env python3.9
 
 """
-This program returns a complete list of all the runs awaiting verificaiton for
-a given game (argv[1]) and optionally a second given game (argv[2]).
+This program returns a complete list of all the runs awaiting verificaiton for a given game
+(argv[1]) and optionally a second given game (argv[2]).
 """
 
 from datetime import timedelta
@@ -13,8 +13,7 @@ from typing import Literal
 from utils import *
 
 USAGE: Literal[str] = (
-	"Usage: `+pending [GAME] [GAME (Optional)]`\n"
-	+ "Example: `+pending mkw mkwextracategories`"
+	"Usage: `+pending [GAME] [GAME (Optional)]`\n" + "Example: `+pending mkw mkwextracategories`"
 )
 
 
@@ -39,9 +38,7 @@ def get_pending(game: str) -> list[dict]:
 			break
 
 		r = api_get(
-			{item["rel"]: item["uri"] for item in r["pagination"]["links"]}[
-				"next"
-			],
+			{item["rel"]: item["uri"] for item in r["pagination"]["links"]}["next"],
 		)
 
 	return runs

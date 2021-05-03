@@ -16,16 +16,17 @@
 #include "srcom/utils.h"
 #include "srcom/verified.h"
 
-static void usage(void)
+static void
+usage(void)
 {
-	fputs("Usage: `+verified [PLAYER NAME] [GAME (Optional)] [GAME "
-	      "(Optional)]`\n"
+	fputs("Usage: `+verified [PLAYER NAME] [GAME (Optional)] [GAME (Optional)]`\n"
 	      "Example: `+verified AnInternetTroll mkw mkwextracategories`\n",
 	      stderr);
 	exit(EXIT_FAILURE);
 }
 
-static unsigned int count_examined(bool *done, string_t *json)
+static unsigned int
+count_examined(bool *done, string_t *json)
 {
 	char *ptr = json->ptr;
 	unsigned int count = 0, tmp;
@@ -41,8 +42,8 @@ static unsigned int count_examined(bool *done, string_t *json)
 	return count;
 }
 
-static void perform_requests(char *uri_base, unsigned int offset,
-                             string_t *json)
+static void
+perform_requests(char *uri_base, unsigned int offset, string_t *json)
 {
 	char uri[URIBUF];
 	int running = 0, numfds;
@@ -62,7 +63,7 @@ static void perform_requests(char *uri_base, unsigned int offset,
 			exit(EXIT_FAILURE);
 		}
 
-		snprintf(uri, URIBUF, "%s%u", uri_base, offset);
+		sprintf(uri, "%s%u", uri_base, offset);
 		offset += MAX_RECV;
 
 		/* Load the contents of the API request to `json`. */
@@ -99,7 +100,8 @@ static void perform_requests(char *uri_base, unsigned int offset,
 		curl_easy_cleanup(handles[i]);
 }
 
-static unsigned int get_examined(const char *uid, const char *gname)
+static unsigned int
+get_examined(const char *uid, const char *gname)
 {
 	bool done = false;
 	char uri_base[URIBUF];
@@ -114,8 +116,7 @@ static unsigned int get_examined(const char *uid, const char *gname)
 		exit(EXIT_FAILURE);
 	}
 
-	snprintf(uri_base, URIBUF,
-	         API "/runs?examiner=%s&game=%s&max=" STR(MAX_RECV) "&offset=",
+	sprintf(uri_base, API "/runs?examiner=%s&game=%s&max=" STR(MAX_RECV) "&offset=",
 	         uid, game ? game->id : "");
 
 	/* Every loop `json` is cleared */
@@ -132,7 +133,8 @@ static unsigned int get_examined(const char *uid, const char *gname)
 	return examined;
 }
 
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
 	if (argc < 2)
 		usage();

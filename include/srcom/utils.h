@@ -3,10 +3,9 @@
 
 #include <stddef.h>
 
-#define API     "https://www.speedrun.com/api/v1"
-#define UIDBUF  16
-#define URIBUF  128
-#define GAMEBUF 8192
+#include "defines.h"
+
+#define API "https://www.speedrun.com/api/v1"
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,7 +24,7 @@ typedef struct {
  * @brief A struct that holds data regarding a game.
  */
 struct game_t {
-	char id[UIDBUF];
+	char id[ID_LEN+ 1];
 	char name[BUFSIZ];
 };
 
@@ -35,7 +34,16 @@ struct game_t {
  * @param size The amount of bytes to allocate.
  * @return void* A pointer to the allocated memory.
  */
-void *safe_malloc(size_t size);
+void *xmalloc(const size_t size);
+
+/**
+ * @brief A wrapper around `realloc(2)` that does error checking.
+ *
+ * @param ptr The pointer to reallocate memory to.
+ * @param size The amount of bytes to allocate.
+ * @return void* A pointer to the reallocated memory.
+ */
+void *xrealloc(void *ptr, const size_t size);
 
 /**
  * @brief Initialize a string_t struct.
@@ -46,7 +54,7 @@ void init_string(string_t *str);
 
 /**
  * @brief Get a games ID and name from its abbreviation.
- * 
+ *
  * @param abbrev The games sr.c abbreviation.
  * @return struct game_t* A game_t struct containing game information. If no
  * game was found, NULL will be returned.
@@ -59,7 +67,7 @@ struct game_t *get_game(const char *abbrev);
  * @param username The players speedrun.com username.
  * @return char* The players user ID, or NULL on error.
  */
-char *get_uid(const char *const username);
+char *get_uid(const char *username);
 
 /**
  * @brief Perform a GET request to the speedrun.com API and store the result.
@@ -79,8 +87,7 @@ void get_req(const char *uri, string_t *json);
  * @param json pointer to the string_t struct where the json will be stored.
  * @return size_t The number of bytes taken care of.
  */
-size_t write_callback(const void *ptr, const size_t size, const size_t nmemb,
-                      string_t *json);
+size_t write_callback(const void *ptr, const size_t size, const size_t nmemb, string_t *json);
 
 /**
  * @brief Find the number of occurances of a substring in a string.
@@ -90,8 +97,7 @@ size_t write_callback(const void *ptr, const size_t size, const size_t nmemb,
  * @param subl The length of the substring.
  * @return unsigned int The number of occurances.
  */
-unsigned int count_substr(const char *str, const char *const sub,
-                          const int subl);
+unsigned int count_substr(const char *str, const char *const sub, const int subl);
 
 /**
  * @brief Find the last occurance of a substring in a string.

@@ -1,6 +1,6 @@
 /*
- * This file contains all sorts of utility functions and variables that are
- * used throughout the programs in this directory.
+ * This file contains all sorts of utility functions and variables that are used throughout the
+ * programs in this directory.
  */
 
 #include <stdlib.h>
@@ -10,77 +10,88 @@
 
 #include "srcom/utils.h"
 
-void *safe_malloc(size_t size)
+void *
+xmalloc(const size_t size)
 {
 	void *ptr = malloc(size);
 	if (ptr == NULL) {
-		fputs("Error: Memory allocation error, the bot is likely out "
-		      "of RAM, try again later.\n",
+		fputs("Error: Memory allocation error, the bot is likely out of RAM, try again later.\n",
 		      stderr);
 		exit(EXIT_FAILURE);
 	}
 	return ptr;
 }
 
-void init_string(string_t *str)
+void *
+xrealloc(void *ptr, const size_t size)
 {
-	str->len = 0;
-	str->ptr = safe_malloc(str->len + 1);
-	str->ptr[0] = '\0';
-	return;
+	ptr = realloc(ptr, size);
+	if (ptr == NULL) {
+		fputs("Error: Memory reallocation error, the bot is likely out of RAM, try again later.\n",
+		      stderr);
+		exit(EXIT_FAILURE);
+	}
+	return ptr;
 }
 
-struct game_t *get_game(const char *abbrev)
+void
+init_string(string_t *str)
 {
-	char uri[URIBUF];
+	str->len = 0;
+	str->ptr = xmalloc(str->len + 1);
+	str->ptr[0] = '\0';
+}
+
+struct game_t *
+get_game(const char *abbrev)
+{
+	/* 52 is space for the rest of the URL */
+	char *uri = xmalloc((strlen(abbrev) + 52) * sizeof(char));
 	static struct game_t game;
 	string_t json;
 	init_string(&json);
 
-	snprintf(uri, URIBUF, API "/games?abbreviation=%s", abbrev);
+	sprintf(uri, API "/games?abbreviation=%s", abbrev);
 	get_req(uri, &json);
 
 	sscanf(json.ptr,
-	       "{\"data\":[{\"id\":\"%[^\"]\",\"names\":{\"international\":\"%["
-	       "^\"]",
+	       "{\"data\":[{\"id\":\"%[^\"]\",\"names\":{\"international\":\"%[^\"]",
 	       game.id, game.name);
 
+	free(uri);
 	free(json.ptr);
 	if (game.id[0] == '\0')
 		return NULL;
 	return &game;
 }
 
-char *get_uid(const char *const username)
+char *
+get_uid(const char *username)
 {
-	char uri[URIBUF];
+	/* 46 is space for the rest of the URL */
+	char *uri = xmalloc((strlen(username) + 46) * sizeof(char));
 	string_t user;
 	init_string(&user);
 
-	snprintf(uri, URIBUF, API "/users?lookup=%s", username);
+	sprintf(uri, API "/users?lookup=%s", username);
 	get_req(uri, &user);
 
-	static char uid[UIDBUF];
+	static char uid[ID_LEN + 1];
 	sscanf(user.ptr, "{\"data\":[{\"id\":\"%[^\"]", uid);
 
+	free(uri);
 	free(user.ptr);
 	if (uid[0] == '\0')
 		return NULL;
 	return uid;
 }
 
-size_t write_callback(const void *ptr, const size_t size, const size_t nmemb,
-                      string_t *json)
+size_t
+write_callback(const void *ptr, const size_t size, const size_t nmemb, string_t *json)
 {
 	/* Update the length of the JSON, and allocate more memory if needed. */
 	const size_t new_len = json->len + size * nmemb;
-	json->ptr = realloc(json->ptr, new_len + 1);
-	if (json->ptr == NULL) {
-		fputs("Error: Memory reallocation error, the bot is likely out "
-		      "of RAM, try again later.\n",
-		      stderr);
-		exit(EXIT_FAILURE);
-	}
+	json->ptr = xrealloc(json->ptr, new_len + 1);
 
 	/* Copy the incoming bytes to `json`. */
 	memcpy(json->ptr + json->len, ptr, size * nmemb);
@@ -90,7 +101,8 @@ size_t write_callback(const void *ptr, const size_t size, const size_t nmemb,
 	return size * nmemb;
 }
 
-void get_req(const char *uri, string_t *json)
+void
+get_req(const char *uri, string_t *json)
 {
 	CURL *curl = curl_easy_init();
 	if (curl == NULL) {
@@ -106,16 +118,15 @@ void get_req(const char *uri, string_t *json)
 	CURLcode res;
 	if ((res = curl_easy_perform(curl)) != CURLE_OK) {
 		curl_easy_cleanup(curl);
-		fputs("Error: Unable to retrieve data from the sr.c API.\n",
-		      stderr);
+		fputs("Error: Unable to retrieve data from the sr.c API.\n", stderr);
 		exit(EXIT_FAILURE);
 	}
 
 	curl_easy_cleanup(curl);
 }
 
-unsigned int count_substr(const char *str, const char *const sub,
-                          const int subl)
+unsigned int
+count_substr(const char *str, const char *const sub, const int subl)
 {
 	unsigned int c = 0;
 	for (str = strstr(str, sub); str; str = strstr(str + subl, sub))
@@ -123,7 +134,8 @@ unsigned int count_substr(const char *str, const char *const sub,
 	return c;
 }
 
-char *last_substr(const char *str, const char *const sub, const int subl)
+char *
+last_substr(const char *str, const char *const sub, const int subl)
 {
 	char *ptr;
 	for (ptr = strstr(str, sub); str; str = strstr(str + subl, sub)) {}

@@ -20,7 +20,8 @@ char uri_base[URIBUF];
 int offset_start = 0;
 int fgcounts[THREAD_COUNT], ilcounts[THREAD_COUNT];
 
-static void usage(void)
+static void
+usage(void)
 {
 	fputs("Usage: `+runs [PLAYER NAME] [GAME (Optional)]`\n"
 	      "Example: `+runs AnInternetTroll mkw`\n",
@@ -28,7 +29,8 @@ static void usage(void)
 	exit(EXIT_FAILURE);
 }
 
-static void *routine(void *tnum)
+static void *
+routine(void *tnum)
 {
 	/*
 	 * Equivalant to `(int) tnum` but supresses compiler warnings that can
@@ -39,8 +41,7 @@ static void *routine(void *tnum)
 	string_t json;
 
 	/* Make a GET request. */
-	snprintf(uri, URIBUF, "%s%d", uri_base,
-	         offset_start + MAX_RECV * i_tnum);
+	sprintf(uri, "%s%d", uri_base, offset_start + MAX_RECV * i_tnum);
 	init_string(&json);
 	get_req(uri, &json);
 
@@ -54,8 +55,7 @@ static void *routine(void *tnum)
 	json_t *root, *data, *obj, *level;
 	root = json_loads(json.ptr, 0, NULL);
 	if (!root) {
-		fputs("Error: Unable to parse sr.c reponse, try again later.\n",
-		      stderr);
+		fputs("Error: Unable to parse sr.c reponse, try again later.\n", stderr);
 		exit(EXIT_FAILURE);
 	}
 	data = json_object_get(root, "data");
@@ -75,7 +75,8 @@ static void *routine(void *tnum)
 	return NULL;
 }
 
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
 	if (argc == 1)
 		usage();
@@ -85,19 +86,15 @@ int main(int argc, char **argv)
 
 	/* Get the users ID and name. */
 	if ((uid = get_uid(argv[1])) == NULL) {
-		fprintf(stderr, "Error: User with name '%s' not found.\n",
-		        argv[1]);
+		fprintf(stderr, "Error: User with name '%s' not found.\n", argv[1]);
 		exit(EXIT_FAILURE);
 	}
 	if (argc > 2 && (game = get_game(argv[2])) == NULL) {
-		fprintf(stderr,
-		        "Error: Game with abbreviation '%s' not found.\n",
-		        argv[2]);
+		fprintf(stderr, "Error: Game with abbreviation '%s' not found.\n", argv[2]);
 		exit(EXIT_FAILURE);
 	}
 
-	snprintf(uri_base, URIBUF,
-	         API "/runs?user=%s&game=%s&max=" STR(MAX_RECV) "&offset=", uid,
+	sprintf(uri_base, API "/runs?user=%s&game=%s&max=" STR(MAX_RECV) "&offset=", uid,
 	         game ? game->id : "");
 
 	while (!done) {
@@ -107,19 +104,15 @@ int main(int argc, char **argv)
 			 * This cast is a could be replaced with a simple `(void *) i`
 			 * cast, but the compiler doesn't like it when I do that.
 			 */
-			if (pthread_create(&threads[i], NULL, &routine,
-			                   *((void **) &i))
-			    != 0) {
-				fputs("Error: Failed to create thread.\n",
-				      stderr);
+			if (pthread_create(&threads[i], NULL, &routine, *((void **) &i)) != 0) {
+				fputs("Error: Failed to create thread.\n", stderr);
 				exit(EXIT_FAILURE);
 			}
 		}
 
 		for (int i = 0; i < THREAD_COUNT; i++) {
 			if (pthread_join(threads[i], NULL) != 0) {
-				fputs("Error: Failed to join thread.\n",
-				      stderr);
+				fputs("Error: Failed to join thread.\n", stderr);
 				exit(EXIT_FAILURE);
 			}
 		}
@@ -142,5 +135,6 @@ int main(int argc, char **argv)
 	       "Individual Level: %d\n"
 	       "Total: %d\n",
 	       fullgame, il, fullgame + il);
+
 	return EXIT_SUCCESS;
 }

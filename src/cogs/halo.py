@@ -13,9 +13,7 @@ RATE: Literal[int] = 5
 class Halo(commands.Cog):
 	def __init__(self, bot: SRBpp) -> None:
 		self.bot = bot
-		self._cd = commands.CooldownMapping.from_cooldown(
-			RATE, 60, commands.BucketType.user
-		)
+		self._cd = commands.CooldownMapping.from_cooldown(RATE, 60, commands.BucketType.user)
 
 	@commands.group(name="halo", invoke_without_command=True)
 	async def halo(_, ctx: Context) -> None:

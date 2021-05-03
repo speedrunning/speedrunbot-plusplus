@@ -13,9 +13,7 @@ RATE: Literal[int] = 5
 class Src(commands.Cog):
 	def __init__(self, bot: SRBpp) -> None:
 		self.bot = bot
-		self._cd = commands.CooldownMapping.from_cooldown(
-			RATE, 60, commands.BucketType.user
-		)
+		self._cd = commands.CooldownMapping.from_cooldown(RATE, 60, commands.BucketType.user)
 
 	async def cog_check(self, ctx: Context) -> True:
 		"""
@@ -39,9 +37,7 @@ class Src(commands.Cog):
 		await run_and_output(ctx, f"{PREFIX}/categories", game)
 
 	@commands.command(name="categoriesplayed", aliases=("catsplayed",))
-	async def categoriesplayed(
-		_, ctx: Context, player: Optional[str] = None
-	) -> None:
+	async def categoriesplayed(_, ctx: Context, player: Optional[str] = None) -> None:
 		"""
 		Get the number of unique categories a player has submit runs to.
 		"""
@@ -57,9 +53,7 @@ class Src(commands.Cog):
 		"""
 		Get the number of unique games a player has submit runs to.
 		"""
-		await run_and_output(
-			ctx, f"{PREFIX}/games", player, title=f"Games Played: {player}"
-		)
+		await run_and_output(ctx, f"{PREFIX}/games", player, title=f"Games Played: {player}")
 
 	@commands.command(name="leaderboard", aliases=("lb",))
 	async def leaderboard(
@@ -70,12 +64,9 @@ class Src(commands.Cog):
 		subcategory: Optional[str] = None,
 	) -> None:
 		"""
-		Get the top 10 runs for a game, with an optional category and
-		subcategory.
+		Get the top 10 runs for a game, with an optional category and subcategory.
 		"""
-		await run_and_output(
-			ctx, f"{PREFIX}/leaderboard", game, category, subcategory
-		)
+		await run_and_output(ctx, f"{PREFIX}/leaderboard", game, category, subcategory)
 
 	@commands.command(name="modcount", aliases=("mc",))
 	async def modcount(_, ctx: Context, player: Optional[str] = None) -> None:
@@ -97,8 +88,8 @@ class Src(commands.Cog):
 		game2: Optional[str] = None,
 	) -> None:
 		"""
-		Get the number of runs awaiting verification for a given game.
-		Optionally, a second game can be given.
+		Get the number of runs awaiting verification for a given game. Optionally, a second
+		game can be given.
 		"""
 		await run_and_output(ctx, f"{PREFIX}/runqueue", game1, game2)
 
@@ -110,8 +101,7 @@ class Src(commands.Cog):
 		game: Optional[str] = None,
 	) -> None:
 		"""
-		Get the amount of runs a player has submit. Optionally a game
-		can be specified.
+		Get the amount of runs a player has submit. Optionally a game can be specified.
 		"""
 		await run_and_output(ctx, f"{PREFIX}/runs", player, game)
 
@@ -124,8 +114,8 @@ class Src(commands.Cog):
 		game2: Optional[str] = None,
 	) -> None:
 		"""
-		Get the amount of runs a player has verified or rejected.
-		Optionally 1 or 2 games can be specified.
+		Get the amount of runs a player has verified or rejected. Optionally 1 or 2 games
+		can be specified.
 		"""
 		await run_and_output(
 			ctx,
@@ -145,12 +135,9 @@ class Src(commands.Cog):
 		subcategory: Optional[str] = None,
 	) -> None:
 		"""
-		Get the world record for a game, with an optional category and
-		subcategory.
+		Get the world record for a game, with an optional category and subcategory.
 		"""
-		await run_and_output(
-			ctx, f"{PREFIX}/worldrecord", game, category, subcategory
-		)
+		await run_and_output(ctx, f"{PREFIX}/worldrecord", game, category, subcategory)
 
 	@commands.command(name="worldrecords", aliases=("wrs",))
 	async def worldrecords(
@@ -190,8 +177,8 @@ class Src(commands.Cog):
 		game2: Optional[str] = None,
 	) -> None:
 		"""
-		Get a leaderboard of a games verifiers and how many runs each
-		has examined. Optionally 2 games can be specified.
+		Get a leaderboard of a games verifiers and how many runs each has examined.
+		Optionally 2 games can be specified.
 		"""
 		await run_and_output(
 			ctx,

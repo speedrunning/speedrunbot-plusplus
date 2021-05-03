@@ -1,8 +1,8 @@
 #!/usr/bin/env python3.9
 
 """
-This program returns the top 10 for a given game (argv[1]) as well as an
-optional category (argv[2]) and optional subcategory (argv[3]).
+This program returns the top 10 for a given game (argv[1]) as well as an optional category (argv[2])
+and optional subcategory (argv[3]).
 """
 
 from re import sub
@@ -19,8 +19,7 @@ USAGE: Literal[str] = (
 
 def pad(time: str, ms: bool) -> str:
 	"""
-	Pad a time with blank spaces if it doesnt contain milliseconds for
-	output formatting.
+	Pad a time with blank spaces if it doesnt contain milliseconds for output formatting.
 
 	>>> pad("59:54.397", True)
 	'59:54.397'
@@ -85,9 +84,7 @@ def main() -> int:
 
 	# Set this flag if atleast one run has milliseconds.
 	try:
-		ms = "." in "".join(
-			ptime(run["run"]["times"]["primary_t"]) for run in r["data"]["runs"]
-		)
+		ms = "." in "".join(ptime(run["run"]["times"]["primary_t"]) for run in r["data"]["runs"])
 	except KeyError:
 		error_and_die("The category '{cat}' is an IL category, not level.")
 
@@ -98,18 +95,14 @@ def main() -> int:
 			", ".join(
 				username(player["id"])
 				if player["rel"] == "user"
-				else sub(
-					"^\[.*\]", "", player["name"]
-				)  # Regex to remove flags.
+				else sub("^\[.*\]", "", player["name"])  # Regex to remove flags.
 				for player in run["run"]["players"]
 			),
 		)
 		for run in r["data"]["runs"][:10]
 	)
 
-	title = f"Top {len(rows)}: {game} - {cat}" + (
-		f" - {argv[3]}\n" if vid else "\n"
-	)
+	title = f"Top {len(rows)}: {game} - {cat}" + (f" - {argv[3]}\n" if vid else "\n")
 
 	# Length of the longest run time, used for output padding.
 	try:

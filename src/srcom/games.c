@@ -1,7 +1,4 @@
-/*
- * This program gets the number of games that a given player (argv[1]) has
- * submit runs to.
- */
+/* This program gets the number of games that a given player (argv[1]) has submit runs to. */
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -9,12 +6,15 @@
 
 #include <jansson.h>
 
+#include "defines.h"
+#include "srcom/games.h"
 #include "srcom/utils.h"
 
 /* Who in their right mind would play this many games? Besides Cytruss. */
-char unique[8196][UIDBUF];
+char unique[8196][ID_LEN + 1];
 
-static void usage(void)
+static void
+usage(void)
 {
 #ifdef CATEGORIES
 	fputs("Usage: `+categoriesplayed [PLAYER NAME]`\n"
@@ -28,26 +28,27 @@ static void usage(void)
 	exit(EXIT_FAILURE);
 }
 
-static bool in_unique(char *id)
+static bool
+in_unique(char *id)
 {
 	int i = 0;
 	for (; unique[i][0] != '\0'; i++)
 		if (strcmp(unique[i], id) == 0)
 			return true;
 
-	strncpy(unique[i], id, UIDBUF);
+	strcpy(unique[i], id);
 	return false;
 }
 
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
 	if (argc != 2)
 		usage();
 
 	char *uid = get_uid(argv[1]);
 	if (!uid) {
-		fprintf(stderr, "Error: User with username '%s' not found.\n",
-		        argv[1]);
+		fprintf(stderr, "Error: User with username '%s' not found.\n", argv[1]);
 		exit(EXIT_FAILURE);
 	}
 
@@ -56,15 +57,14 @@ int main(int argc, char **argv)
 
 	/* Get players' PRs. */
 	char uri[URIBUF];
-	snprintf(uri, URIBUF, API "/users/%s/personal-bests", uid);
+	sprintf(uri, API "/users/%s/personal-bests", uid);
 	get_req(uri, &prs);
 
 	/* We don't free `prs.ptr` after this because it's slow. */
 	json_t *root, *data;
 	root = json_loads(prs.ptr, 0, NULL);
 	if (!root) {
-		fputs("Error: Unable to parse sr.c reponse, try again later.\n",
-		      stderr);
+		fputs("Error: Unable to parse sr.c reponse, try again later.\n", stderr);
 		exit(EXIT_FAILURE);
 	}
 

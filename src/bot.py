@@ -35,8 +35,8 @@ class Executed:
 
 def divide_chunks(l: list[str], n: int) -> Generator[list[str], None, None]:
 	"""
-	Take a list of strings and return a generator which yields the same list
-	of strings but in chunks of `n` strings.
+	Take a list of strings and return a generator which yields the same list of strings but in
+	chunks of `n` strings.
 	"""
 	for i in range(0, len(l), n):
 		yield l[i : i + n]
@@ -44,14 +44,11 @@ def divide_chunks(l: list[str], n: int) -> Generator[list[str], None, None]:
 
 async def execv(prog: str, *argv: tuple[str, ...]) -> Executed:
 	"""
-	Run a program called PROG with the command line arguments ARGV. This returns
-	a tuple containing the processes returncode, as well as the encoded stdout and
-	stderr.
+	Run a program called PROG with the command line arguments ARGV. This returns a tuple
+	containing the processes returncode, as well as the encoded stdout and stderr.
 	"""
 	# This is like `shlex.join()`, but it gets rid of any `None` values.
-	args = " ".join(
-		shlex.quote(arg) for arg in tuple(filter(lambda x: x, argv))
-	)
+	args = " ".join(shlex.quote(arg) for arg in tuple(filter(lambda x: x, argv)))
 
 	ret = await asyncio.create_subprocess_shell(
 		f"{PREFIX}/{prog} {args}",
@@ -69,11 +66,10 @@ async def run_and_output(
 	title: Optional[str] = None,
 ) -> None:
 	"""
-	Run a program called `prog` with the command line arguments `argv` as a
-	subprocess and return its output + exit code. If `title` is supplied, it
-	will be used as the title of the embed that is sent to discord. If
-	`title` is not supplied, then the first line of output from `prog` will
-	be used.
+	Run a program called `prog` with the command line arguments `argv` as a subprocess and
+	return its output + exit code. If `title` is supplied, it will be used as the title of the
+	embed that is sent to discord. If `title` is not supplied, then the first line of output
+	from `prog` will be used.
 	"""
 	async with ctx.typing():
 		process = await execv(prog, *argv)
@@ -81,11 +77,7 @@ async def run_and_output(
 			await ctx.send(process.stderr)
 			return
 
-		title, desc = (
-			process.stdout.split("\n", 1)
-			if not title
-			else [title, process.stdout]
-		)
+		title, desc = process.stdout.split("\n", 1) if not title else [title, process.stdout]
 		if len(desc) > 2000:
 			lines = list(divide_chunks(desc.split("\n"), 15))
 			lines_length = len(lines)
@@ -113,9 +105,7 @@ async def run_and_output(
 class SRBpp(commands.Bot):
 	def __init__(self) -> None:
 		super().__init__(
-			allowed_mentions=discord.AllowedMentions(
-				everyone=False, users=False, roles=False
-			),
+			allowed_mentions=discord.AllowedMentions(everyone=False, users=False, roles=False),
 			case_insensitive=True,
 			command_prefix=get_prefix,
 			intents=discord.Intents(messages=True, guilds=True),
@@ -179,8 +169,7 @@ class SRBpp(commands.Bot):
 
 def get_prefix(bot: SRBpp, message: Message) -> list[str]:
 	"""
-	Gets the list of prefixes that can be used to call the bot, including
-	pinging the bot.
+	Gets the list of prefixes that can be used to call the bot, including pinging the bot.
 	"""
 	PREFIXES: tuple[str, ...] = ("+", ";")
 	return commands.when_mentioned_or(*PREFIXES)(bot, message)

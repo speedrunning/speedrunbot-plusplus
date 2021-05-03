@@ -1,6 +1,5 @@
 CCMP   ?= clang
-CFLAGS := -O3 -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes \
-		-Wno-unused-result
+CFLAGS := -O3 -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wno-unused-result
 INC    := -I../../include
 
 cprogs := bin/compile
@@ -18,7 +17,7 @@ objs/%.o: %.c
 	$(CCMP) $(CFLAGS) $(INC) -D$(CCMP) -o $@ -c $<
 
 bin/%: objs/%.o
-	$(CCMP) $(CFLAGS) -o $@ $^
+	$(CCMP) -o $@ $^
 
 # Phony targets
 .PHONY: clean

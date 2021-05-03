@@ -1,5 +1,10 @@
 #!/usr/bin/env python3.9
 
+"""
+This program gets all the verifiers for a given game (argv[1]) and optionally second given game
+(argv[2]) and produces a verifier leaderboard based on how many runs each verifier has examined.
+"""
+
 import shlex
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
@@ -103,9 +108,7 @@ def main() -> int:
 	mods = list(mods)
 	mods.sort(key=attrgetter("examined"), reverse=True)
 
-	print(
-		"WARNING: On large leaderboards this is very likely to be incorrect due to rate limiting"
-	)
+	print("WARNING: On large leaderboards this is very likely to be incorrect due to rate limiting")
 	print("\n".join(f"{mod.name}: {mod.examined}" for mod in mods))
 	return EXIT_SUCCESS
 

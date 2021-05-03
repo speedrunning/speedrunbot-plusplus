@@ -1,17 +1,18 @@
 CCMP   ?= clang
-CFLAGS := -O3 -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes \
-		-Wno-unused-result
+CFLAGS := -O3 -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wno-unused-result
 # This might be not very good, look into this!!
 CURL   := $(shell curl-config --libs) -Wl,-rpath $(shell curl-config --prefix)/lib
 INC    := -I../../include
 PY     := python3.9
 
-cprogs  := bin/categories bin/categoriesplayed bin/games bin/modcount \
-		bin/runqueue bin/runs bin/verified bin/worldrecords
-pyprogs := bin/categories bin/leaderboard bin/pending bin/verifierleaderboard \
-		bin/worldrecord bin/utils.py
+cprogs  := bin/categories bin/categoriesplayed bin/games bin/modcount bin/runqueue bin/runs \
+		bin/verified bin/worldrecords
+pyprogs := bin/categories bin/leaderboard bin/pending bin/verifierleaderboard bin/worldrecord \
+		bin/utils.py
 
 all: $(pyprogs) $(cprogs)
+debug: CFLAGS += -DDEBUG
+debug: all
 $(shell mkdir -p bin/ objs/)
 
 # Python programs
@@ -25,10 +26,10 @@ bin/%: %.py
 
 # C programs
 
-# The special rules for `bin/categoriesplayed`, `bin/games`, etc. comes first to
-# ensure that they don't get linked with incorrect libraries. Additionally,
-# `games` and `categoriesplayed` are almost identical, so they both use
-# `games.c`, with preproccessor statements to create two seperate binaries.
+# The special rules for `bin/categoriesplayed`, `bin/games`, etc. comes first to ensure that they
+# don't get linked with incorrect libraries. Additionally, `games` and `categoriesplayed` are almost
+# identical, so they both use `games.c`, with preproccessor statements to create two seperate
+# binaries.
 .PRECIOUS: objs/%.o
 objs/categoriesplayed.o: games.c
 	$(CCMP) $(CFLAGS) $(INC) -DCATEGORIES -o $@ -c $<

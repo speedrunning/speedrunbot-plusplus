@@ -18,8 +18,7 @@ def usage() -> NoReturn:
 	are given.
 	"""
 	print(
-		"Usage: `+halo recent [AMOUNT (Optional)]`\n"
-		+ "Example: `+halo recent 5`",
+		"Usage: `+halo recent [AMOUNT (Optional)]`\n" + "Example: `+halo recent 5`",
 		file=stderr,
 	)
 	exit(EXIT_FAILURE)

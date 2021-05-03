@@ -2,30 +2,24 @@
 
 # Format all the source files.
 
-if ! command -v black &>/dev/null; then
-	echo Error: Black was not found. This script will break when \
-		formatting python files.
-	printf "Do you want to install black? [y/N]: "
+prompt_user() {
+	echo Error: $1 was not found. This script will break when formatting $2 files.
+	printf "Do you want to install $1? [y/N]: "
 	read -r C
 	if test "$C" = "y" || test "$C" = "Y"; then
-		python3 -m pip install black
+		return 0
 	fi
+	return 1
+}
+
+if ! command -v black >/dev/null; then
+	prompt_user black python && python3 -m pip install black
 fi
-if ! command -v isort &>/dev/null; then
-	echo Error: isort was not found. This script will break when \
-		formatting python files.
-	printf "Do you want to install isort? [y/N]: "
-	read -r C
-	if test "$C" = "y" || test "$C" = "Y"; then
-		python3 -m pip install isort
-	fi
+if ! command -v isort >/dev/null; then
+	prompt_user isort python && python3 -m pip install isort
 fi
-if ! command -v clang-format &>/dev/null; then
-	echo Error: clang-format was not found. This script will break when \
-		formatting C files.
-	printf "Do you want to install clang-format? (Debian only) [y/N]: "
-	read -r C
-	if test "$C" = "y" || test "$C" = "Y"; then
+if ! command -v clang-format >/dev/null; then
+	if prompt_user clang-format C; then
 		if command -v sudo >/dev/null 2>&1; then
 			SU="sudo"
 		elif command -v doas >/dev/null 2>&1; then
@@ -51,18 +45,14 @@ for FILE in "$SCR_PATH"/**/*; do
 	*.py)
 		echo Formatting "$FILE"
 		isort "$FILE" &>/dev/null
-		python3.9 -m black -l 80 "$FILE" &>/dev/null
+		python3.9 -m black -l 100 "$FILE" &>/dev/null
 		unexpand -t 4 --first-only "$FILE" >temp
-		if test -x "$FILE"; then
-			EFLAG=1
-		else
-			EFLAG=0
-		fi
+		test -x "$FILE" && EFLAG=1 || EFLAG=0
 		mv temp "$FILE"
 		test $EFLAG -eq 1 && chmod +x "$FILE"
 
 		# '...' in docstrings causes some formatting issues.
-		sed -i 's/\t\(\t*\.\.\.\)/\1/' $FILE
+		sed -i 's/^\t\(\t*\.\.\.\)/\1/' $FILE
 		;;
 	*.sh)
 		echo Formatting "$FILE"

@@ -1,6 +1,6 @@
 /*
- * Get all the given categories for a given game (argv[1]). This includes
- * fullgame, miscellaneous, and individual level categories.
+ * Get all the given categories for a given game (argv[1]). This includes fullgame, miscellaneous,
+ * and individual level categories.
  */
 
 #include <stdbool.h>
@@ -14,7 +14,8 @@
 #include "srcom/categories.h"
 #include "srcom/utils.h"
 
-static void usage(void)
+static void
+usage(void)
 {
 	fputs("Usage: `+categories [GAME]`\n"
 	      "Example: `+categories mkw`\n",
@@ -22,14 +23,13 @@ static void usage(void)
 	exit(EXIT_FAILURE);
 }
 
-static bool get_categories(json_t *root, struct counts_t *counts,
-                           struct names_t *names, string_t *json)
+static bool
+get_categories(json_t *root, struct counts_t *counts, struct names_t *names, string_t *json)
 {
 	json_t *data;
 	root = json_loads(json->ptr, 0, NULL);
 	if (!root) {
-		fputs("Error: Unable to parse sr.c reponse, try again later.\n",
-		      stderr);
+		fputs("Error: Unable to parse sr.c reponse, try again later.\n", stderr);
 		exit(EXIT_FAILURE);
 	}
 
@@ -40,9 +40,9 @@ static bool get_categories(json_t *root, struct counts_t *counts,
 		return false;
 	}
 
-	names->fullgame = safe_malloc(num_cats * sizeof(char *));
-	names->il = safe_malloc(num_cats * sizeof(char *));
-	names->misc = safe_malloc(num_cats * sizeof(char *));
+	names->fullgame = xmalloc(num_cats * sizeof(char *));
+	names->il = xmalloc(num_cats * sizeof(char *));
+	names->misc = xmalloc(num_cats * sizeof(char *));
 
 	for (size_t i = 0; i < num_cats; i++) {
 		json_t *obj, *type, *misc, *name;
@@ -51,25 +51,23 @@ static bool get_categories(json_t *root, struct counts_t *counts,
 		name = json_object_get(obj, "name");
 
 		/* Update the counters. */
-		if (misc->type == JSON_TRUE) {
-			names->misc[counts->misc++] =
-			        (char *) json_string_value(name);
-		}
+		if (misc->type == JSON_TRUE)
+			names->misc[counts->misc++] = (char *) json_string_value(name);
 		else {
 			type = json_object_get(obj, "type");
 			if (json_string_length(type) == 8) /* "per-game" */
 				names->fullgame[counts->fullgame++] =
 				        (char *) json_string_value(name);
 			else
-				names->il[counts->il++] =
-				        (char *) json_string_value(name);
+				names->il[counts->il++] = (char *) json_string_value(name);
 		}
 	}
 
 	return true;
 }
 
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
 	if (argc != 2)
 		usage();
@@ -80,14 +78,12 @@ int main(int argc, char **argv)
 
 	/* Get the games ID and name. */
 	if ((game = get_game(argv[1])) == NULL) {
-		fprintf(stderr,
-		        "Error: Game with abbreviation '%s' not found.\n",
-		        argv[1]);
+		fprintf(stderr, "Error: Game with abbreviation '%s' not found.\n", argv[1]);
 		exit(EXIT_FAILURE);
 	}
 
 	char uri[URIBUF];
-	snprintf(uri, URIBUF, API "/games/%s/categories", game->id);
+	sprintf(uri, API "/games/%s/categories", game->id);
 	get_req(uri, &categories);
 
 	/*
@@ -127,6 +123,12 @@ int main(int argc, char **argv)
 		puts("");
 	}
 
+#ifdef DEBUG
+	free(categories.ptr);
+	free(names.fullgame);
+	free(names.il);
+	free(names.misc);
 	json_decref(root);
+#endif
 	return EXIT_SUCCESS;
 }

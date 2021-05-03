@@ -1,8 +1,7 @@
 #!/usr/bin/env python3.9
 
 """
-This file contains all sorts of variables and utilities used in the sr.c
-related programs.
+This file contains all sorts of variables and utilities used in the sr.c related programs.
 """
 
 import asyncio
@@ -21,8 +20,7 @@ EXIT_FAILURE: Literal[int] = 1
 
 def usage(usage: str) -> NoReturn:
 	"""
-	Print the commands usage and example if an invalid number of arguments
-	are given to stderr.
+	Print the commands usage and example if an invalid number of arguments are given to stderr.
 	"""
 	print(usage, file=stderr)
 	exit(EXIT_FAILURE)
@@ -38,15 +36,14 @@ def error_and_die(e: Union[Type[Exception], str]) -> NoReturn:
 
 def api_get(uri: str, params: Optional[dict[str, Any]] = {}) -> dict:
 	"""
-	This is a wrapper around `requests.get()` that does error checking for
-	status codes.
+	This is a wrapper around `requests.get()` that does error checking for status codes.
 	"""
 	try:
 		r = requests.get(uri, params=params)
 	except ConnectionError as e:
 		err_and_die(e)
 
-	if r.status_code not in (200, 204):
+	if not r.ok:
 		error_and_die(r.json()["message"])
 
 	return r.json()
@@ -114,9 +111,9 @@ def getgame(abbrev: str) -> tuple[str, str]:
 
 def subcatid(cid: str, subcat: str, lflag: bool = False) -> tuple[str, str]:
 	"""
-	Get the subcategory ID and and value ID from the given category ID and
-	subcategory value label. Whoever decided to handle subcategories like
-	this should consider switching professions.
+	Get the subcategory ID and and value ID from the given category ID and subcategory value
+	label. Whoever decided to handle subcategories like this should consider switching
+	professions.
 
 	>>> subcatid("w20gmyzk", "Random Seed")
 	('5ly7759l', '5q804wk1')
@@ -145,9 +142,8 @@ def subcatid(cid: str, subcat: str, lflag: bool = False) -> tuple[str, str]:
 
 def ptime(s: float) -> str:
 	"""
-	Pretty print a time in the format H:M:S.ms. Empty leading fields are
-	disgarded with the exception of times under 60 seconds which show 0
-	minutes.
+	Pretty print a time in the format H:M:S.ms. Empty leading fields are disgarded with the
+	exception of times under 60 seconds which show 0 minutes.
 
 	>>> ptime(234.2)
 	'3:54.200'
@@ -173,9 +169,8 @@ def ptime(s: float) -> str:
 
 def getcid(cat: str, r: dict) -> Optional[str]:
 	"""
-	Get the category ID with the name `CAT` from the request `R`. This
-	function doesn't do the request itself, since it's meant to work with
-	both fullgame and IL's, amongst other reasons.
+	Get the category ID with the name `CAT` from the request `R`. This function doesn't do the
+	request itself, since it's meant to work with both fullgame and IL's, amongst other reasons.
 
 	>>> r = api_get(f"{API}/games/l3dxogdy/categories")
 	>>> getcid("Nitro Tracks", r)

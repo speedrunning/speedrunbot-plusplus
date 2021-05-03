@@ -4,6 +4,9 @@
 /* Including because `string_t` is used in a prototype below. */
 #include "utils.h"
 
+/* strlen(API "/games//categories") + ID_LEN + 1 */
+#define URIBUF 58
+
 /**
  * @brief A struct containing the counts of each category type.
  */

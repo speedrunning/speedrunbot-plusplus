@@ -24,8 +24,7 @@ class Admin(commands.Cog):
 	@commands.Cog.listener()
 	async def on_command_error(self, ctx: Context, err: CommandError) -> None:
 		"""
-		A simple error handler to avoid spamming my console with errors
-		I do not care about.
+		A simple error handler to avoid spamming my console with errors I do not care about.
 		"""
 		if type(err) in (
 			commands.errors.CommandNotFound,
@@ -33,17 +32,13 @@ class Admin(commands.Cog):
 		):
 			pass
 		elif type(err) == commands.errors.NotOwner:
-			await ctx.send(
-				"You do not have permission to execute this command."
-			)
+			await ctx.send("You do not have permission to execute this command.")
 		elif type(err) == commands.CommandOnCooldown:
 			await ctx.send(
 				f"You can only run {RATE} speedrun.com related commands per minute. Please wait {trunc(err.retry_after)} seconds."
 			)
 		elif type(err) == commands.errors.BadArgument:
-			await ctx.send(
-				"Invalid argument, please check your input and try again."
-			)
+			await ctx.send("Invalid argument, please check your input and try again.")
 		else:  # TODO: Make it DM me the error maybe?
 			print(f"{type(err)}: {err}", file=stderr)
 
@@ -54,7 +49,8 @@ class Admin(commands.Cog):
 			embed.add_field(name="Command invoked: ", value=ctx.invoked_with)
 			await ctx.author.send(f"{type(err)}", embed=embed)
 
-			# For debugging purposes uncomment the following line to enable detailed error printing
+			# For debugging purposes uncomment the following line to enable detailed
+			# error printing.
 			# print_exception(type(err), err, err.__traceback__, file=stderr)
 
 	@commands.is_owner()
@@ -84,8 +80,8 @@ class Admin(commands.Cog):
 	@commands.command(name="restart")
 	async def restart(_, ctx: Context) -> None:
 		"""
-		Restart the bot. This should only really be used when pulling changes to files
-		such as `bot.py` and `main.py`.
+		Restart the bot. This should only really be used when pulling changes to files such
+		as `bot.py` and `main.py`.
 		"""
 		await ctx.send("Restarting!")
 		os.execl(sys.executable, sys.executable, *sys.argv)
@@ -108,9 +104,7 @@ class Admin(commands.Cog):
 				f"The extension {ext} doesn't have an entry point. (Try adding the setup function)"
 			)
 		except commands.ExtensionFailed as e:
-			await ctx.send(
-				f"Some unknown error happened while trying to reload extension {ext}."
-			)
+			await ctx.send(f"Some unknown error happened while trying to reload extension {ext}.")
 			print(e, file=stderr)
 
 	@commands.is_owner()
@@ -131,9 +125,7 @@ class Admin(commands.Cog):
 				f"The extension {ext} doesn't have an entry point. (Try adding the setup function)"
 			)
 		except commands.ExtensionFailed as e:
-			await ctx.send(
-				f"Some unknown error happened while trying to reload extension {ext}."
-			)
+			await ctx.send(f"Some unknown error happened while trying to reload extension {ext}.")
 			print(e, file=stderr)
 
 	@commands.is_owner()
@@ -154,9 +146,7 @@ class Admin(commands.Cog):
 				f"The extension {ext} doesn't have an entry point. (Try adding the setup function)"
 			)
 		except commands.ExtensionFailed as e:
-			await ctx.send(
-				f"Some unknown error happened while trying to reload extension {ext}."
-			)
+			await ctx.send(f"Some unknown error happened while trying to reload extension {ext}.")
 			print(e, file=stderr)
 
 

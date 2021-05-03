@@ -4,9 +4,8 @@
 
 install_python39() {
 	$SU apt update
-	yes | $SU apt install build-essential zlib1g-dev libncurses5-dev \
-		libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev \
-		libreadline-dev libffi-dev curl libbz2-dev
+	yes | $SU apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev
+		libssl-dev libsqlite3-dev libreadline-dev libffi-dev curl libbz2-dev
 
 	wget https://www.python.org/ftp/python/3.9.1/Python-3.9.1.tgz
 	tar -xf Python-3.9.1.tgz
@@ -42,8 +41,7 @@ elif command -v gcc >/dev/null 2>&1; then
 elif command -v cc >/dev/null 2>&1; then
 	CC="cc"
 else
-	echo You must install a C compiler before setting up the bot. Clang or \
-		GCC are recommended.
+	echo You must install a C compiler before setting up the bot. Clang or GCC are recommended.
 	exit 0
 fi
 
@@ -52,8 +50,7 @@ echo Checking for Python3.9
 if command -v python3.9 >/dev/null 2>&1; then
 	PY="python3.9"
 elif command -v python3 >/dev/null 2>&1; then
-	echo WARNING: Python3 was found but not Python3.9. There is no \
-		guarantee the bot will work.
+	echo WARNING: Python3 was found but not Python3.9. There is no guarantee the bot will work.
 	install_python39
 	printf "Do you want to install python3.9? (Only tested on Debian) [y/N]: "
 
@@ -65,9 +62,9 @@ elif command -v python3 >/dev/null 2>&1; then
 		PY="python3"
 	fi
 else
-	echo ERROR: Python3 was not found. The bot will not work. You can \
-		either install Python3 from your distributions package manager \
-		or you can install Python3.9 from this script.
+	echo ERROR: Python3 was not found. The bot will not work. You can either install Python3 \
+		from your distributions package manager or you can install Python3.9 from this \
+		script.
 	printf "Do you want to install python3.9? (Only tested on Debian) [y/N]: "
 
 	read -r C
@@ -98,8 +95,7 @@ debian)
 	yes | $SU apt install libjansson-dev libcurl4-openssl-dev >/dev/null 2>&1
 	;;
 *)
-	echo You do not have a supported OS. Please install jansson and libcurl \
-		manually
+	echo You do not have a supported OS. Please install jansson and libcurl manually
 	exit 1
 	;;
 esac

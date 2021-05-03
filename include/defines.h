@@ -25,4 +25,7 @@
 /* Maximum length of a speedrun.com username */
 #define SRC_MAX_USERNAME 30
 
+/* The length of a speedrun.com ID */
+#define ID_LEN 8
+
 #endif /* !__DEFINES_H_ */

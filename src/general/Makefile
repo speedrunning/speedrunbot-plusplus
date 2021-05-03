@@ -1,4 +1,4 @@
-PY     := python3.9
+PY := python3.9
 
 pyprogs := bin/retime
 
@@ -7,9 +7,8 @@ $(shell mkdir -p bin/)
 
 # Python programs
 
-# This needs to retain the file extension for importability
 bin/%: %.py
-	chmod +x $< && cp $< $@
+	chmod +x $< && ln -b $< $@
 
 # Phony targets
 .PHONY: clean test
