@@ -138,6 +138,7 @@ char *
 last_substr(const char *str, const char *const sub, const int subl)
 {
 	char *ptr;
-	for (ptr = strstr(str, sub); str; str = strstr(str + subl, sub)) {}
+	for (ptr = strstr(str, sub); str; str = strstr(str + subl, sub))
+		ptr = str;
 	return ptr;
 }
