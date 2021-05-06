@@ -6,14 +6,14 @@ INC    := -I../../include
 PY     := python3.9
 
 cprogs  := bin/categories bin/categoriesplayed bin/games bin/modcount bin/runqueue bin/runs \
-		bin/verified bin/worldrecords
-pyprogs := bin/categories bin/leaderboard bin/pending bin/verifierleaderboard bin/worldrecord \
-		bin/utils.py
+		bin/worldrecords
+pyprogs := bin/categories bin/leaderboard bin/pending bin/verified bin/verifierleaderboard \
+		bin/worldrecord bin/utils.py
 
 all: $(pyprogs) $(cprogs)
 debug: CFLAGS += -DDEBUG
 debug: all
-$(shell mkdir -p bin/ objs/)
+$(shell mkdir -p bin/ objs/ ../../cache/srcom/)
 
 # Python programs
 

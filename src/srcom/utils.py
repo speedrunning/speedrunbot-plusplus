@@ -6,16 +6,21 @@ This file contains all sorts of variables and utilities used in the sr.c related
 
 import asyncio
 import shlex
+from os.path import dirname
 from sys import exit, stderr
+from time import sleep
 from typing import Any, Literal, NoReturn, Optional, Type, Union
 
 import requests
 from requests.exceptions import ConnectionError
 
 API: Literal[str] = "https://www.speedrun.com/api/v1"
+RATE_LIMIT: Literal[int] = 420
 
 EXIT_SUCCESS: Literal[int] = 0
 EXIT_FAILURE: Literal[int] = 1
+
+CACHEDIR: Literal[str] = f"{dirname(__file__)}/../../../cache/srcom"
 
 
 def usage(usage: str) -> NoReturn:
@@ -38,15 +43,18 @@ def api_get(uri: str, params: Optional[dict[str, Any]] = {}) -> dict:
 	"""
 	This is a wrapper around `requests.get()` that does error checking for status codes.
 	"""
-	try:
-		r = requests.get(uri, params=params)
-	except ConnectionError as e:
-		err_and_die(e)
+	while True:
+		try:
+			r = requests.get(uri, params=params)
+		except ConnectionError as e:
+			error_and_die(e)
 
-	if not r.ok:
+		if r.ok:
+			return r.json()
+		if r.status_code == RATE_LIMIT:
+			sleep(5)
+			continue
 		error_and_die(r.json()["message"])
-
-	return r.json()
 
 
 def getuid(user: str) -> str:

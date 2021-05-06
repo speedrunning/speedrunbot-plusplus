@@ -11,7 +11,7 @@ from concurrent.futures import ThreadPoolExecutor
 from operator import attrgetter
 from os import chdir
 from os.path import dirname
-from sys import argv, exit, stderr
+from sys import argv, exit
 from typing import Literal
 
 from utils import *
@@ -85,14 +85,10 @@ def check_args() -> None:
 		usage(USAGE)
 
 	if argc > 3:
-		print(
-			"Error: Too many games given, you can give a maximum of 2.",
-			file=stderr,
-		)
-		exit(EXIT_FAILURE)
+		error_and_die("Too many games given, you can give a maximum of 2.")
 
 	if argc == 3 and argv[1] == argv[2]:
-		print("Error: The same game cannot be provided twice.", file=stderr)
+		error_and_die("The same game cannot be provided twice.")
 		exit(EXIT_FAILURE)
 
 
@@ -108,7 +104,6 @@ def main() -> int:
 	mods = list(mods)
 	mods.sort(key=attrgetter("examined"), reverse=True)
 
-	print("WARNING: On large leaderboards this is very likely to be incorrect due to rate limiting")
 	print("\n".join(f"{mod.name}: {mod.examined}" for mod in mods))
 	return EXIT_SUCCESS
 
