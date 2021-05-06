@@ -11,6 +11,7 @@ from datetime import datetime
 from fcntl import LOCK_EX, LOCK_NB, LOCK_UN, flock
 from io import TextIOWrapper
 from itertools import count
+from os.path import exists
 from sys import argv, exit
 from time import sleep
 from typing import Literal
@@ -54,6 +55,15 @@ class xopen:
 	def __exit__(self, _, __, ___) -> None:
 		flock(self.file, LOCK_UN)
 		self.file.close()
+
+
+def check_cache_exists() -> None:
+	"""
+	A simple function to check if the cache file exists, and if it doesn't, to create it.
+	"""
+	if not exists(f"{CACHEDIR}/verified.json"):
+		with xopen(f"{CACHEDIR}/verified.json", "w") as f:
+			f.write("{}")
 
 
 def write_to_cache(uid: str, totals: defaultdict) -> None:
@@ -126,6 +136,7 @@ def examined(uid: str, gids: list[str]) -> int:
 	Gets the number of runs examined by the given user for the given games. If no games are
 	specified then it gets all the users examined runs.
 	"""
+	check_cache_exists()
 	with xopen(f"{CACHEDIR}/verified.json", "r") as f:
 		data = json.load(f)
 
