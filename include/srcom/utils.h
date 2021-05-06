@@ -24,7 +24,7 @@ typedef struct {
  * @brief A struct that holds data regarding a game.
  */
 struct game_t {
-	char id[ID_LEN+ 1];
+	char id[ID_LEN + 1];
 	char name[BUFSIZ];
 };
 

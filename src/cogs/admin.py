@@ -7,12 +7,11 @@ from traceback import format_exception, print_exception
 from typing import Literal
 
 import discord
+from bot import SRBpp, run_and_output
+from cogs.src import RATE
 from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.ext.commands.errors import CommandError
-
-from bot import SRBpp, run_and_output
-from cogs.src import RATE
 
 PREFIX: Literal[str] = "admin/bin"
 

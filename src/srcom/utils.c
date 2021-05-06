@@ -15,7 +15,8 @@ xmalloc(const size_t size)
 {
 	void *ptr = malloc(size);
 	if (ptr == NULL) {
-		fputs("Error: Memory allocation error, the bot is likely out of RAM, try again later.\n",
+		fputs("Error: Memory allocation error, the bot is likely out of RAM, try again "
+		      "later.\n",
 		      stderr);
 		exit(EXIT_FAILURE);
 	}
@@ -27,7 +28,8 @@ xrealloc(void *ptr, const size_t size)
 {
 	ptr = realloc(ptr, size);
 	if (ptr == NULL) {
-		fputs("Error: Memory reallocation error, the bot is likely out of RAM, try again later.\n",
+		fputs("Error: Memory reallocation error, the bot is likely out of RAM, try again "
+		      "later.\n",
 		      stderr);
 		exit(EXIT_FAILURE);
 	}
@@ -54,8 +56,7 @@ get_game(const char *abbrev)
 	sprintf(uri, API "/games?abbreviation=%s", abbrev);
 	get_req(uri, &json);
 
-	sscanf(json.ptr,
-	       "{\"data\":[{\"id\":\"%[^\"]\",\"names\":{\"international\":\"%[^\"]",
+	sscanf(json.ptr, "{\"data\":[{\"id\":\"%[^\"]\",\"names\":{\"international\":\"%[^\"]",
 	       game.id, game.name);
 
 	free(uri);

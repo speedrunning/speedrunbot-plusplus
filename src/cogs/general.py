@@ -3,12 +3,11 @@ from asyncio import TimeoutError
 from math import floor, trunc
 from typing import Literal
 
+from bot import SRBpp, run_and_output
 from discord import Message
 from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.utils import oauth_url
-
-from bot import SRBpp, run_and_output
 
 PREFIX: Literal[str] = "general/bin"
 

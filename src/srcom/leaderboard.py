@@ -6,7 +6,7 @@ and optional subcategory (argv[3]).
 """
 
 from re import sub
-from sys import argv, exit, stderr
+from sys import argv, exit
 from typing import Literal
 
 from utils import *

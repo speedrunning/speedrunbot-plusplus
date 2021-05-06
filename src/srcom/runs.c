@@ -95,7 +95,7 @@ main(int argc, char **argv)
 	}
 
 	sprintf(uri_base, API "/runs?user=%s&game=%s&max=" STR(MAX_RECV) "&offset=", uid,
-	         game ? game->id : "");
+	        game ? game->id : "");
 
 	while (!done) {
 		pthread_t threads[THREAD_COUNT];

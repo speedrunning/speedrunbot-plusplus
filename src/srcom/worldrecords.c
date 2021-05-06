@@ -34,9 +34,7 @@ main(int argc, char **argv)
 	char uri[URIBUF];
 	struct game_t *game = NULL;
 	if (argc > 2 && (game = get_game(argv[2])) == NULL) {
-		fprintf(stderr,
-			"Error: Game with abbreviation '%s' not found.\n",
-			argv[2]);
+		fprintf(stderr, "Error: Game with abbreviation '%s' not found.\n", argv[2]);
 		exit(EXIT_FAILURE);
 	}
 
@@ -44,8 +42,7 @@ main(int argc, char **argv)
 	init_string(&runs);
 
 	/* Get players PRs. */
-	sprintf(uri, API "/users/%s/personal-bests?top=1&game=%s", uid,
-	         game ? game->id : "");
+	sprintf(uri, API "/users/%s/personal-bests?top=1&game=%s", uid, game ? game->id : "");
 	get_req(uri, &runs);
 
 	/*
