@@ -127,7 +127,7 @@ def make_requests(uid: str, gids: list[str]) -> int:
 
 	write_to_cache(uid, totals)
 	if not gids:
-		return sum(totals[i] for i in totals if i != "total")
+		return totals["total"]
 	return sum(totals[i] for i in gids)
 
 
@@ -153,7 +153,7 @@ def examined(uid: str, gids: list[str]) -> int:
 		try:
 			return sum(data[uid][gid] for gid in gids)
 		except KeyError:  # Counts for a specific game havent been added to cache yet
-			make_requests(uid, gids)
+			return make_requests(uid, gids)
 	return data[uid]["total"]
 
 
