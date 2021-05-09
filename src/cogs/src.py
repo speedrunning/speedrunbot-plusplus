@@ -95,7 +95,8 @@ class Src(commands.Cog):
 			f"{PREFIX}/runqueue",
 			game1,
 			game2,
-			title=f"Runs Awaiting Verification: {', '.join((game1, game2))}",
+			#title=f"Runs Awaiting Verification: {', '.join((game1, game2))}",
+			title=f"Runs Awaiting Verification"
 		)
 
 	@commands.command(name="runs")
