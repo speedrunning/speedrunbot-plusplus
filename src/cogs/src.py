@@ -90,14 +90,7 @@ class Src(commands.Cog):
 		Get the number of runs awaiting verification for a given game. Optionally, a second
 		game can be given.
 		"""
-		await run_and_output(
-			ctx,
-			f"{PREFIX}/runqueue",
-			game1,
-			game2,
-			#title=f"Runs Awaiting Verification: {', '.join((game1, game2))}",
-			title=f"Runs Awaiting Verification"
-		)
+		await run_and_output(ctx, f"{PREFIX}/runqueue", game1, game2)
 
 	@commands.command(name="runs")
 	async def runs(

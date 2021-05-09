@@ -37,22 +37,23 @@ routine(void *tnum)
 	 * be safely ignored.
 	 */
 	int size, i_tnum = *((int *) &tnum);
+	char *size_key;
 	char uri[URIBUF];
 	string_t json;
+	json_t *root, *data, *obj, *level;
 
 	/* Make a GET request. */
 	sprintf(uri, "%s%d", uri_base, offset_start + MAX_RECV * i_tnum);
 	init_string(&json);
 	get_req(uri, &json);
 
-	char *size_key = last_substr(json.ptr, SIZE_KEY, KEY_LEN);
+	size_key = last_substr(json.ptr, SIZE_KEY, KEY_LEN);
 	sscanf(size_key, SIZE_KEY "%d", &size);
 
 	if (size < MAX_RECV)
 		done = true;
 
 	/* Loop through each pending run and tally the fullgame and IL runs. */
-	json_t *root, *data, *obj, *level;
 	root = json_loads(json.ptr, 0, NULL);
 	if (!root) {
 		fputs("Error: Unable to parse sr.c reponse, try again later.\n", stderr);
@@ -76,16 +77,10 @@ routine(void *tnum)
 }
 
 static void
-runqueue(const char *gname)
+runqueue(const struct game_t *game)
 {
-	struct game_t *game;
 	string_t json;
 	init_string(&json);
-
-	if ((game = get_game(gname)) == NULL) {
-		fprintf(stderr, "Error: Game with abbreviation '%s' not found.\n", gname);
-		exit(EXIT_FAILURE);
-	}
 
 	sprintf(uri_base, API "/runs?game=%s&status=new&max=" STR(MAX_RECV) "&offset=", game->id);
 	done = false;
@@ -93,11 +88,7 @@ runqueue(const char *gname)
 	while (!done) {
 		pthread_t threads[THREAD_COUNT];
 		for (int i = 0; i < THREAD_COUNT; i++) {
-			/*
-			 * This cast is a could be replaced with a simple `(void *) i`
-			 * cast, but the compiler doesn't like it when I do that.
-			 */
-			if (pthread_create(&threads[i], NULL, &routine, *((void **) &i)) != 0) {
+			if (pthread_create(&threads[i], NULL, &routine, (void *) i) != 0) {
 				fputs("Error: Failed to create thread.\n", stderr);
 				exit(EXIT_FAILURE);
 			}
@@ -116,8 +107,8 @@ runqueue(const char *gname)
 	free(json.ptr);
 }
 
-int
-main(int argc, char **argv)
+static void
+check_args(int argc, char **argv)
 {
 	if (argc < 2 || argc > 3)
 		usage();
@@ -126,19 +117,45 @@ main(int argc, char **argv)
 		fputs("Error: The same game cannot be provided twice.\n", stderr);
 		exit(EXIT_FAILURE);
 	}
+}
 
-	while (*++argv)
-		runqueue(*argv);
+int
+main(int argc, char **argv)
+{
+	const bool two_games = (argc == 3);
+	unsigned int fullgame = 0, il = 0;
+	struct game_t *games[2] = {0};
 
-	int fullgame = 0, il = 0;
+	check_args(argc, argv);
+
+	for (int i = 1; i < argc; i++) {
+		if ((games[i - 1] = get_game(argv[i])) == NULL) {
+			fprintf(stderr, "Error: Game with abbreviation '%s' not found.\n", argv[i]);
+			exit(EXIT_FAILURE);
+		}
+	}
+
+	for (int i = 1; i < argc; i++)
+		runqueue(games[i - 1]);
+
 	for (int i = 0; i < THREAD_COUNT; i++) {
 		fullgame += fgcounts[i];
 		il += ilcounts[i];
 	}
 
-	printf("Fullgame: %d\n"
-	       "Individual Level: %d\n"
-	       "Total: %d\n",
+	printf("Runs Awaiting Verification: `%s`", games[0]->name);
+	if (two_games)
+		printf(" and `%s`", games[1]->name);
+	putchar('\n');
+
+#ifdef DEBUG
+	free(games[0]);
+	free(games[1]);
+#endif
+
+	printf("Fullgame: %u\n"
+	       "Individual Level: %u\n"
+	       "Total: %u\n",
 	       fullgame, il, fullgame + il);
 	return EXIT_SUCCESS;
 }
