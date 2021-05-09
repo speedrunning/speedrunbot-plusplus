@@ -131,6 +131,10 @@ main(int argc, char **argv)
 	else
 		printf("Run Count: %s\n", argv[1]);
 
+#ifdef DEBUG
+	free(game);
+#endif
+
 	printf("Fullgame: %d\n"
 	       "Individual Level: %d\n"
 	       "Total: %d\n",

@@ -49,7 +49,7 @@ get_game(const char *abbrev)
 {
 	/* 52 is space for the rest of the URL */
 	char *uri = xmalloc((strlen(abbrev) + 52) * sizeof(char));
-	static struct game_t game;
+	struct game_t *game = xmalloc(sizeof(struct game_t));
 	string_t json;
 	init_string(&json);
 
@@ -57,13 +57,13 @@ get_game(const char *abbrev)
 	get_req(uri, &json);
 
 	sscanf(json.ptr, "{\"data\":[{\"id\":\"%[^\"]\",\"names\":{\"international\":\"%[^\"]",
-	       game.id, game.name);
+	       game->id, game->name);
 
 	free(uri);
 	free(json.ptr);
-	if (game.id[0] == '\0')
+	if (game->id[0] == '\0')
 		return NULL;
-	return &game;
+	return game;
 }
 
 char *

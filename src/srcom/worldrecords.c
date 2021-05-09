@@ -58,13 +58,15 @@ main(int argc, char **argv)
 	else
 		printf("World Record Count: %s\n", argv[1]);
 
+#ifdef DEBUG
+	free(game);
+	free(runs.ptr);
+#endif
+
 	printf("Full Game: %u\n"
 	       "Individual Level: %u\n"
 	       "Total: %u\n",
 	       fullgame, total - fullgame, total);
 
-#ifdef DEBUG
-	free(runs.ptr);
-#endif
 	return EXIT_SUCCESS;
 }

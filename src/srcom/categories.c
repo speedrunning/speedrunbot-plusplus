@@ -95,6 +95,10 @@ main(int argc, char **argv)
 	struct names_t names = {.fullgame = NULL, .il = NULL, .misc = NULL};
 	printf("Categories - %s\n", game->name);
 
+#ifdef DEBUG
+	free(game);
+#endif
+
 	if (!get_categories(root, &counts, &names, &categories)) {
 		printf("No categories\n");
 		return EXIT_SUCCESS;
