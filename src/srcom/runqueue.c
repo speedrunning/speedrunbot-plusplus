@@ -1,6 +1,6 @@
 /*
  * This program gets the number of runs in the verification queue of a given game
- * (argv[1]).
+ * (argv[1]) and optionally a second (argv[2])
  */
 
 #include <pthread.h>
@@ -15,16 +15,16 @@
 #include "srcom/runqueue.h"
 #include "srcom/utils.h"
 
-bool done = false;
+bool done;
 char uri_base[URIBUF];
-int offset_start = 0;
+int offset_start;
 int fgcounts[THREAD_COUNT], ilcounts[THREAD_COUNT];
 
 static void
 usage(void)
 {
-	fputs("Usage: `+runqueue [GAME]`\n"
-	      "Example: `+runqueue mkw`\n",
+	fputs("Usage: `+runqueue [GAME] [GAME (Optional)]`\n"
+	      "Example: `+runqueue mkw mkwextracategories`\n",
 	      stderr);
 	exit(EXIT_FAILURE);
 }
@@ -75,23 +75,21 @@ routine(void *tnum)
 	return NULL;
 }
 
-int
-main(int argc, char **argv)
+static void
+runqueue(const char *gname)
 {
-	if (argc != 2)
-		usage();
-
 	struct game_t *game;
 	string_t json;
 	init_string(&json);
 
-	if ((game = get_game(argv[1])) == NULL) {
-		fprintf(stderr, "Error: game with abbreviation '%s' not found.\n", argv[1]);
+	if ((game = get_game(gname)) == NULL) {
+		fprintf(stderr, "Error: Game with abbreviation '%s' not found.\n", gname);
 		exit(EXIT_FAILURE);
 	}
 
 	sprintf(uri_base, API "/runs?game=%s&status=new&max=" STR(MAX_RECV) "&offset=", game->id);
-
+	done = false;
+	offset_start = 0;
 	while (!done) {
 		pthread_t threads[THREAD_COUNT];
 		for (int i = 0; i < THREAD_COUNT; i++) {
@@ -115,19 +113,32 @@ main(int argc, char **argv)
 		offset_start += THREAD_COUNT * MAX_RECV;
 	}
 
+	free(json.ptr);
+}
+
+int
+main(int argc, char **argv)
+{
+	if (argc < 2 || argc > 3)
+		usage();
+
+	if (argc == 3 && strcmp(argv[1], argv[2]) == 0) {
+		fputs("Error: The same game cannot be provided twice.\n", stderr);
+		exit(EXIT_FAILURE);
+	}
+
+	while (*++argv)
+		runqueue(*argv);
+
 	int fullgame = 0, il = 0;
 	for (int i = 0; i < THREAD_COUNT; i++) {
 		fullgame += fgcounts[i];
 		il += ilcounts[i];
 	}
 
-	printf("Runs Awaiting Verification: %s\n"
-	       "Fullgame: %d\n"
+	printf("Fullgame: %d\n"
 	       "Individual Level: %d\n"
 	       "Total: %d\n",
-	       game->name, fullgame, il, fullgame + il);
-#ifdef DEBUG
-	free(json.ptr);
-#endif
+	       fullgame, il, fullgame + il);
 	return EXIT_SUCCESS;
 }
