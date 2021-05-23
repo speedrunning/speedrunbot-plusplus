@@ -6,6 +6,7 @@ This file contains all sorts of variables and utilities used in the sr.c related
 
 import asyncio
 import shlex
+from json.decoder import JSONDecodeError
 from os.path import dirname
 from sys import exit, stderr
 from time import sleep
@@ -54,7 +55,10 @@ def api_get(uri: str, params: Optional[dict[str, Any]] = {}) -> dict:
 			if r.status_code == RATE_LIMIT:
 				sleep(5)
 			else:
-				error_and_die(r.json()["message"])
+				try:
+					error_and_die(r.json()["message"])
+				except JSONDecodeError:
+					error_and_die("The site is probably down go complain to ELO")
 
 
 def getuid(user: str) -> str:
