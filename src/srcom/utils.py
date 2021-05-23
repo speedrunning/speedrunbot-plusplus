@@ -47,14 +47,14 @@ def api_get(uri: str, params: Optional[dict[str, Any]] = {}) -> dict:
 		try:
 			r = requests.get(uri, params=params)
 		except ConnectionError as e:
-			error_and_die(e)
-
-		if r.ok:
-			return r.json()
-		if r.status_code == RATE_LIMIT:
-			sleep(5)
-			continue
-		error_and_die(r.json()["message"])
+			sleep(2)
+		else:
+			if r.ok:
+				return r.json()
+			if r.status_code == RATE_LIMIT:
+				sleep(5)
+			else:
+				error_and_die(r.json()["message"])
 
 
 def getuid(user: str) -> str:
