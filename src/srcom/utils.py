@@ -9,7 +9,7 @@ import shlex
 from os.path import dirname
 from sys import exit, stderr
 from time import sleep
-from typing import Any, Literal, NoReturn, Optional, Type, Union
+from typing import Any, Literal, NoReturn, Optional, Union
 
 import requests
 from requests.exceptions import ConnectionError
@@ -31,7 +31,7 @@ def usage(usage: str) -> NoReturn:
 	exit(EXIT_FAILURE)
 
 
-def error_and_die(e: Union[Type[Exception], str]) -> NoReturn:
+def error_and_die(e: Union[Exception, str]) -> NoReturn:
 	"""
 	Print an error message to stderr and then exit.
 	"""
@@ -46,7 +46,7 @@ def api_get(uri: str, params: Optional[dict[str, Any]] = {}) -> dict:
 	while True:
 		try:
 			r = requests.get(uri, params=params)
-		except ConnectionError as e:
+		except ConnectionError:
 			sleep(2)
 		else:
 			if r.ok:
