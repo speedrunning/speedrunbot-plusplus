@@ -14,7 +14,7 @@ def check_files() -> None:
 	"""
 	if not isfile(TOKEN_FILE):
 		token = input("BOT SETUP - Enter bot token: ")
-		with open(TOKEN_FILE, "w+") as f:
+		with open(TOKEN_FILE, "w+", encoding="utf-8") as f:
 			f.write(token)
 
 

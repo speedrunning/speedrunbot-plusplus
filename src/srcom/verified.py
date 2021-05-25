@@ -43,7 +43,7 @@ class xopen:
 	def __enter__(self) -> TextIOWrapper:
 		while True:
 			try:
-				self.file = open(self.filename, self.mode)
+				self.file = open(self.filename, self.mode, encoding="utf-8")
 				flock(self.file, LOCK_EX | LOCK_NB)
 			except BlockingIOError:
 				sleep(0.05)

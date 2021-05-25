@@ -118,7 +118,7 @@ class SRBpp(commands.Bot):
 			except Exception as e:
 				print(e, file=stderr)
 
-		with open(f"{ROOT_DIR}/token", "r") as f:
+		with open(f"{ROOT_DIR}/token", "r", encoding="utf-8") as f:
 			self.token = f.read().strip()
 
 	async def on_ready(self) -> None:
