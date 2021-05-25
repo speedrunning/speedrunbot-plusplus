@@ -17,7 +17,7 @@ from time import sleep
 from typing import Literal
 
 import requests
-from requests.sessions import Session
+from requests import Session
 
 from utils import *
 
@@ -56,6 +56,24 @@ class xopen:
 		flock(self.file, LOCK_UN)
 		self.file.close()
 
+def xapi_get(session: Session, uri: str, params: Optional[dict[str, Any]] = {}) -> dict:
+	"""
+	A copy of what we have in utils.py but adapted for `requests.Session()`.
+	"""
+	while True:
+		try:
+			with session.get(uri, params=params) as r:
+				if r.ok:
+					return r.json()
+				if r.status_code == RATE_LIMIT:
+					sleep(5)
+				else:
+					try:
+						error_and_die(r.json()["message"])
+					except JSONDecodeError:
+						error_and_die("The site is probably down go complain to ELO")
+		except ConnectionError:
+			sleep(2)
 
 def check_cache_exists() -> None:
 	"""
@@ -91,20 +109,13 @@ def fetch_runs(session: Session, uid: str, offset: int, totals: defaultdict) -> 
 	"""
 	ret = 0
 	while True:
-		with session.get(
-			f"{API}/runs", params={"examiner": uid, "max": 200, "offset": offset}
-		) as response:
-			if not response.ok:
-				if response.status_code == RATE_LIMIT:
-					sleep(5)
-					continue
-				error_and_die(response.json()["message"])
-			data = response.json()
-			ret += data["pagination"]["size"]
+		data = xapi_get(session, f"{API}/runs", params={"examiner": uid, "max": 200, "offset": offset})
 
-			for run in data["data"]:
-				totals[run["game"]] += 1
-			return ret
+		for run in data["data"]:
+			totals[run["game"]] += 1
+
+		ret += data["pagination"]["size"]
+		return ret
 
 
 def make_requests(uid: str, gids: list[str]) -> int:
