@@ -6,6 +6,7 @@
 #include "defines.h"
 
 #define API "https://www.speedrun.com/api/v1"
+#define RATE_LIMIT 420
 
 #ifdef __cplusplus
 extern "C" {

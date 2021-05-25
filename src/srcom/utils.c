@@ -5,6 +5,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <curl/curl.h>
 
@@ -115,9 +116,16 @@ get_req(const char *uri, string_t *json)
 	curl_easy_setopt(curl, CURLOPT_URL, uri);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, json);
+	curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
 
 	CURLcode res;
+rate_limit:
 	if ((res = curl_easy_perform(curl)) != CURLE_OK) {
+		if (res == RATE_LIMIT) {
+			sleep(5);
+			goto rate_limit;
+		}
+
 		curl_easy_cleanup(curl);
 		fputs("Error: Unable to retrieve data from the sr.c API.\n", stderr);
 		exit(EXIT_FAILURE);
