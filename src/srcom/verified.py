@@ -18,7 +18,6 @@ from typing import Literal
 
 import requests
 from requests import Session
-
 from utils import *
 
 TWO_HOURS: Literal[int] = 7200
@@ -56,6 +55,7 @@ class xopen:
 		flock(self.file, LOCK_UN)
 		self.file.close()
 
+
 def xapi_get(session: Session, uri: str, params: Optional[dict[str, Any]] = {}) -> dict:
 	"""
 	A copy of what we have in utils.py but adapted for `requests.Session()`.
@@ -75,6 +75,7 @@ def xapi_get(session: Session, uri: str, params: Optional[dict[str, Any]] = {}) 
 		except ConnectionError:
 			sleep(2)
 
+
 def check_cache_exists() -> None:
 	"""
 	A simple function to check if the cache file exists, and if it doesn't, to create it.
@@ -88,17 +89,19 @@ def write_to_cache(uid: str, totals: defaultdict) -> None:
 	"""
 	Writes the examination counts stored in the `totals` default dict to the cache.
 	"""
-	with xopen(f"{CACHEDIR}/verified.json", "r") as f:
+	with xopen(f"{CACHEDIR}/verified.json", "r+") as f:
 		data = json.load(f)
 
-	if uid not in data:
-		data[uid] = {}
-	for game in totals:
-		data[uid][game] = totals[game]
+		if uid not in data:
+			data[uid] = {}
+		for game in totals:
+			data[uid][game] = totals[game]
 
-	data[uid]["last_updated"] = datetime.timestamp(datetime.utcnow())
-	with xopen(f"{CACHEDIR}/verified.json", "w") as f:
-		json.dump(data, f, indent=4)
+		data[uid]["last_updated"] = datetime.timestamp(datetime.utcnow())
+
+		f.seek(0)
+		json.dump(data, f, indent=8)
+		f.truncate()
 
 
 def fetch_runs(session: Session, uid: str, offset: int, totals: defaultdict) -> int:
@@ -109,7 +112,9 @@ def fetch_runs(session: Session, uid: str, offset: int, totals: defaultdict) -> 
 	"""
 	ret = 0
 	while True:
-		data = xapi_get(session, f"{API}/runs", params={"examiner": uid, "max": 200, "offset": offset})
+		data = xapi_get(
+			session, f"{API}/runs", params={"examiner": uid, "max": 200, "offset": offset}
+		)
 
 		for run in data["data"]:
 			totals[run["game"]] += 1
