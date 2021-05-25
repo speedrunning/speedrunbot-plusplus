@@ -130,16 +130,21 @@ unsigned int
 count_substr(const char *str, const char *const sub, const int subl)
 {
 	unsigned int c = 0;
-	for (str = strstr(str, sub); str; str = strstr(str + subl, sub))
+	str = strstr(str, sub);
+	while (str) {
 		c++;
+		str = strstr(str + subl, sub);
+	}
 	return c;
 }
 
-char *
+const char *
 last_substr(const char *str, const char *const sub, const int subl)
 {
-	char *ptr;
-	for (ptr = strstr(str, sub); str; str = strstr(str + subl, sub))
+	const char *ptr = strstr(str, sub);
+	while (str) {
 		ptr = str;
+		str = strstr(str + subl, sub);
+	}
 	return ptr;
 }

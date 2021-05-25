@@ -37,7 +37,7 @@ routine(void *tnum)
 	 * be safely ignored.
 	 */
 	int size, i_tnum = *((int *) &tnum);
-	char *size_key;
+	const char *size_key;
 	char uri[URIBUF];
 	string_t json;
 	json_t *root, *data, *obj, *level;

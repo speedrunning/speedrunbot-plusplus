@@ -107,7 +107,7 @@ unsigned int count_substr(const char *str, const char *const sub, const int subl
  * @param subl The length of the substring.
  * @return char* A pointer to the last substring found, or NULL if none found.
  */
-char *last_substr(const char *str, const char *const sub, const int subl);
+const char *last_substr(const char *str, const char *const sub, const int subl);
 
 #ifdef __cplusplus
 }

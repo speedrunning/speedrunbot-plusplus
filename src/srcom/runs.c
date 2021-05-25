@@ -45,7 +45,7 @@ routine(void *tnum)
 	init_string(&json);
 	get_req(uri, &json);
 
-	char *size_key = last_substr(json.ptr, SIZE_KEY, KEY_LEN);
+	const char *size_key = last_substr(json.ptr, SIZE_KEY, KEY_LEN);
 	sscanf(size_key, SIZE_KEY "%d", &size);
 
 	if (size < MAX_RECV)
