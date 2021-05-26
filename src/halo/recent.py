@@ -9,7 +9,6 @@ from sys import argv, exit, stderr, stdout
 from typing import NoReturn
 
 import requests
-
 from utils import *
 
 

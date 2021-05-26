@@ -16,7 +16,7 @@ from typing import Literal
 
 from utils import *
 
-USAGE: Literal[str] = (
+USAGE: str = (
 	"Usage: `+verifierleaderboard [GAME] [GAME (Optional)]`\n"
 	+ "Example: `+verifierleaderboard mkw mkwextracategories`"
 )

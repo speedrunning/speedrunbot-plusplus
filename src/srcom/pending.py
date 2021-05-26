@@ -12,7 +12,7 @@ from typing import Literal
 
 from utils import *
 
-USAGE: Literal[str] = (
+USAGE: str = (
 	"Usage: `+pending [GAME] [GAME (Optional)]`\n" + "Example: `+pending mkw mkwextracategories`"
 )
 

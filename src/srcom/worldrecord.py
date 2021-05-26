@@ -11,7 +11,7 @@ from typing import Literal, Optional
 
 from utils import *
 
-USAGE: Literal[str] = (
+USAGE: str = (
 	"Usage: `+worldrecord [GAME] [CATEGORY (Optional)] [SUBCATEGORY (Optional)]`\n"
 	+ 'Example: `+worldrecord mkw "Nitro Tracks"`'
 )

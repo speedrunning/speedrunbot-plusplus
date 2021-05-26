@@ -20,8 +20,8 @@ import requests
 from requests import Session
 from utils import *
 
-TWO_HOURS: Literal[int] = 7200
-USAGE: Literal[str] = (
+TWO_HOURS: Literal[7200] = 7200
+USAGE: str = (
 	"Usage: `+verified [PLAYER NAME] [GAME (Optional)] [GAME (Optional)]`\n"
 	+ "Example: `+verified AnInternetTroll mkw mkwextracategories`"
 )
@@ -130,7 +130,7 @@ def make_requests(uid: str, gids: list[str]) -> int:
 	examined runs for the game(s) specified by the user are then returned (or the total if none
 	specified).
 	"""
-	totals = defaultdict(int)
+	totals: defaultdict = defaultdict(int)
 	with requests.Session() as session:
 		for i in count(0, 2000):
 			tmp = 0

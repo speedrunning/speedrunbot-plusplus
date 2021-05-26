@@ -4,16 +4,19 @@ from math import trunc
 from subprocess import CompletedProcess, run
 from sys import stderr
 from traceback import format_exception, print_exception
-from typing import Literal
+from typing import Literal, Union
 
 import discord
-from bot import SRBpp, run_and_output
-from cogs.src import RATE
 from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.ext.commands.errors import CommandError
+from discord_slash import SlashContext, cog_ext
+from discord_slash.utils.manage_commands import create_option
 
-PREFIX: Literal[str] = "admin/bin"
+from bot import SRBpp, run_and_output
+from cogs.src import RATE
+
+PREFIX: Literal["admin/bin"] = "admin/bin"
 
 
 class Admin(commands.Cog):
@@ -52,13 +55,27 @@ class Admin(commands.Cog):
 			# error printing.
 			# print_exception(type(err), err, err.__traceback__, file=stderr)
 
-	@commands.is_owner()
-	@commands.command(name="compile", aliases=("make", "comp"))
-	async def compile(_, ctx: Context) -> None:
+	async def compile(_, ctx: Union[Context, SlashContext]) -> None:
 		"""
 		Run the bots Makefiles to update all the code.
 		"""
 		await run_and_output(ctx, f"{PREFIX}/compile", title="Compile")
+
+	@commands.is_owner()
+	@commands.command(name="compile", aliases=("make", "comp"))
+	async def compile_bot(self, ctx: Context):
+		"""
+		Run the bots Makefiles to update all the code.
+		"""
+		await self.compile(ctx)
+
+	@commands.is_owner()
+	@cog_ext.cog_slash(
+		name="compile",
+		description="Run the bots Makefiles to update all the code.",
+	)
+	async def compile_slash(self, ctx: SlashContext):
+		await self.compile(ctx)
 
 	@commands.is_owner()
 	@commands.command(name="pull")
@@ -85,9 +102,7 @@ class Admin(commands.Cog):
 		await ctx.send("Restarting!")
 		os.execl(sys.executable, sys.executable, *sys.argv)
 
-	@commands.is_owner()
-	@commands.command(name="reload")
-	async def reload(self, ctx: Context, ext: str) -> None:
+	async def reload(self, ctx: Union[Context, SlashContext], ext: str) -> None:
 		"""
 		Reloads an extension.
 		"""
@@ -107,8 +122,30 @@ class Admin(commands.Cog):
 			print(e, file=stderr)
 
 	@commands.is_owner()
-	@commands.command(name="load")
-	async def load(self, ctx: Context, ext: str) -> None:
+	@cog_ext.cog_slash(
+		name="reload",
+		description="Reloads an extension.",
+		options=[
+			create_option(
+				name="ext",
+				description="The file name of an extension (without .py). For example `src`",
+				option_type=3,
+				required=True,
+			),
+		],
+	)
+	async def reload_slash(self, ctx: SlashContext, ext):
+		await self.reload(ctx, ext)
+
+	@commands.is_owner()
+	@commands.command(name="reload")
+	async def reload_bot(self, ctx: Context, ext: str):
+		"""
+		Reloads an extension.
+		"""
+		await self.reload(ctx, ext)
+
+	async def load(self, ctx: Union[Context, SlashContext], ext: str) -> None:
 		"""
 		Loads an extension.
 		"""
@@ -128,7 +165,29 @@ class Admin(commands.Cog):
 			print(e, file=stderr)
 
 	@commands.is_owner()
-	@commands.command(name="unload")
+	@commands.command(name="load")
+	async def load_bot(self, ctx: Context, ext: str):
+		"""
+		Loads an extension.
+		"""
+		await self.load(self, ext)
+
+	@commands.is_owner()
+	@cog_ext.cog_slash(
+		name="load",
+		description="Reloads an extension.",
+		options=[
+			create_option(
+				name="ext",
+				description="The file name of an extension (without .py). For example `src`",
+				option_type=3,
+				required=True,
+			),
+		],
+	)
+	async def load_slash(self, ctx: SlashContext, ext: str):
+		await self.load(ctx, ext)
+
 	async def unload(self, ctx: Context, ext: str) -> None:
 		"""
 		Unloads an extension.
@@ -147,6 +206,30 @@ class Admin(commands.Cog):
 		except commands.ExtensionFailed as e:
 			await ctx.send(f"Some unknown error happened while trying to reload extension {ext}.")
 			print(e, file=stderr)
+
+	@commands.is_owner()
+	@commands.command(name="unload")
+	async def unload_bot(self, ctx: Context, ext: str):
+		"""
+		Unloads an extension.
+		"""
+		await self.unload(self, ext)
+
+	@commands.is_owner()
+	@cog_ext.cog_slash(
+		name="unload",
+		description="Unloads an extension.",
+		options=[
+			create_option(
+				name="ext",
+				description="The file name of an extension (without .py). For example `src`",
+				option_type=3,
+				required=True,
+			),
+		],
+	)
+	async def unload_slash(self, ctx: SlashContext, ext: str):
+		await self.unload(ctx, ext)
 
 
 def setup(bot: SRBpp) -> None:
