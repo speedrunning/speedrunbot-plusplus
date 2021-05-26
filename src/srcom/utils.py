@@ -15,13 +15,13 @@ from typing import Any, Literal, NoReturn, Optional, Union
 import requests
 from requests.exceptions import ConnectionError
 
-API: Literal[str] = "https://www.speedrun.com/api/v1"
-RATE_LIMIT: Literal[int] = 420
+API: Literal["https://www.speedrun.com/api/v1"] = "https://www.speedrun.com/api/v1"
+RATE_LIMIT: Literal[420] = 420
 
-EXIT_SUCCESS: Literal[int] = 0
-EXIT_FAILURE: Literal[int] = 1
+EXIT_SUCCESS: Literal[0] = 0
+EXIT_FAILURE: Literal[1] = 1
 
-CACHEDIR: Literal[str] = f"{dirname(__file__)}/../../../cache/srcom"
+CACHEDIR: str = f"{dirname(__file__)}/../../../cache/srcom"
 
 
 def usage(usage: str) -> NoReturn:
@@ -71,7 +71,7 @@ def getuid(user: str) -> str:
 	'7j477kvj'
 	>>> getuid("abc")
 	Traceback (most recent call last):
-		...
+...
 	SystemExit: 1
 	"""
 
@@ -92,7 +92,7 @@ def username(uid: str) -> str:
 	'AnInternetTroll'
 	>>> username("Sesame Street")
 	Traceback (most recent call last):
-		...
+...
 	SystemExit: 1
 	"""
 	r = api_get(f"{API}/users/{uid}")
@@ -109,7 +109,7 @@ def getgame(abbrev: str) -> tuple[str, str]:
 	('CELESTE Classic', '4d7e7z67')
 	>>> getgame("Fake Game")
 	Traceback (most recent call last):
-		...
+...
 	SystemExit: 1
 	"""
 	r = api_get(f"{API}/games", params={"abbreviation": abbrev})
@@ -135,7 +135,7 @@ def subcatid(cid: str, subcat: str, lflag: bool = False) -> tuple[str, str]:
 	('ylqmdmvn', '810enwwq')
 	>>> subcatid("mkeoz98d", "Gem Skips")
 	Traceback (most recent call last):
-		...
+...
 	SystemExit: 1
 	"""
 	r = api_get(f"{API}/{'levels' if lflag else 'categories'}/{cid}/variables")

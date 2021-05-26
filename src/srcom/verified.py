@@ -18,11 +18,10 @@ from typing import Literal
 
 import requests
 from requests import Session
-
 from utils import *
 
-TWO_HOURS: Literal[int] = 7200
-USAGE: Literal[str] = (
+TWO_HOURS: Literal[7200] = 7200
+USAGE: str = (
 	"Usage: `+verified [PLAYER NAME] [GAME (Optional)] [GAME (Optional)]`\n"
 	+ "Example: `+verified AnInternetTroll mkw mkwextracategories`"
 )
@@ -56,6 +55,7 @@ class xopen:
 		flock(self.file, LOCK_UN)
 		self.file.close()
 
+
 def xapi_get(session: Session, uri: str, params: Optional[dict[str, Any]] = {}) -> dict:
 	"""
 	A copy of what we have in utils.py but adapted for `requests.Session()`.
@@ -74,6 +74,7 @@ def xapi_get(session: Session, uri: str, params: Optional[dict[str, Any]] = {}) 
 						error_and_die("The site is probably down go complain to ELO")
 		except ConnectionError:
 			sleep(2)
+
 
 def check_cache_exists() -> None:
 	"""
@@ -109,7 +110,9 @@ def fetch_runs(session: Session, uid: str, offset: int, totals: defaultdict) -> 
 	"""
 	ret = 0
 	while True:
-		data = xapi_get(session, f"{API}/runs", params={"examiner": uid, "max": 200, "offset": offset})
+		data = xapi_get(
+			session, f"{API}/runs", params={"examiner": uid, "max": 200, "offset": offset}
+		)
 
 		for run in data["data"]:
 			totals[run["game"]] += 1
@@ -125,7 +128,7 @@ def make_requests(uid: str, gids: list[str]) -> int:
 	examined runs for the game(s) specified by the user are then returned (or the total if none
 	specified).
 	"""
-	totals = defaultdict(int)
+	totals: defaultdict = defaultdict(int)
 	with requests.Session() as session:
 		for i in count(0, 2000):
 			tmp = 0

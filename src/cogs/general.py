@@ -1,44 +1,96 @@
 import json
 from asyncio import TimeoutError
 from math import floor, trunc
-from typing import Literal
+from typing import Literal, Union
 
-from bot import SRBpp, run_and_output
-from discord import Message
+from discord import Embed, Message
 from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.utils import oauth_url
+from discord_slash import SlashContext, cog_ext
+from discord_slash.utils.manage_commands import create_option
 
-PREFIX: Literal[str] = "general/bin"
+from bot import SRBpp, run_and_output
+
+PREFIX: Literal["general/bin"] = "general/bin"
 
 
 class General(commands.Cog):
 	def __init__(self, bot: SRBpp) -> None:
 		self.bot = bot
 
-	@commands.command(name="source")
-	async def source(_, ctx: Context) -> None:
+	async def source(_, ctx: Union[Context, SlashContext]) -> None:
 		"""
 		Link the bots GitHub repository.
 		"""
 		await ctx.send("https://www.github.com/Mango0x45/speedrunbot-plusplus")
 
+	@cog_ext.cog_slash(
+		name="source",
+		description="Link the bots GitHub repository.",
+	)
+	async def source_slash(self, ctx: SlashContext):
+		await self.source(ctx)
+
+	@commands.command(name="source")
+	async def source_bot(self, ctx: Context):
+		"""
+		Link the bots GitHub repository.
+		"""
+		await self.source(ctx)
+
+	async def ping(self, ctx: Union[SlashContext, Context]) -> None:
+		await ctx.send(f"Pong! {round(self.bot.latency * 1000)}ms")
+
+	@cog_ext.cog_slash(
+		name="ping",
+		description="Ping the bot, because why not?",
+	)
+	async def ping_slash(self, ctx: SlashContext):
+		await self.ping(ctx)
+
 	@commands.command(name="ping")
-	async def ping(self, ctx: Context) -> None:
+	async def ping_bot(self, ctx: Context):
 		"""
 		Ping the bot, because why not?
 		"""
-		await ctx.send(f"Pong! {round(self.bot.latency * 1000)}ms")
+		await self.ping(ctx)
 
-	@commands.command(name="invite")
 	async def invite(self, ctx: Context) -> None:
 		"""
 		Get the bots discord invite link.
 		"""
-		await ctx.send(oauth_url(self.bot.user.id))
+		embed = Embed(title="Invite this bot to your server!")
+		embed.add_field(
+			name="As a bot with slash commands",
+			value=f"[Click here]({oauth_url(self.bot.user.id, scopes=('bot', 'applications.commands'))})",
+		)
+		embed.add_field(
+			name="As a bot **without** slash commands",
+			value=f"[Click here]({oauth_url(self.bot.user.id)})",
+		)
+		embed.add_field(
+			name="As an interaction with  **only** slash commands",
+			value=f"[Click here]({oauth_url(self.bot.user.id, scopes=('applications.commands',))})",
+		)
+		await ctx.send(embed=embed)
+
+	@cog_ext.cog_slash(
+		name="invite",
+		description="Get the bots discord invite link.",
+	)
+	async def invite_slash(self, ctx):
+		await self.invite(ctx)
+
+	@commands.command(name="invite")
+	async def invite_bot(self, ctx):
+		"""
+		Get the bots discord invite link.
+		"""
+		self.invite(ctx)
 
 	@commands.command(name="retime")
-	async def retime(
+	async def retime_bot(
 		self,
 		ctx: Context,
 		framerate: int = 30,
@@ -110,7 +162,7 @@ class General(commands.Cog):
 		)
 
 	@commands.command(name="prefix", aliases=("prefixes",))
-	async def prefix(self, ctx):
+	async def prefix_bot(self, ctx):
 		"""
 		Get the bot's prefixes.
 		"""

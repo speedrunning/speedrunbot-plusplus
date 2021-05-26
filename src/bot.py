@@ -4,15 +4,16 @@ import shlex
 from datetime import datetime
 from pathlib import Path
 from sys import stderr
-from typing import Generator, Literal, Optional
+from typing import Generator, Literal, Optional, Union
 
 import discord
 from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.message import Message
+from discord_slash import SlashCommand, SlashContext
 
-PREFIX: Literal[Path] = Path(__file__).parent
-ROOT_DIR: Literal[str] = f"{PREFIX}/.."
+PREFIX: Path = Path(__file__).parent
+ROOT_DIR: str = f"{PREFIX}/.."
 EXTENSIONS: Generator[str, None, None] = (
 	f"cogs.{f[:-3]}" for f in os.listdir(f"{PREFIX}/cogs") if f.endswith(".py")
 )
@@ -60,7 +61,7 @@ async def execv(prog: str, *argv: tuple[str, ...]) -> Executed:
 
 
 async def run_and_output(
-	ctx: Context,
+	ctx: Union[SlashContext, Context],
 	prog: str,
 	*argv: tuple[str, ...],
 	title: Optional[str] = None,
@@ -71,34 +72,47 @@ async def run_and_output(
 	embed that is sent to discord. If `title` is not supplied, then the first line of output
 	from `prog` will be used.
 	"""
-	async with ctx.typing():
-		process = await execv(prog, *argv)
-		if process.returncode != 0:
-			await ctx.send(process.stderr)
-			return
+	is_slash_called = type(ctx) == SlashContext
+	print(is_slash_called)
+	if not is_slash_called:
+		await ctx.trigger_typing()
 
-		title, desc = process.stdout.split("\n", 1) if not title else [title, process.stdout]
-		if len(desc) > 2000:
-			lines = list(divide_chunks(desc.split("\n"), 15))
-			lines_length = len(lines)
-			try:
+	process = await execv(prog, *argv)
+	if process.returncode != 0:
+		await ctx.send(process.stderr)
+		return
+
+	title, desc = process.stdout.split("\n", 1) if not title else [title, process.stdout]
+	if len(desc) > 2000:
+		lines = list(divide_chunks(desc.split("\n"), 15))
+		lines_length = len(lines)
+		try:
+			if is_slash_called:
+				await ctx.send(
+					"The contents of this message are too long, and as such they cannot be sent through a slash command. Please try again using a regular command."
+				)
+				return
+			else:
 				await ctx.reply(
 					"The contents of this message are too long and as such they will be sent in DMs"
 				)
-				async with ctx.author.typing():
-					for line in range(lines_length):
-						await ctx.author.send(
-							embed=discord.Embed(
-								title=f"{title} Page: {line + 1}/{lines_length}",
-								description="\n".join(lines[line]),
-							)
+			async with ctx.author.typing():
+				for line in range(lines_length):
+					await ctx.author.send(
+						embed=discord.Embed(
+							title=f"{title} Page: {line + 1}/{lines_length}",
+							description="\n".join(lines[line]),
 						)
-			except discord.Forbidden:
-				await ctx.reply(
-					"You have blocked the bot and the message is too long to be sent in this channel. Please unblock me and try again. "
-				)
+					)
+		except discord.Forbidden:
+			await ctx.reply(
+				"You have blocked the bot and the message is too long to be sent in this channel. Please unblock me and try again. "
+			)
+	else:
+		embed = discord.Embed(title=title, description=desc)
+		if is_slash_called:
+			await ctx.send(embed=embed)
 		else:
-			embed = discord.Embed(title=title, description=desc)
 			await ctx.reply(embed=embed)
 
 
@@ -111,6 +125,8 @@ class SRBpp(commands.Bot):
 			intents=discord.Intents(messages=True, guilds=True),
 			help_command=commands.MinimalHelpCommand(dm_help=True),
 		)
+
+		slash = SlashCommand(self, sync_commands=True, sync_on_cog_reload=True)
 
 		for extension in EXTENSIONS:
 			try:

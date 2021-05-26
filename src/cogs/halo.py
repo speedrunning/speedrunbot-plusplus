@@ -1,12 +1,13 @@
 from typing import Literal, Optional
 
-from bot import SRBpp, run_and_output
 from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.ext.commands.cooldowns import Cooldown
 
-PREFIX: Literal[str] = "halo/bin"
-RATE: Literal[int] = 5
+from bot import SRBpp, run_and_output
+
+PREFIX: Literal["halo/bin"] = "halo/bin"
+RATE: Literal[5] = 5
 
 
 class Halo(commands.Cog):
