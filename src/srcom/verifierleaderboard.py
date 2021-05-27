@@ -104,7 +104,7 @@ def main() -> int:
 	mods = list(mods)
 	mods.sort(key=attrgetter("examined"), reverse=True)
 
-	print("\n".join(f"{mod.name}: {mod.examined}" for mod in mods))
+	print("```" + "\n".join(f"{mod.name}: {mod.examined}" for mod in mods) + "```")
 	return EXIT_SUCCESS
 
 

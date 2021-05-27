@@ -29,17 +29,17 @@ class General(commands.Cog):
 		name="source",
 		description="Link the bots GitHub repository.",
 	)
-	async def source_slash(self, ctx: SlashContext):
+	async def source_slash(self, ctx: SlashContext) -> None:
 		await self.source(ctx)
 
 	@commands.command(name="source")
-	async def source_bot(self, ctx: Context):
+	async def source_bot(self, ctx: Context) -> None:
 		"""
 		Link the bots GitHub repository.
 		"""
 		await self.source(ctx)
 
-	async def ping(self, ctx: Union[SlashContext, Context]) -> None:
+	async def ping(self, ctx: Union[Context, SlashContext]) -> None:
 		await ctx.send(f"Pong! {round(self.bot.latency * 1000)}ms")
 
 	@cog_ext.cog_slash(
@@ -56,7 +56,7 @@ class General(commands.Cog):
 		"""
 		await self.ping(ctx)
 
-	async def invite(self, ctx: Context) -> None:
+	async def invite(self, ctx: Union[Context, SlashContext]) -> None:
 		"""
 		Get the bots discord invite link.
 		"""
@@ -79,15 +79,15 @@ class General(commands.Cog):
 		name="invite",
 		description="Get the bots discord invite link.",
 	)
-	async def invite_slash(self, ctx):
+	async def invite_slash(self, ctx: SlashContext) -> None:
 		await self.invite(ctx)
 
 	@commands.command(name="invite")
-	async def invite_bot(self, ctx):
+	async def invite_bot(self, ctx: Context) -> None:
 		"""
 		Get the bots discord invite link.
 		"""
-		self.invite(ctx)
+		await self.invite(ctx)
 
 	@commands.command(name="retime")
 	async def retime_bot(
@@ -96,7 +96,7 @@ class General(commands.Cog):
 		framerate: int = 30,
 		data1: str = None,
 		data2: str = None,
-	):
+	) -> None:
 		"""
 		**UNSTABLE**
 		Retime youtube videos using debugging data.
@@ -162,7 +162,7 @@ class General(commands.Cog):
 		)
 
 	@commands.command(name="prefix", aliases=("prefixes",))
-	async def prefix_bot(self, ctx):
+	async def prefix_bot(self, ctx: Context) -> None:
 		"""
 		Get the bot's prefixes.
 		"""

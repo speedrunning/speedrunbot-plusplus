@@ -73,8 +73,9 @@ async def run_and_output(
 	from `prog` will be used.
 	"""
 	is_slash_called = type(ctx) == SlashContext
-	print(is_slash_called)
-	if not is_slash_called:
+	if is_slash_called:
+		await ctx.defer()
+	else:
 		await ctx.trigger_typing()
 
 	process = await execv(prog, *argv)

@@ -41,6 +41,8 @@ class Admin(commands.Cog):
 			)
 		elif type(err) == commands.errors.BadArgument:
 			await ctx.send("Invalid argument, please check your input and try again.")
+		elif type(err) == commands.errors.NotOwner:
+			await ctx.send("You are not allowed to use this command. ")
 		else:  # TODO: Make it DM me the error maybe?
 			print(f"{type(err)}: {err}", file=stderr)
 
