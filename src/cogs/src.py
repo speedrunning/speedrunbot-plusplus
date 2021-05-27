@@ -387,7 +387,7 @@ class Src(commands.Cog):
 	@commands.command(name="verifierleaderboard", aliases=("vlb",))
 	async def verifierleaderboard_bot(
 		self,
-		ctx: SlashContext,
+		ctx: Context,
 		game1: Optional[str] = None,
 		game2: Optional[str] = None,
 	) -> None:
