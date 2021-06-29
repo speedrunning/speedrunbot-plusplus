@@ -7,13 +7,18 @@ PY     := python3.9
 
 cprogs  := bin/categories bin/categoriesplayed bin/games bin/modcount bin/runqueue bin/runs \
 		bin/worldrecords
-pyprogs := bin/categories bin/leaderboard bin/pending bin/verified bin/verifierleaderboard \
-		bin/worldrecord bin/utils.py
+pyprogs := bin/leaderboard bin/pending bin/verified bin/verifierleaderboard bin/worldrecord \
+	   	bin/utils.py
+shprogs := bin/posts
 
-all: $(pyprogs) $(cprogs)
+all: $(shprogs) $(pyprogs) $(cprogs)
 debug: CFLAGS += -DDEBUG
 debug: all
 $(shell mkdir -p bin/ objs/ ../../cache/srcom/)
+
+# Shell scripts
+bin/%: %.sh
+	chmod +x $< && ln -b $< $@
 
 # Python programs
 

@@ -8,8 +8,8 @@ from discord_slash.utils.manage_commands import create_option
 
 from bot import SRBpp, run_and_output
 
-PREFIX: Literal["srcom/bin"] = "srcom/bin"
-RATE: Literal[5] = 5
+PREFIX = "srcom/bin"
+RATE = 5
 
 class Src(commands.Cog):
 	def __init__(self, bot: SRBpp) -> None:
@@ -77,6 +77,12 @@ class Src(commands.Cog):
 			player,
 			title=f"Leaderboards Moderated: {player}",
 		)
+
+	async def posts(_, ctx: Union[Context, SlashContext], player: Optional[str] = None) -> None:
+		"""
+		Get the number of forum posts a user has made.
+		"""
+		await run_and_output(ctx, f"{PREFIX}/posts", player, title=f"Forum Posts: {player}")
 
 	async def verified(
 		_,
@@ -270,6 +276,25 @@ class Src(commands.Cog):
 		Get the number of runs awaiting verification for a given game. Optionally, a second game can be given.
 		"""
 		await self.modcount(ctx, player)
+
+	@cog_ext.cog_slash(
+		name="posts",
+		description="Get the number of forum posts a user has made.",
+		options=[
+			create_option(
+				name="player", description="The username of a player.", option_type=3, required=True
+			)
+		]
+	)
+	async def posts_slash(self, ctx: SlashContext, player: str) -> None:
+		await self.posts(ctx, player)
+
+	@commands.command(name="posts", aliases=("p",))
+	async def posts_bot(self, ctx: Context, player: Optional[str] = None) -> None:
+		"""
+		Get the number of forum posts a user has made.
+		"""
+		await self.posts(ctx, player)
 
 	async def runqueue(
 		_,
