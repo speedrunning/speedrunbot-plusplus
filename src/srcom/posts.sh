@@ -13,6 +13,8 @@ download () (
 [ $1 ] || die 'Usage: `+posts [PLAYER NAME]`
 Example: `+posts AnInternetTroll`'
 
+set -e
+
 # In the sed(1) command we branch to `:quit` the moment we match, if not it will match twice.
 MAX=$(curl "https://www.speedrun.com/$1/allposts" 2>/dev/null | sed -En '
 b sub
@@ -47,6 +49,10 @@ while read LINE; do
 	esac
 done </tmp/$$
 
+TOTAL=$(curl "https://www.speedrun.com/user/$1/info" 2>/dev/null |
+	sed -En 's/.*Posts:[^[:digit:]]+([0-9]+).*/\1/p')
+
 echo "Site Forums: $SITE
 Game Forums: $GAME
-Total: $(( SITE + GAME ))"
+Secret Forums: $(( TOTAL - SITE - GAME ))
+Total: $TOTAL"
