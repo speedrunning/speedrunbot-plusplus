@@ -10,7 +10,8 @@ download () (
 		sed -En "s|\s+<p class=\"mb-1\">Forum: <a href='/([^/]+)/forum'>.*</a></p>|\1|p" >>/tmp/$3
 )
 
-[ $1 ] || die 'USAGE'
+[ $1 ] || die 'Usage: +posts [PLAYER NAME]
+Example: +posts AnInternetTroll'
 
 # In the sed(1) command we branch to `:quit` the moment we match, if not it will match twice.
 MAX=$(curl "https://www.speedrun.com/$1/allposts" 2>/dev/null | sed -En '
