@@ -11,4 +11,4 @@ Example: `+posts AnInternetTroll`'
 POSTS=$(curl "https://www.speedrun.com/user/$1/info" 2>/dev/null |
 	sed -En 's/.*Posts:[^[:digit:]]*([0-9]+).*/\1/p')
 
-[ $POSTS ] && echo $POSTS || die 'The site is probably down, go complain to ELO.'
+[ $POSTS ] && echo $POSTS || die 'Either an incorrect username, or the site is down'
