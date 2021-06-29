@@ -29,7 +29,7 @@ trap "rm -f /tmp/$$" EXIT
 i=0
 until [ $i -ge $MAX ]; do
 	for _ in 1 2 3 4; do
-		: $(( i = i + 1 ))
+		: $(( i += 1 ))
 		download "$1" $i $$ &
 	done
 	wait
