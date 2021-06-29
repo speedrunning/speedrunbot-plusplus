@@ -10,8 +10,8 @@ download () (
 		sed -En "s|\s+<p class=\"mb-1\">Forum: <a href='/([^/]+)/forum'>.*</a></p>|\1|p" >>/tmp/$3
 )
 
-[ $1 ] || die 'Usage: +posts [PLAYER NAME]
-Example: +posts AnInternetTroll'
+[ $1 ] || die 'Usage: `+posts [PLAYER NAME]`
+Example: `+posts AnInternetTroll`'
 
 # In the sed(1) command we branch to `:quit` the moment we match, if not it will match twice.
 MAX=$(curl "https://www.speedrun.com/$1/allposts" 2>/dev/null | sed -En '
@@ -28,7 +28,7 @@ t quit')
 trap "rm -f /tmp/$$" EXIT
 
 i=0
-until [ $i -ge $MAX ]; do
+until [ $i -gt $MAX ]; do
 	for _ in 1 2 3 4; do
 		: $(( i += 1 ))
 		download "$1" $i $$ &
