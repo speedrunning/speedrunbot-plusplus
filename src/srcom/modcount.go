@@ -28,7 +28,12 @@ func main() {
 	gc := make(chan uint)
 	sc := make(chan uint)
 
-	/* At this scale this is probably overkill (and maybe a little slower), but oh well */
+	/*
+	 * At this scale this is probably overkill (and maybe a little slower), but oh well.
+	 *
+	 * TODO: Support offsets and such when someone actually hits that number (likely not for a
+	 * VERY long time)
+	 */
 	go count("/games?&_bulk=yes&max=1000&moderator=", uid, gc)
 	go count("/series?&max=200&moderator=", uid, sc)
 
