@@ -5,13 +5,13 @@ CURL   := $(shell curl-config --libs) -Wl,-rpath $(shell curl-config --prefix)/l
 INC    := -I../../include
 PY     := python3.9
 
-cprogs  := bin/categories bin/categoriesplayed bin/games bin/modcount bin/runqueue bin/runs \
-		bin/worldrecords
+cprogs  := bin/categories bin/categoriesplayed bin/games bin/runs bin/worldrecords
+goprogs	:= bin/modcount bin/runqueue
 pyprogs := bin/leaderboard bin/pending bin/verified bin/verifierleaderboard bin/worldrecord \
 	   	bin/utils.py
 shprogs := bin/posts
 
-all: $(shprogs) $(pyprogs) $(cprogs)
+all: $(shprogs) $(pyprogs) $(goprogs) $(cprogs)
 debug: CFLAGS += -DDEBUG
 debug: all
 $(shell mkdir -p bin/ objs/ ../../cache/srcom/)
@@ -28,6 +28,14 @@ bin/utils.py: utils.py
 
 bin/%: %.py
 	chmod +x $< && ln -b $< $@
+
+# Go programs
+bin/modcount: modcount.go
+	go build $< utils.go
+	mv modcount bin/
+bin/runqueue: runqueue.go
+	go build $< utils.go
+	mv runqueue bin/
 
 # C programs
 
@@ -50,9 +58,6 @@ bin/categoriesplayed: objs/categoriesplayed.o objs/utils.o
 
 bin/games: objs/games.o objs/utils.o
 	$(CCMP) -o $@ $^ $(CURL) -ljansson
-
-bin/runqueue: objs/runqueue.o objs/utils.o
-	$(CCMP) -o $@ $^ $(CURL) -ljansson -pthread
 
 bin/runs: objs/runs.o objs/utils.o
 	$(CCMP) -o $@ $^ $(CURL) -ljansson -pthread
