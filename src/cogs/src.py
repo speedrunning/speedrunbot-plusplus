@@ -489,7 +489,7 @@ class Src(commands.Cog):
 		player: Optional[str] = None,
 	) -> None:
 		"""
-		Get the number of world records a player currently holds.
+		Get the number of top 3 runs a player have.
 		"""
 		await self.podiums(ctx, player)
 
