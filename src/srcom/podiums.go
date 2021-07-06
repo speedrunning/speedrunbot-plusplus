@@ -17,7 +17,7 @@ type Run struct {
 
 func main() {
 	if len(os.Args) != 2 {
-		Usage("top3", "[PLAYER NAME]", "whatevermarco")
+		Usage("podiums", "[PLAYER NAME]", "whatevermarco")
 	}
 
 	uid, err := UserID(os.Args[1])
