@@ -167,7 +167,7 @@ class Src(commands.Cog):
 		player: Optional[str] = None,
 	) -> None:
 		"""
-		Get the number of top 3 runs a player have.
+		Get the number of top 3 runs a player has.
 		"""
 		await run_and_output(ctx, f"{PREFIX}/podiums", player)
 
@@ -489,7 +489,7 @@ class Src(commands.Cog):
 		player: Optional[str] = None,
 	) -> None:
 		"""
-		Get the number of top 3 runs a player have.
+		Get the number of top 3 runs a player has.
 		"""
 		await self.podiums(ctx, player)
 
