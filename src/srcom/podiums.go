@@ -6,12 +6,10 @@ import (
 	"os"
 )
 
-type Runs struct {
-	Data []Run
-}
-
-type Run struct {
-	Place int
+type JsonData struct {
+	Data []struct {
+		Place int `json:"place"`
+	} `json:"data"`
 }
 
 func main() {
@@ -26,7 +24,7 @@ func main() {
 
 	res := Request("/users/" + uid + "/personal-bests")
 
-	var runs Runs
+	var runs JsonData
 	json.Unmarshal(res, &runs)
 
 	count := 0
