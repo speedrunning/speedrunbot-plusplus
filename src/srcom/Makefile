@@ -59,7 +59,7 @@ bin/posts: posts.sh
 
 ##### PHONY #####
 clean:
-	rm -rf objs/ bin/ __pycache__/ ../__pycache__/
+	rm -rf bin/ __pycache__/ ../__pycache__/
 start:
 	mkdir -p bin/
 .PHONY: clean start
