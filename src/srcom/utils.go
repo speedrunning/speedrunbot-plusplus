@@ -48,6 +48,7 @@ func Request(endpoint string) []byte {
 	}
 
 	data, _ := ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
 	return data
 }
 
