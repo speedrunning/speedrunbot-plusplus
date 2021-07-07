@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"os"
 )
 
@@ -25,14 +24,10 @@ func main() {
 		ErrorAndDie(err)
 	}
 
-	res, err := http.Get(API + "/users/" + uid + "/personal-bests")
-	if err != nil {
-		ErrorAndDie(err)
-	}
-	defer res.Body.Close()
+	res := Request("/users/" + uid + "/personal-bests")
 
 	var runs Runs
-	json.NewDecoder(res.Body).Decode(&runs)
+	json.Unmarshal(res, &runs)
 
 	count := 0
 	for _, run := range runs.Data {
