@@ -33,5 +33,5 @@ func main() {
 			count++
 		}
 	}
-	fmt.Printf("Podium Count: %s\nTop 3 Runs: %d\n", os.Args[1], count)
+	fmt.Printf("Podium Count: `%s`\nTop 3 Runs: %d\n", os.Args[1], count)
 }

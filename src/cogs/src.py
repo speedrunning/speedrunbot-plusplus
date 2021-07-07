@@ -75,7 +75,6 @@ class Src(commands.Cog):
 			ctx,
 			f"{PREFIX}/modcount",
 			player,
-			title=f"Leaderboards Moderated: {player}",
 		)
 
 	async def posts(_, ctx: Union[Context, SlashContext], player: Optional[str] = None) -> None:
