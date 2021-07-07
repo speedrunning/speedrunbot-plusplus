@@ -62,4 +62,6 @@ clean:
 	rm -rf bin/ __pycache__/ ../__pycache__/
 start:
 	mkdir -p bin/
-.PHONY: clean start
+test:
+	${PY} -m doctest leaderboard.py utils.py
+.PHONY: clean start test
