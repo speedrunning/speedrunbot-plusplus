@@ -597,7 +597,7 @@ class Src(commands.Cog):
 
 	@cog_ext.cog_slash(
 		name="podiums",
-		description="Get the number of top 3 runs a player have.",
+		description="Get the number of top 3 runs a player has.",
 		options=[
 			create_option(
 				name="player", description="The username of a player.", option_type=3, required=True
