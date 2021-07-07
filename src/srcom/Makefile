@@ -6,7 +6,7 @@ INC    := -I../../include
 PY     := python3.9
 
 cprogs  := bin/categories bin/categoriesplayed bin/games bin/runs bin/worldrecords
-goprogs	:= bin/modcount bin/runqueue
+goprogs	:= bin/modcount bin/runqueue bin/podiums
 pyprogs := bin/leaderboard bin/pending bin/verified bin/verifierleaderboard bin/worldrecord \
 	   	bin/utils.py
 shprogs := bin/posts
@@ -36,6 +36,9 @@ bin/modcount: modcount.go
 bin/runqueue: runqueue.go
 	go build $< utils.go
 	mv runqueue bin/
+bin/podiums: podiums.go
+	go build $< utils.go
+	mv podiums bin/
 
 # C programs
 

@@ -161,6 +161,16 @@ class Src(commands.Cog):
 		"""
 		await run_and_output(ctx, f"{PREFIX}/worldrecord", game, category, subcategory)
 
+	async def podiums(
+		_,
+		ctx: Union[Context, SlashContext],
+		player: Optional[str] = None,
+	) -> None:
+		"""
+		Get the number of top 3 runs a player has.
+		"""
+		await run_and_output(ctx, f"{PREFIX}/podiums", player)
+
 	@cog_ext.cog_slash(
 		name="categories",
 		description="Get a list of all of a games categories.",
@@ -472,6 +482,17 @@ class Src(commands.Cog):
 		"""
 		await self.pending(ctx, game1, game2)
 
+	@commands.command(name="podiums")
+	async def podiums_bot(
+		self,
+		ctx: Context,
+		player: Optional[str] = None,
+	) -> None:
+		"""
+		Get the number of top 3 runs a player has.
+		"""
+		await self.podiums(ctx, player)
+
 	@cog_ext.cog_slash(
 		name="worldrecord",
 		description="Get the world record for a game",
@@ -573,6 +594,23 @@ class Src(commands.Cog):
 		game2: Optional[str] = None,
 	) -> None:
 		await self.verifierleaderboard(ctx, game1, game2)
+
+	@cog_ext.cog_slash(
+		name="podiums",
+		description="Get the number of top 3 runs a player has.",
+		options=[
+			create_option(
+				name="player", description="The username of a player.", option_type=3, required=True
+			),
+		],
+	)
+	async def podiums_slash(
+		self,
+		ctx: SlashContext,
+		player: str,
+	) -> None:
+		await self.podiums(ctx, player)
+
 
 def setup(bot: SRBpp) -> None:
 	bot.add_cog(Src(bot))
