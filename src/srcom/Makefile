@@ -1,78 +1,65 @@
-CCMP   ?= clang
-CFLAGS := -O3 -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wno-unused-result
-# This might be not very good, look into this!!
-CURL   := $(shell curl-config --libs) -Wl,-rpath $(shell curl-config --prefix)/lib
-INC    := -I../../include
-PY     := python3.9
+.POSIX:
+.SUFFIXES:
+CC	= cc
+CFLAGS	= -O3 -pipe -march=native -pedantic -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes \
+	  -I ../../include
+CURL	= $$(curl-config --libs) -Wl,-rpath $$(curl-config --prefix)/lib
+PY	= python3.9
 
-cprogs  := bin/categories bin/categoriesplayed bin/games bin/runs bin/worldrecords
-goprogs	:= bin/modcount bin/runqueue bin/podiums
-pyprogs := bin/leaderboard bin/pending bin/verified bin/verifierleaderboard bin/worldrecord \
-	   	bin/utils.py
-shprogs := bin/posts
+cprogs	= bin/categories bin/categoriesplayed bin/games bin/runs bin/worldrecords
+goprogs	= bin/modcount bin/runqueue bin/podiums
+pyprogs	= bin/leaderboard bin/pending bin/verified bin/verifierleaderboard bin/worldrecord \
+	  bin/utils.py
+shprogs	= bin/posts
 
-all: $(shprogs) $(pyprogs) $(goprogs) $(cprogs)
-debug: CFLAGS += -DDEBUG
-debug: all
-$(shell mkdir -p bin/ objs/ ../../cache/srcom/)
+all: start ${cprogs} ${goprogs} ${pyprogs} ${shprogs}
 
-# Shell scripts
-bin/%: %.sh
-	chmod +x $< && ln -b $< $@
 
-# Python programs
+##### C #####
+bin/categories: categories.c utils.c
+	${CC} ${CFLAGS} -o $@ $< utils.c ${CURL} -ljansson
+bin/categoriesplayed: games.c utils.c
+	${CC} ${CFLAGS} -DCATEGORIES -o $@ $< utils.c ${CURL} -ljansson
+bin/games: games.c utils.c
+	${CC} ${CFLAGS} -o $@ $< utils.c ${CURL} -ljansson
+bin/runs: runs.c utils.c
+	${CC} ${CFLAGS} -o $@ $< utils.c ${CURL} -ljansson -pthread
+bin/worldrecords: worldrecords.c utils.c
+	${CC} ${CFLAGS} -o $@ $< utils.c ${CURL}
 
-# This needs to retain the file extension for importability
+
+##### GOLANG #####
+bin/modcount: modcount.go
+	go build -o $@ $< utils.go
+bin/runqueue: runqueue.go
+	go build -o $@ $< utils.go
+bin/podiums: podiums.go
+	go build -o $@ $< utils.go
+
+
+##### PYTHON #####
 bin/utils.py: utils.py
 	chmod +x $< && cp $< $@
+bin/leaderboard: leaderboard.py
+	chmod +x $< && ln $< $@
+bin/pending: pending.py
+	chmod +x $< && ln $< $@
+bin/verified: verified.py
+	chmod +x $< && ln $< $@
+bin/verifierleaderboard: verifierleaderboard.py
+	chmod +x $< && ln $< $@
+bin/worldrecord: worldrecord.py
+	chmod +x $< && ln $< $@
 
-bin/%: %.py
-	chmod +x $< && ln -b $< $@
 
-# Go programs
-bin/modcount: modcount.go
-	go build $< utils.go
-	mv modcount bin/
-bin/runqueue: runqueue.go
-	go build $< utils.go
-	mv runqueue bin/
-bin/podiums: podiums.go
-	go build $< utils.go
-	mv podiums bin/
+##### SHELL #####
+bin/posts: posts.sh
+	chmod +x $< && ln $< $@
 
-# C programs
 
-# The special rules for `bin/categoriesplayed`, `bin/games`, etc. comes first to ensure that they
-# don't get linked with incorrect libraries. Additionally, `games` and `categoriesplayed` are almost
-# identical, so they both use `games.c`, with preproccessor statements to create two seperate
-# binaries.
-.PRECIOUS: objs/%.o
-objs/categoriesplayed.o: games.c
-	$(CCMP) $(CFLAGS) $(INC) -DCATEGORIES -o $@ -c $<
-
-objs/%.o: %.c
-	$(CCMP) $(CFLAGS) $(INC) -o $@ -c $<
-
-bin/categories: objs/categories.o objs/utils.o
-	$(CCMP) -o $@ $^ $(CURL) -ljansson
-
-bin/categoriesplayed: objs/categoriesplayed.o objs/utils.o
-	$(CCMP) -o $@ $^ $(CURL) -ljansson
-
-bin/games: objs/games.o objs/utils.o
-	$(CCMP) -o $@ $^ $(CURL) -ljansson
-
-bin/runs: objs/runs.o objs/utils.o
-	$(CCMP) -o $@ $^ $(CURL) -ljansson -pthread
-
-bin/%: objs/%.o objs/utils.o
-	$(CCMP) -o $@ $^ $(CURL)
-
-# Phony targets
-.PHONY: clean test
+##### PHONY #####
 clean:
 	rm -rf objs/ bin/ __pycache__/ ../__pycache__/
-
-test:
-	$(PY) -m doctest leaderboard.py
-	$(PY) -m doctest utils.py 2>/dev/null
+start:
+	mkdir -p bin/
+.PHONY: clean start
