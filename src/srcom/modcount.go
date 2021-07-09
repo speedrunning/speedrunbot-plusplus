@@ -40,6 +40,6 @@ func main() {
 	games := <- gc
 	series := <- sc
 
-	fmt.Printf("Leaderboards Moderated: `%s`\nGames: %d\nSeries: %d\nTotal: %d\n", games,
-		   series, games + series)
+	fmt.Printf("Leaderboards Moderated: `%s`\nGames: %d\nSeries: %d\nTotal: %d\n", os.Args[1],
+		   games, series, games + series)
 }
