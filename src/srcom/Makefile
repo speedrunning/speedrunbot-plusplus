@@ -12,7 +12,7 @@ pyprogs	= bin/leaderboard bin/pending bin/verified bin/verifierleaderboard bin/w
 	  bin/utils.py
 shprogs	= bin/posts
 
-all: start ${cprogs} ${goprogs} ${pyprogs} ${shprogs}
+all: bin/ ${cprogs} ${goprogs} ${pyprogs} ${shprogs}
 
 
 ##### C #####
@@ -57,11 +57,14 @@ bin/posts: posts.sh
 	chmod +x $< && ln $< $@
 
 
+##### OTHER #####
+bin/:
+	mkdir -p bin/
+
+
 ##### PHONY #####
 clean:
 	rm -rf bin/ __pycache__/ ../__pycache__/
-start:
-	mkdir -p bin/
 test:
 	${PY} -m doctest leaderboard.py utils.py
-.PHONY: clean start test
+.PHONY: clean test
