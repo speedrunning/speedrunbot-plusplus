@@ -125,6 +125,7 @@ class SRBpp(commands.Bot):
 			command_prefix=get_prefix,
 			intents=discord.Intents(messages=True, guilds=True),
 			help_command=commands.MinimalHelpCommand(dm_help=True),
+			activity=discord.Game("+help / ;help"),
 		)
 
 		slash = SlashCommand(self, sync_commands=True, sync_on_cog_reload=True)
@@ -143,8 +144,6 @@ class SRBpp(commands.Bot):
 		Code to run when the bot starts up.
 		"""
 		self.uptime = datetime.utcnow()
-		game = discord.Game("+help / ;help")
-		await self.change_presence(activity=game)
 
 		print(
 			f"Bot Name\t\t{self.user.name}\n"
