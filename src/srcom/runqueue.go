@@ -15,7 +15,7 @@ const (
 
 type JsonData struct {
 	Data []struct {
-		Level    string `json:"level"`
+		Level string `json:"level"`
 	} `json:"data"`
 }
 
