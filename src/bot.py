@@ -113,6 +113,20 @@ async def run_and_output(
 		embed = discord.Embed(title=title, description=desc)
 		if is_slash_called:
 			await ctx.send(embed=embed)
+		# If the original message is replying to another message then try to reply to that message
+		elif ctx.message.reference:
+			# If the message is in cache then reply to it
+			if ctx.message.reference.cached_message:
+				# If the message is deleted then just reply to the message that invoked the
+				# command
+				if ctx.message.reference.cached_message.fail_if_not_exists:
+					await ctx.reply(embed=embed)
+				else:
+					await ctx.message.reference.cached_message.reply(embed=embed)
+			# If it's not cached then get the message then reply to it
+			else:
+				msg = await ctx.channel.fetch_message(ctx.message.reference.message_id)
+				await msg.reply(embed=embed)
 		else:
 			await ctx.reply(embed=embed)
 
