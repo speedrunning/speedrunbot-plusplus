@@ -114,7 +114,23 @@ async def run_and_output(
 		if is_slash_called:
 			await ctx.send(embed=embed)
 		else:
-			await ctx.reply(embed=embed)
+			if ctx.message.reference:
+				# If the original message is replying to another message
+				# Then try to reply to that message
+				if ctx.message.reference.cached_message:
+					# If the message is in cache then reply to it
+					if ctx.message.reference.cached_message.fail_if_not_exists:
+						# If the message is deleted then just reply to the message
+						# That invoked the command
+						await ctx.reply(embed=embed)
+					else:
+						await ctx.message.reference.cached_message.reply(embed=embed)
+				else:
+					# If it's not cached then get the message then reply to it
+					msg = await ctx.channel.fetch_message(ctx.message.reference.message_id)
+					await msg.reply(embed=embed)
+			else:
+				await ctx.reply(embed=embed)
 
 
 class SRBpp(commands.Bot):
