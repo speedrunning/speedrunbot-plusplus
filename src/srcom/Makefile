@@ -37,22 +37,29 @@ bin/podiums: podiums.go utils.go
 
 ##### PYTHON #####
 bin/utils.py: utils.py
-	chmod +x $< && cp $< $@
+	chmod +x $<
+	cp $< $@
 bin/leaderboard: leaderboard.py
-	chmod +x $< && ln $< $@
+	chmod +x $<
+	[ -e $@ ] || ln $< $@
 bin/pending: pending.py
-	chmod +x $< && ln $< $@
+	chmod +x $<
+	[ -e $@ ] || ln $< $@
 bin/verified: verified.py
-	chmod +x $< && ln $< $@
+	chmod +x $<
+	[ -e $@ ] || ln $< $@
 bin/verifierleaderboard: verifierleaderboard.py
-	chmod +x $< && ln $< $@
+	chmod +x $<
+	[ -e $@ ] || ln $< $@
 bin/worldrecord: worldrecord.py
-	chmod +x $< && ln $< $@
+	chmod +x $<
+	[ -e $@ ] || ln $< $@
 
 
 ##### SHELL #####
 bin/posts: posts.sh
-	chmod +x $< && ln $< $@
+	chmod +x $<
+	[ -e $@ ] || ln $< $@
 
 
 ##### OTHER #####
