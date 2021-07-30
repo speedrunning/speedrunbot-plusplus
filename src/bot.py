@@ -72,7 +72,8 @@ async def run_and_output(
 	embed that is sent to discord. If `title` is not supplied, then the first line of output
 	from `prog` will be used.
 	"""
-	is_slash_called = type(ctx) == SlashContext
+	print(argv)
+	is_slash_called = (type(ctx) == SlashContext)
 	if is_slash_called:
 		await ctx.defer()
 	else:

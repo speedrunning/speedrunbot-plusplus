@@ -77,11 +77,15 @@ class Src(commands.Cog):
 			player,
 		)
 
-	async def posts(_, ctx: Union[Context, SlashContext], player: Optional[str] = None) -> None:
+	async def posts(_, ctx: Union[Context, SlashContext], args: Optional[list[str]]) -> None:
 		"""
 		Get the number of forum posts a user has made.
 		"""
-		await run_and_output(ctx, f"{PREFIX}/posts", player, title=f"Forum Posts: {player}")
+		if args:
+			player = args[-1]
+		else:
+			player = None
+		await run_and_output(ctx, f"{PREFIX}/posts", *args, title=f"Forum Posts: {player}")
 
 	async def verified(
 		_,
@@ -292,18 +296,21 @@ class Src(commands.Cog):
 		options=[
 			create_option(
 				name="player", description="The username of a player.", option_type=3, required=True
+			),
+			create_option(
+				name="verbose", description="Show extended information.", option_type=5, required=True
 			)
 		]
 	)
-	async def posts_slash(self, ctx: SlashContext, player: str) -> None:
-		await self.posts(ctx, player)
+	async def posts_slash(self, ctx: SlashContext, player: str, verbose: bool) -> None:
+		await self.posts(ctx, ["-v" , player] if verbose else [player])
 
 	@commands.command(name="posts", aliases=("p",))
-	async def posts_bot(self, ctx: Context, player: Optional[str] = None) -> None:
+	async def posts_bot(self, ctx: Context, *, args: Optional[str] = "") -> None:
 		"""
 		Get the number of forum posts a user has made.
 		"""
-		await self.posts(ctx, player)
+		await self.posts(ctx, args.split())
 
 	async def runqueue(
 		_,
