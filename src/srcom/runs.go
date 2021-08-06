@@ -82,18 +82,17 @@ func main() {
 		ErrorAndDie(err)
 	}
 
-	var uri_base string
 	if argc == 3 {
 		game, err := GameData(os.Args[2])
 		if err != nil {
 			ErrorAndDie(err)
 		}
-		uri_base = "/runs?user=" + uid + "&game=" + game.id + "&max=200&offset="
+		uri_base := "/runs?user=" + uid + "&game=" + game.id + "&max=200&offset="
 		main, il := get_counts(uri_base)
 		fmt.Printf("Run Count: %s - %s\nFullgame: %d\nIndividual Level: %d\nTotal: %d\n",
 			os.Args[1], game.name, main, il, main + il)
 	} else {
-		uri_base = "/runs?user=" + uid + "&max=200&offset="
+		uri_base := "/runs?user=" + uid + "&max=200&offset="
 		main, il := get_counts(uri_base)
 		fmt.Printf("Run Count: %s\nFullgame: %d\nIndividual Level: %d\nTotal: %d\n",
 			os.Args[1], main, il, main + il)
