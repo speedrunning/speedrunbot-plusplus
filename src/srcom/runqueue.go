@@ -20,8 +20,8 @@ type JsonData struct {
 }
 
 type Pending struct {
-	il	uint
 	main	uint
+	il	uint
 	err	error
 }
 
@@ -47,7 +47,7 @@ func get_games(argc int, argv []string) [2]Game {
 	return games
 }
 
-func worker(id string, jobs <- chan int, counts chan<- Pending) {
+func worker(id string, jobs <- chan int, counts chan <- Pending) {
 	for offset := range jobs {
 		json_bytes := Request("/runs?game=" + id + "&status=new&max=200&offset=" +
 				strconv.Itoa(offset))
@@ -121,7 +121,7 @@ func get_pending(argc int, games [2]Game) (uint, uint) {
 		main += p.main
 	}
 
-	return il, main
+	return main, il
 }
 
 func main() {
@@ -136,7 +136,7 @@ func main() {
 	}
 
 	games := get_games(argc, argv)
-	il, main := get_pending(argc, games)
+	main, il := get_pending(argc, games)
 
 	if argc == 1 {
 		fmt.Printf("Runs Awaiting Verification: `%s`\n", games[0].name)

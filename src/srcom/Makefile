@@ -18,8 +18,6 @@ all: bin/ ${cprogs} ${goprogs} ${pyprogs} ${shprogs}
 ##### C #####
 bin/categories: categories.c utils.c
 	${CC} ${CFLAGS} -o $@ $< utils.c ${CURL} -ljansson
-bin/runs: runs.c utils.c
-	${CC} ${CFLAGS} -o $@ $< utils.c ${CURL} -ljansson -pthread
 bin/worldrecords: worldrecords.c utils.c
 	${CC} ${CFLAGS} -o $@ $< utils.c ${CURL}
 
@@ -30,6 +28,8 @@ bin/games: games.go utils.go
 bin/modcount: modcount.go utils.go
 	go build -o $@ $< utils.go
 bin/runqueue: runqueue.go utils.go
+	go build -o $@ $< utils.go
+bin/runs: runs.go utils.go
 	go build -o $@ $< utils.go
 bin/podiums: podiums.go utils.go
 	go build -o $@ $< utils.go
