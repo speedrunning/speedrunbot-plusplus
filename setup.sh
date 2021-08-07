@@ -32,16 +32,17 @@ else
 	read -r SU
 fi
 
-# Check for C compilers. Clang is preferred, then GCC, then the systems default.
+# Check for C compilers.
 echo Checking for C compiler
-if command -v clang >/dev/null 2>&1; then
+if command -v cc >/dev/null 2>&1; then
+	CC="cc"
+elif command -v clang >/dev/null 2>&1; then
 	CC="clang"
 elif command -v gcc >/dev/null 2>&1; then
 	CC="gcc"
-elif command -v cc >/dev/null 2>&1; then
-	CC="cc"
 else
-	echo You must install a C compiler before setting up the bot. Clang or GCC are recommended.
+	echo You must install a C compiler before setting up the bot. If the installed compiler is \
+		not GCC or Clang, make sure to link it to /bin/cc.
 	exit 0
 fi
 
@@ -51,7 +52,6 @@ if command -v python3.9 >/dev/null 2>&1; then
 	PY="python3.9"
 elif command -v python3 >/dev/null 2>&1; then
 	echo WARNING: Python3 was found but not Python3.9. There is no guarantee the bot will work.
-	install_python39
 	printf "Do you want to install python3.9? (Only tested on Debian) [y/N]: "
 
 	read -r C
@@ -85,25 +85,24 @@ fi
 
 # Install dependencies
 echo Installing dependencies
-$PY -m pip install -r requirements.txt >/dev/null 2>&1
+$PY -m pip install -r requirements.txt
 
 case $OS in
 arch)
-	yes | $SU pacman -S curl jansson redis 2>&1
+	yes | $SU pacman -S curl jansson redis
 	;;
 debian)
 	yes | $SU add-apt-repository ppa:redislabs/redis
 	yes | $SU apt update
-	yes | $SU apt install libjansson-dev libcurl4-openssl-dev redis >/dev/null 2>&1
+	yes | $SU apt install libjansson-dev libcurl4-openssl-dev redis
 	;;
 *)
-	echo You do not have a supported OS. Please install jansson, libcurl and redis manually
+	echo You do not have a supported OS. Please install libjansson, libcurl and redis manually
 	exit 1
 	;;
 esac
 
 # Run the Makefiles.
-echo Building executables
-for f in $(find "$SCR_PATH" | grep 'Makefile'); do
-	make CCMP=$CC -C "$(dirname "$f")" >/dev/null 2>&1
-done
+cd "$SCR_PATH/src/admin"
+make
+./bin/compile
