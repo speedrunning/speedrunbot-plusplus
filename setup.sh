@@ -34,16 +34,10 @@ fi
 
 # Check for C compilers.
 echo Checking for C compiler
-if command -v cc >/dev/null 2>&1; then
-	CC="cc"
-elif command -v clang >/dev/null 2>&1; then
-	CC="clang"
-elif command -v gcc >/dev/null 2>&1; then
-	CC="gcc"
-else
+if ! command -v cc gcc clang >/dev/null 2>&1; then
 	echo You must install a C compiler before setting up the bot. If the installed compiler is \
 		not GCC or Clang, make sure to link it to /bin/cc.
-	exit 0
+	exit 1
 fi
 
 # Check for Python 3.9.
