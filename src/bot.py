@@ -1,4 +1,5 @@
 import asyncio
+import json
 import os
 import shlex
 from datetime import datetime
@@ -6,17 +7,64 @@ from pathlib import Path
 from sys import stderr
 from typing import Generator, Literal, Optional, Union
 
+import cryptocode
 import discord
+from aiohttp import ClientSession
 from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.message import Message
 from discord_slash import SlashCommand, SlashContext
+from redis import Redis
 
 PREFIX: Path = Path(__file__).parent
 ROOT_DIR: str = f"{PREFIX}/.."
 EXTENSIONS: Generator[str, None, None] = (
 	f"cogs.{f[:-3]}" for f in os.listdir(f"{PREFIX}/cogs") if f.endswith(".py")
 )
+
+class Database:
+	def __init__(self, redis: Redis = None, database_file: str = None):
+		self.db: Union["redis", "json"]
+		if redis:
+			self.db = "redis"
+		elif database_file:
+			self.db = "json"
+			try:
+				f = open(database_file)
+			except IOError:
+				print("No database file found, creating...")
+				f = open(database_file, mode="w+")
+				f.write("{}")
+			finally:
+				f.close()
+		self.redis = redis
+		self.database_file = database_file
+
+	def hset(self, name: str, key: str, value: str, **kwargs):
+		if self.db == "redis":
+			self.redis.hset(name, key, value, mapping=(kwargs["mapping"] if "mapping" in kwargs else None))
+		elif self.db == "json":
+			with open(self.database_file, mode="r") as f:
+				file = json.load(f)
+			with open(self.database_file, mode="w") as f:
+				if name not in file:
+					file[name] = {}
+				file[name][key] = value
+				json.dump(file, f)
+	
+	def hget(self, name: str, key: str) -> Optional[str]:
+		if self.db == "redis":
+			value = self.redis.hget(name, key)
+			if not value:
+				return None
+			else:
+				return value.decode("utf-8")
+		elif self.db == "json":
+			with open(self.database_file, mode="r") as f:
+				file = json.load(f)
+				if name not in file:
+					return None
+				return file[name][key]
 
 
 class Executed:
@@ -63,7 +111,7 @@ async def execv(prog: str, *argv: tuple[str, ...]) -> Executed:
 async def run_and_output(
 	ctx: Union[SlashContext, Context],
 	prog: str,
-	*argv: tuple[str, ...],
+	*argv: list[str, discord.User, ...],
 	title: Optional[str] = None,
 ) -> None:
 	"""
@@ -72,14 +120,26 @@ async def run_and_output(
 	embed that is sent to discord. If `title` is not supplied, then the first line of output
 	from `prog` will be used.
 	"""
-	print(argv)
-	is_slash_called = (type(ctx) == SlashContext)
+	prog_namespace = prog.split("/")[0]
+	args = list(argv)
+	for arg in range(len(args)):
+		if isinstance(args[arg], discord.User):
+			user_prog_id_hashed = ctx.bot.database.hget("users", f"{hash(args[arg])}.{prog_namespace}")
+			args.pop(arg)
+			if user_prog_id_hashed:
+				user_prog_id = cryptocode.decrypt(user_prog_id_hashed, str(ctx.author.id))
+				if user_prog_id:
+					args.insert(
+						arg, user_prog_id
+					)
+					args.insert(arg, "--uid")
+	is_slash_called = type(ctx) == SlashContext
 	if is_slash_called:
 		await ctx.defer()
 	else:
 		await ctx.trigger_typing()
 
-	process = await execv(prog, *argv)
+	process = await execv(prog, *args)
 	if process.returncode != 0:
 		await ctx.send(process.stderr)
 		return
@@ -150,15 +210,36 @@ class SRBpp(commands.Bot):
 				self.load_extension(extension)
 			except Exception as e:
 				print(e, file=stderr)
+		
+		config = False
+		try:
+			f = open(f"{ROOT_DIR}/config.json", encoding="utf-8")
+			config = json.load(f)
+			self.token = config["token"]
+		except IOError:
+			print("No config file found, trying backwards compatible method.")
+			try:
+				f = open(f"{ROOT_DIR}/token", "r", encoding="utf-8")
+				self.token = f.read().strip()
+			except IOError:
+				print("No bot token found. ")
+				exit(1)
+		finally:
+			f.close()
 
-		with open(f"{ROOT_DIR}/token", "r", encoding="utf-8") as f:
-			self.token = f.read().strip()
+		if config and ("redis_hostname" in config and "redis_port" in config):
+			self.database = Database(redis=Redis(host=config["redis_hostname"], port=config["redis_port"], db=(config["redis_db"] if "redis_db" in config else 0)))
+		elif config:
+			self.database = Database(database_file=(config["database_file"] if "database_file" in config else "database.json"))
+		else:
+			self.database = Database(database_file="database.json")
 
 	async def on_ready(self) -> None:
 		"""
 		Code to run when the bot starts up.
 		"""
 		self.uptime = datetime.utcnow()
+		self.session = ClientSession()
 
 		print(
 			f"Bot Name\t\t{self.user.name}\n"
@@ -171,6 +252,7 @@ class SRBpp(commands.Bot):
 		"""
 		Cleanup before the bot exits.
 		"""
+		await self.session.close()
 		for extension in EXTENSIONS:
 			try:
 				self.unload_extension(extension)

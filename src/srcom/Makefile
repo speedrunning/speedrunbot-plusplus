@@ -8,7 +8,7 @@ PY	= python3.9
 
 cprogs	= bin/categories bin/runs bin/worldrecords
 goprogs	= bin/games bin/modcount bin/runqueue bin/podiums
-pyprogs	= bin/leaderboard bin/pending bin/verified bin/verifierleaderboard bin/worldrecord \
+pyprogs	= bin/leaderboard bin/pending bin/verified bin/verifierleaderboard bin/worldrecord bin/whois \
 	  bin/utils.py
 shprogs	= bin/posts
 
@@ -54,7 +54,9 @@ bin/verifierleaderboard: verifierleaderboard.py
 bin/worldrecord: worldrecord.py
 	chmod +x $<
 	[ -e $@ ] || ln $< $@
-
+bin/whois: whois.py
+	chmod +x $<
+	[ -e $@ ] || ln $< $@
 
 ##### SHELL #####
 bin/posts: posts.sh

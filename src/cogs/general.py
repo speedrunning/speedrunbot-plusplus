@@ -1,9 +1,10 @@
 import json
 from asyncio import TimeoutError
 from math import floor, trunc
-from typing import Literal, Union
+from typing import Literal, Optional, Union
 
-from discord import Embed, Message
+import cryptocode
+from discord import Embed, Forbidden, Message, User
 from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.utils import oauth_url
@@ -11,7 +12,9 @@ from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
 
 from bot import SRBpp, run_and_output
+from cogs.src import PREFIX as SRC_PREFIX
 
+SRC_NAMESPACE = SRC_PREFIX.split("/")[0]
 PREFIX: Literal["general/bin"] = "general/bin"
 
 
@@ -174,6 +177,80 @@ class General(commands.Cog):
 			else:
 				message += f"`{prefix}`, "
 		await ctx.send(f"My prefixes are: {message[:len(message) - 2]}")
+
+	@commands.group(name="link")
+	async def link(self, ctx: Context):
+		"""
+		Link an external account to your discord account via this bot.
+		"""
+		if ctx.invoked_subcommand is None:
+			await ctx.send("Invalid service passed.")
+
+	@link.command(name="sr.c", aliases=["src"])
+	async def link_src(self, ctx, apikey: str):
+
+		try:
+			await ctx.message.delete()
+		except Forbidden:
+			await ctx.reply(
+				"Please delete this message or someone could take control of your speedrun.com user"
+			)
+
+		user = str(hash(ctx.author))
+
+		async with self.bot.session.get(
+			"https://www.speedrun.com/api/v1/profile",
+			headers={
+				"X-API-Key": apikey,
+			},
+		) as r:
+
+			# As soon as we're done with the api key
+			# Delete it from memory
+			del apikey
+
+			if not r.ok:
+				print(r.status, await r.text())
+				return await ctx.reply("Something went wrong, please try again later.")
+
+			res = await r.json()
+			src_id = cryptocode.encrypt(res["data"]["id"], str(ctx.author.id))
+
+			self.bot.database.hset("users", key=f"{user}.{SRC_NAMESPACE}", value=src_id)
+			self.bot.database.hset("users", key=f"{user}.{SRC_NAMESPACE}.hide", value=0)
+
+			await ctx.reply(
+				f"Linked {ctx.author.mention} to {res['data']['names']['international']}"
+			)
+
+	@commands.group()
+	async def whois(self, ctx):
+		if ctx.invoked_subcommand is None:
+			await ctx.send("Invalid service passed")
+
+	@whois.command(name="src")
+	async def whois_src(self, ctx, user: Optional[str] = None):
+		if user:
+			try:
+				user = await commands.UserConverter().convert(ctx, user)
+			except commands.errors.UserNotFound:
+				pass
+		else:
+			user = ctx.author
+		await run_and_output(ctx, f"{SRC_PREFIX}/whois", user, title=f"Info about {user}")
+
+	@commands.group()
+	async def hide(self, ctx):
+		if ctx.invoked_subcommand is None:
+			await ctx.send("Invalid git command passed...")
+
+	@hide.command(name="sr.c", aliases=["src"])
+	async def hide_src(self, ctx):
+		hide_val = int(
+			self.bot.database.hget("users", key=f"{hash(ctx.author)}.{SRC_NAMESPACE}.hide")
+		)
+		self.bot.database.hset("users", key=f"{hash(ctx.author)}.{SRC_NAMESPACE}.hide", value=0 if hide_val else 1)
+		await ctx.reply(f"User {'unhidden' if hide_val else 'hidden'}")
 
 
 def setup(bot: SRBpp) -> None:
