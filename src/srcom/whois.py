@@ -14,11 +14,12 @@ from utils import *
 USAGE = "Usage: `+whois [USERNAME]`\n" + "Example: `+whois 1`"
 
 def date_format(date: datetime) -> str:
-	if date.day % 10 == 1:
+	last = date.day % 10
+	if last == 1:
 		return date.strftime("%-dst %B, %Y")
-	if date.day % 10 == 2:
+	if last == 2:
 		return date.strftime("%-dnd %B, %Y")
-	if date.day % 10 == 3:
+	if last == 3:
 		return date.strftime("%-drd %B, %Y")
 	return date.strftime("%-dth %B, %Y")
 
