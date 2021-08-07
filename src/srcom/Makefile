@@ -6,8 +6,8 @@ CFLAGS	= -O3 -pipe -march=native -pedantic -Wall -Wextra -Wmissing-prototypes -W
 CURL	= $$(curl-config --libs) -Wl,-rpath $$(curl-config --prefix)/lib
 PY	= python3.9
 
-cprogs	= bin/categories bin/runs bin/worldrecords
-goprogs	= bin/games bin/modcount bin/runqueue bin/podiums
+cprogs	= bin/categories bin/runs
+goprogs	= bin/games bin/modcount bin/runqueue bin/podiums bin/worldrecords
 pyprogs	= bin/leaderboard bin/pending bin/verified bin/verifierleaderboard bin/worldrecord bin/whois \
 	  bin/utils.py
 shprogs	= bin/posts
@@ -18,8 +18,6 @@ all: bin/ ${cprogs} ${goprogs} ${pyprogs} ${shprogs}
 ##### C #####
 bin/categories: categories.c utils.c
 	${CC} ${CFLAGS} -o $@ $< utils.c ${CURL} -ljansson
-bin/worldrecords: worldrecords.c utils.c
-	${CC} ${CFLAGS} -o $@ $< utils.c ${CURL}
 
 
 ##### GOLANG #####
@@ -32,6 +30,8 @@ bin/runqueue: runqueue.go utils.go
 bin/runs: runs.go utils.go
 	go build -o $@ $< utils.go
 bin/podiums: podiums.go utils.go
+	go build -o $@ $< utils.go
+bin/worldrecords: worldrecords.go utils.go
 	go build -o $@ $< utils.go
 
 
@@ -57,6 +57,7 @@ bin/worldrecord: worldrecord.py
 bin/whois: whois.py
 	chmod +x $<
 	[ -e $@ ] || ln $< $@
+
 
 ##### SHELL #####
 bin/posts: posts.sh
