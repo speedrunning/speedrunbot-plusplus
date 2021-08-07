@@ -5,23 +5,29 @@ This program gets information for a given user (argv[1])
 """
 
 from argparse import ArgumentParser
-from datetime import datetime
+from datetime import datetime, datetime
 from sys import exit, stderr
 from typing import Literal, Optional
 
 from utils import *
 
-USAGE: str = "Usage: `+whois [USERNAME]`\n" + 'Example: `+whois 1`'
+USAGE = "Usage: `+whois [USERNAME]`\n" + "Example: `+whois 1`"
 
-parser = ArgumentParser()
-
-parser.add_argument("--uid", type=str, help="A speedrun.com user ID", default=None)
-
-parser.add_argument("username", type=str, help="A speedrun.com username", nargs="?", default=None)
-
-args = parser.parse_args()
+def date_format(date: datetime) -> str:
+	if date.day % 10 == 1:
+		return date.strftime("%-dst %B, %Y")
+	if date.day % 10 == 2:
+		return date.strftime("%-dnd %B, %Y")
+	if date.day % 10 == 3:
+		return date.strftime("%-drd %B, %Y")
+	return date.strftime("%-dth %B, %Y")
 
 def main() -> int:
+	parser = ArgumentParser()
+	parser.add_argument("--uid", type=str, help="A speedrun.com user ID", default=None)
+	parser.add_argument("username", type=str, help="A speedrun.com username", nargs="?", default=None)
+	args = parser.parse_args()
+
 	if not args.username and not args.uid:
 		usage(USAGE)
 
@@ -38,8 +44,8 @@ def main() -> int:
 		+ f"[{r['data']['names']['international']}]({r['data']['weblink']})"
 		+ (f' ({r["data"]["names"]["japanese"]})' if r["data"]["names"]["japanese"] else "")
 		+ (f"\n**Pronouns**: {r['data']['pronouns']}" if r["data"]["pronouns"] else "")
-		+ (f"\n**Role**: {r['data']['role']}" if r["data"]["role"] != "user" else "")
-		+ f"\n**Signed up**: {datetime.strptime(r['data']['signup'], '%Y-%m-%dT%H:%M:%S%z').date()}"
+		+ (f"\n**Role**: {r['data']['role'].capitalize()}" if r["data"]["role"] != "user" else "")
+		+ f"\n**Signed up**: {date_format(datetime.strptime(r['data']['signup'], '%Y-%m-%dT%H:%M:%S%z'))}"
 		+ f"\n**Socials**: "
 		+ (f"[Twitch]({r['data']['twitch']['uri']}) " if r["data"]["twitch"] else "")
 		+ (f"[Hitbox]({r['data']['hitbox']['uri']}) " if r["data"]["hitbox"] else "")
