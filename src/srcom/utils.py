@@ -5,15 +5,21 @@ This file contains all sorts of variables and utilities used in the sr.c related
 """
 
 import asyncio
+import json
 import shlex
 from json.decoder import JSONDecodeError
 from os.path import dirname
-from sys import exit, stderr
+from sys import exit, path, stderr
 from time import sleep
 from typing import Any, Literal, NoReturn, Optional, Union
 
+path.insert(1, f"{dirname(__file__)}/../..")
+
 import requests
+from redis import Redis
 from requests.exceptions import ConnectionError
+
+from bot import Database
 
 API: Literal["https://www.speedrun.com/api/v1"] = "https://www.speedrun.com/api/v1"
 RATE_LIMIT: Literal[420] = 420
@@ -22,6 +28,22 @@ EXIT_SUCCESS: Literal[0] = 0
 EXIT_FAILURE: Literal[1] = 1
 
 CACHEDIR: str = f"{dirname(__file__)}/../../../cache/srcom"
+
+config = False
+try:
+	f = open(f"config.json", encoding="utf-8")
+	config = json.load(f)
+except IOError:
+	pass
+finally:
+	f.close()
+
+if config and ("redis_hostname" in config and "redis_port" in config):
+	database = Database(redis=Redis(host=config["redis_hostname"], port=config["redis_port"], db=(config["redis_db"] if "redis_db" in config else 0)))
+elif config:
+	database = Database(database_file=(config["database_file"] if "database_file" in config else "database.json"))
+else:
+	database = Database(database_file="database.json")
 
 
 def usage(usage: str) -> NoReturn:
@@ -48,12 +70,22 @@ def api_get(uri: str, params: Optional[dict[str, Any]] = {}) -> dict:
 		try:
 			r = requests.get(uri, params=params)
 		except ConnectionError:
-			sleep(2)
+			data = database.hget("cache", hash(uri))
+			if data:
+				return json.loads(data)
+			else:
+				sleep(2)
 		else:
 			if r.ok:
-				return r.json()
+				data = r.json()
+				database.hset("cache", hash(uri), r.text)
+				return data
 			if r.status_code == RATE_LIMIT:
-				sleep(5)
+				data = database.hget("cache", hash(uri))
+				if data:
+					return json.loads(data)
+				else:
+					sleep(5)
 			else:
 				try:
 					error_and_die(r.json()["message"])
@@ -71,7 +103,7 @@ def getuid(user: str) -> str:
 	'7j477kvj'
 	>>> getuid("abc")
 	Traceback (most recent call last):
-...
+	...
 	SystemExit: 1
 	"""
 
@@ -92,7 +124,7 @@ def username(uid: str) -> str:
 	'AnInternetTroll'
 	>>> username("Sesame Street")
 	Traceback (most recent call last):
-...
+	...
 	SystemExit: 1
 	"""
 	r = api_get(f"{API}/users/{uid}")
@@ -109,7 +141,7 @@ def getgame(abbrev: str) -> tuple[str, str]:
 	('CELESTE Classic', '4d7e7z67')
 	>>> getgame("Fake Game")
 	Traceback (most recent call last):
-...
+	...
 	SystemExit: 1
 	"""
 	r = api_get(f"{API}/games", params={"abbreviation": abbrev})
@@ -135,7 +167,7 @@ def subcatid(cid: str, subcat: str, lflag: bool = False) -> tuple[str, str]:
 	('ylqmdmvn', '810enwwq')
 	>>> subcatid("mkeoz98d", "Gem Skips")
 	Traceback (most recent call last):
-...
+	...
 	SystemExit: 1
 	"""
 	r = api_get(f"{API}/{'levels' if lflag else 'categories'}/{cid}/variables")

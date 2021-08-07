@@ -6,9 +6,9 @@ CFLAGS	= -O3 -pipe -march=native -pedantic -Wall -Wextra -Wmissing-prototypes -W
 CURL	= $$(curl-config --libs) -Wl,-rpath $$(curl-config --prefix)/lib
 PY	= python3.9
 
-cprogs	= bin/categories bin/worldrecords
-goprogs	= bin/games bin/modcount bin/runqueue bin/runs bin/podiums
-pyprogs	= bin/leaderboard bin/pending bin/verified bin/verifierleaderboard bin/worldrecord \
+cprogs	= bin/categories bin/runs bin/worldrecords
+goprogs	= bin/games bin/modcount bin/runqueue bin/podiums
+pyprogs	= bin/leaderboard bin/pending bin/verified bin/verifierleaderboard bin/worldrecord bin/whois \
 	  bin/utils.py
 shprogs	= bin/posts
 
@@ -37,22 +37,31 @@ bin/podiums: podiums.go utils.go
 
 ##### PYTHON #####
 bin/utils.py: utils.py
-	chmod +x $< && cp $< $@
+	chmod +x $<
+	cp $< $@
 bin/leaderboard: leaderboard.py
-	chmod +x $< && ln $< $@
+	chmod +x $<
+	[ -e $@ ] || ln $< $@
 bin/pending: pending.py
-	chmod +x $< && ln $< $@
+	chmod +x $<
+	[ -e $@ ] || ln $< $@
 bin/verified: verified.py
-	chmod +x $< && ln $< $@
+	chmod +x $<
+	[ -e $@ ] || ln $< $@
 bin/verifierleaderboard: verifierleaderboard.py
-	chmod +x $< && ln $< $@
+	chmod +x $<
+	[ -e $@ ] || ln $< $@
 bin/worldrecord: worldrecord.py
-	chmod +x $< && ln $< $@
-
+	chmod +x $<
+	[ -e $@ ] || ln $< $@
+bin/whois: whois.py
+	chmod +x $<
+	[ -e $@ ] || ln $< $@
 
 ##### SHELL #####
 bin/posts: posts.sh
-	chmod +x $< && ln $< $@
+	chmod +x $<
+	[ -e $@ ] || ln $< $@
 
 
 ##### OTHER #####

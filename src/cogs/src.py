@@ -298,12 +298,15 @@ class Src(commands.Cog):
 				name="player", description="The username of a player.", option_type=3, required=True
 			),
 			create_option(
-				name="verbose", description="Show extended information.", option_type=5, required=True
-			)
-		]
+				name="verbose",
+				description="Show extended information.",
+				option_type=5,
+				required=True,
+			),
+		],
 	)
 	async def posts_slash(self, ctx: SlashContext, player: str, verbose: bool) -> None:
-		await self.posts(ctx, ["-v" , player] if verbose else [player])
+		await self.posts(ctx, ["-v", player] if verbose else [player])
 
 	@commands.command(name="posts", aliases=("p",))
 	async def posts_bot(self, ctx: Context, *, args: Optional[str] = "") -> None:

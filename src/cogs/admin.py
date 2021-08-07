@@ -1,3 +1,4 @@
+import asyncio
 import os
 import sys
 from math import trunc
@@ -232,6 +233,21 @@ class Admin(commands.Cog):
 	)
 	async def unload_slash(self, ctx: SlashContext, ext: str):
 		await self.unload(ctx, ext)
+
+	@commands.is_owner()
+	@commands.command(name="announce", aliases=["announcement"])
+	async def announce(self, ctx, *, message):
+		channels = []
+		messages = []
+		for guild in self.bot.guilds:
+			channels = guild.text_channels.sort(key=lambda channel: channel.position)
+			for channel in channels:
+				try:
+					messages.append(channel.send(f"**Public announcement:**\n{message}"))
+					break
+				except discord.errors.Forbidden:
+					continue
+		await asyncio.gather(*messages)
 
 
 def setup(bot: SRBpp) -> None:

@@ -1,0 +1,44 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"type": "object",
+	"properties": {
+		"token": {
+			"type": "string",
+			"description": "The token used by your discord bot.",
+			"title": "Discord Token"
+		},
+		"redis_hostname": {
+			"type": "string",
+			"description": "The hostname redis is listening on.",
+			"title": "Redis hostname",
+			"default": "localhost"
+		},
+		"redis_port": {
+			"type": "integer",
+			"description": "The port redis is listening on.",
+			"title": "Redis Port",
+			"default": 6379
+		},
+		"redis_db": {
+			"type": "integer",
+			"default": 0
+		},
+		"redis_username": {
+			"type": "string",
+			"description": "The username used for redis."
+		},
+		"redis_password": {
+			"type": "string",
+			"description": "The password used for redis."
+		},
+		"database_file": {
+			"type": "string",
+			"description": "This file is used only as a backup if redis hostname and port are not provided. It is **strongly advised not** to use this in production"
+		}
+	},
+	"required": [
+		"token",
+		"redis_hostname",
+		"redis_port"
+	]
+}

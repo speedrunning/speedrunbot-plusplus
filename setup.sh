@@ -89,13 +89,15 @@ $PY -m pip install -r requirements.txt >/dev/null 2>&1
 
 case $OS in
 arch)
-	yes | $SU pacman -S curl jansson 2>&1
+	yes | $SU pacman -S curl jansson redis 2>&1
 	;;
 debian)
-	yes | $SU apt install libjansson-dev libcurl4-openssl-dev >/dev/null 2>&1
+	yes | $SU add-apt-repository ppa:redislabs/redis
+	yes | $SU apt update
+	yes | $SU apt install libjansson-dev libcurl4-openssl-dev redis >/dev/null 2>&1
 	;;
 *)
-	echo You do not have a supported OS. Please install jansson and libcurl manually
+	echo You do not have a supported OS. Please install jansson, libcurl and redis manually
 	exit 1
 	;;
 esac
