@@ -1,5 +1,5 @@
+cryptocode==0.1
 discord.py==1.7.3
-requests==2.25.1
 discord-py-slash-command==1.1.2
 redis==3.5.3
-cryptocode==0.1
+requests==2.25.1
