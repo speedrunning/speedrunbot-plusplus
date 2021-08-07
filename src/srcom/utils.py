@@ -21,13 +21,13 @@ from requests.exceptions import ConnectionError
 
 from bot import Database
 
-API: Literal["https://www.speedrun.com/api/v1"] = "https://www.speedrun.com/api/v1"
-RATE_LIMIT: Literal[420] = 420
+API = "https://www.speedrun.com/api/v1"
+RATE_LIMIT = 420
 
-EXIT_SUCCESS: Literal[0] = 0
-EXIT_FAILURE: Literal[1] = 1
+EXIT_SUCCESS = 0
+EXIT_FAILURE = 1
 
-CACHEDIR: str = f"{dirname(__file__)}/../../../cache/srcom"
+CACHEDIR = f"{dirname(__file__)}/../../../cache/srcom"
 
 config = False
 try:
@@ -35,7 +35,7 @@ try:
 	config = json.load(f)
 except IOError:
 	pass
-finally:
+else:
 	f.close()
 
 if config and ("redis_hostname" in config and "redis_port" in config):
