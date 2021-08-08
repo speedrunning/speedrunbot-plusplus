@@ -4,6 +4,7 @@
 This program gets information for a given user (argv[1])
 """
 
+
 from datetime import datetime
 from getopt import GetoptError, getopt
 from sys import argv, exit, stderr

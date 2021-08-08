@@ -96,6 +96,17 @@ debian)
 	;;
 esac
 
+$SU systemctl start redis
+
+printf "Do you want to start redis on startup? [y/N]: "
+
+read -r C
+
+if test "$C" = "y" || test "$C" = "Y"; then
+	$SU systemctl enable redis
+fi
+
+
 # Run the Makefiles.
 cd "$SCR_PATH/src/admin"
 make
