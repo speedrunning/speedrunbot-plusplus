@@ -4,14 +4,15 @@
 This program gets information for a given user (argv[1])
 """
 
-from argparse import ArgumentParser
-from datetime import datetime, datetime
-from sys import exit, stderr
+from datetime import datetime
+from getopt import GetoptError, getopt
+from sys import argv, exit, stderr
 from typing import Literal, Optional
 
 from utils import *
 
 USAGE = "Usage: `+whois [USERNAME]`\n" + "Example: `+whois 1`"
+
 
 def date_format(date: datetime) -> str:
 	last = date.day % 10
@@ -23,22 +24,26 @@ def date_format(date: datetime) -> str:
 		return date.strftime("%-drd %B, %Y")
 	return date.strftime("%-dth %B, %Y")
 
+
 def main() -> int:
-	parser = ArgumentParser()
-	parser.add_argument("--uid", type=str, help="A speedrun.com user ID", default=None)
-	parser.add_argument("username", type=str, help="A speedrun.com username", nargs="?", default=None)
-	args = parser.parse_args()
+	try:
+		opts, args = getopt(argv[1:], ":u:", ["uid="])
+	except GetoptError as e:
+		usage(f"{e}\n{USAGE}")
 
-	if not args.username and not args.uid:
-		usage(USAGE)
-
-	if not args.uid:
-		uid = getuid(args.username)
-	else:
-		uid = args.uid
-
-	# Get the games categories.
-	r = api_get(f"{API}/users/{uid}")
+	uid = None
+	for o, a in opts:
+		if o in ("-u", "--uid"):
+			r = api_get(f"{API}/users/{uid}")
+			break
+	if not uid:
+		try:
+			r = api_get(f"{API}/users?lookup={args[0]}")
+			# When getting a user with the `lookup` parameter, the `data` field returns
+			# an array of length 1 instead of just the data directly.
+			r["data"] = r["data"][0]
+		except IndexError:
+			usage(USAGE)
 
 	print(
 		f"**Username**: "
@@ -64,7 +69,7 @@ def main() -> int:
 					+ (
 						r["data"]["location"]["region"]["names"]["international"]
 						+ " "
-						+ f'({r["data"]["location"]["region"]["code"]})'
+						+ f'({r["data"]["location"]["region"]["code"].upper()})'
 						+ (
 							f"({r['data']['location']['region']['names']['japanese']})"
 							if r["data"]["location"]["region"]["names"]["japanese"]
@@ -77,7 +82,7 @@ def main() -> int:
 					"\n**Country**: "
 					+ r["data"]["location"]["country"]["names"]["international"]
 					+ " "
-					+ f'({r["data"]["location"]["country"]["code"]})'
+					+ f'({r["data"]["location"]["country"]["code"].upper()})'
 					+ (
 						f"({r['data']['location']['country']['names']['japanese']})"
 						if r["data"]["location"]["country"]["names"]["japanese"]
