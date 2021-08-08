@@ -44,15 +44,12 @@ for FILE in "$SCR_PATH"/**/*; do
 		;;
 	*.py)
 		echo Formatting "$FILE"
-		isort "$FILE" &>/dev/null
-		python3.9 -m black -l 100 "$FILE" &>/dev/null
+		isort "$FILE" >/dev/null
+		python3.9 -m black -l 100 "$FILE" 2>/dev/null
 		unexpand -t 4 --first-only "$FILE" >temp
-		test -x "$FILE" && EFLAG=1 || EFLAG=0
+		test -x "$FILE" && chmod +x temp
 		mv temp "$FILE"
-		test $EFLAG -eq 1 && chmod +x "$FILE"
-
-		# '...' in docstrings causes some formatting issues.
-		sed -i 's/^\t\(\t*\.\.\.\)/\1/' $FILE
+		sed -i '/^\t*\.\.\.$/s/^\t//' "$FILE"
 		;;
 	*.sh)
 		echo Formatting "$FILE"
