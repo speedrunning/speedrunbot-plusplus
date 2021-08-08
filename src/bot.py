@@ -22,6 +22,7 @@ EXTENSIONS: Generator[str, None, None] = (
 	f"cogs.{f[:-3]}" for f in os.listdir(f"{PREFIX}/cogs") if f.endswith(".py")
 )
 
+
 class Database:
 	def __init__(self, redis: Redis = None, database_file: str = None):
 		self.db: Union["redis", "json"]
@@ -42,7 +43,9 @@ class Database:
 
 	def hset(self, name: str, key: str, value: str, **kwargs):
 		if self.db == "redis":
-			self.redis.hset(name, key, value, mapping=(kwargs["mapping"] if "mapping" in kwargs else None))
+			self.redis.hset(
+				name, key, value, mapping=(kwargs["mapping"] if "mapping" in kwargs else None)
+			)
 		elif self.db == "json":
 			with open(self.database_file, mode="r") as f:
 				file = json.load(f)
@@ -51,7 +54,7 @@ class Database:
 					file[name] = {}
 				file[name][key] = value
 				json.dump(file, f)
-	
+
 	def hget(self, name: str, key: str) -> Optional[str]:
 		if self.db == "redis":
 			value = self.redis.hget(name, key)
@@ -124,14 +127,14 @@ async def run_and_output(
 	args = list(argv)
 	for arg in range(len(args)):
 		if isinstance(args[arg], discord.User):
-			user_prog_id_hashed = ctx.bot.database.hget("users", f"{hash(args[arg])}.{prog_namespace}")
+			user_prog_id_hashed = ctx.bot.database.hget(
+				"users", f"{hash(args[arg])}.{prog_namespace}"
+			)
 			args.pop(arg)
 			if user_prog_id_hashed:
 				user_prog_id = cryptocode.decrypt(user_prog_id_hashed, str(ctx.author.id))
 				if user_prog_id:
-					args.insert(
-						arg, user_prog_id
-					)
+					args.insert(arg, user_prog_id)
 					args.insert(arg, "--uid")
 	is_slash_called = type(ctx) == SlashContext
 	if is_slash_called:
@@ -210,7 +213,7 @@ class SRBpp(commands.Bot):
 				self.load_extension(extension)
 			except Exception as e:
 				print(e, file=stderr)
-		
+
 		config = False
 		try:
 			f = open(f"{ROOT_DIR}/config.json", encoding="utf-8")
@@ -228,9 +231,19 @@ class SRBpp(commands.Bot):
 			f.close()
 
 		if config and ("redis_hostname" in config and "redis_port" in config):
-			self.database = Database(redis=Redis(host=config["redis_hostname"], port=config["redis_port"], db=(config["redis_db"] if "redis_db" in config else 0)))
+			self.database = Database(
+				redis=Redis(
+					host=config["redis_hostname"],
+					port=config["redis_port"],
+					db=(config["redis_db"] if "redis_db" in config else 0),
+				)
+			)
 		elif config:
-			self.database = Database(database_file=(config["database_file"] if "database_file" in config else "database.json"))
+			self.database = Database(
+				database_file=(
+					config["database_file"] if "database_file" in config else "database.json"
+				)
+			)
 		else:
 			self.database = Database(database_file="database.json")
 

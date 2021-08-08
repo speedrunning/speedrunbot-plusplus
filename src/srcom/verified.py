@@ -18,6 +18,7 @@ from typing import Literal
 
 import requests
 from requests import Session
+
 from utils import *
 
 TWO_HOURS: Literal[7200] = 7200

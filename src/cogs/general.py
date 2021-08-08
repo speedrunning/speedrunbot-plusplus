@@ -4,15 +4,14 @@ from math import floor, trunc
 from typing import Literal, Optional, Union
 
 import cryptocode
+from bot import SRBpp, run_and_output
+from cogs.src import PREFIX as SRC_PREFIX
 from discord import Embed, Forbidden, Message, User
 from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.utils import oauth_url
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
-
-from bot import SRBpp, run_and_output
-from cogs.src import PREFIX as SRC_PREFIX
 
 SRC_NAMESPACE = SRC_PREFIX.split("/")[0]
 PREFIX: Literal["general/bin"] = "general/bin"
@@ -249,7 +248,9 @@ class General(commands.Cog):
 		hide_val = int(
 			self.bot.database.hget("users", key=f"{hash(ctx.author)}.{SRC_NAMESPACE}.hide")
 		)
-		self.bot.database.hset("users", key=f"{hash(ctx.author)}.{SRC_NAMESPACE}.hide", value=0 if hide_val else 1)
+		self.bot.database.hset(
+			"users", key=f"{hash(ctx.author)}.{SRC_NAMESPACE}.hide", value=0 if hide_val else 1
+		)
 		await ctx.reply(f"User {'unhidden' if hide_val else 'hidden'}")
 
 
