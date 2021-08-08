@@ -9,17 +9,13 @@ import json
 import shlex
 from json.decoder import JSONDecodeError
 from os.path import dirname
-from sys import exit, path, stderr
+from sys import exit, stderr
 from time import sleep
 from typing import Any, Literal, NoReturn, Optional, Union
 
-path.insert(1, f"{dirname(__file__)}/../..")
-
-import requests
 from redis import Redis
+from requests import Session
 from requests.exceptions import ConnectionError
-
-from bot import Database
 
 API = "https://www.speedrun.com/api/v1"
 RATE_LIMIT = 420
@@ -38,13 +34,9 @@ except IOError:
 else:
 	f.close()
 
-if config and ("redis_hostname" in config and "redis_port" in config):
-	database = Database(redis=Redis(host=config["redis_hostname"], port=config["redis_port"], db=(config["redis_db"] if "redis_db" in config else 0)))
-elif config:
-	database = Database(database_file=(config["database_file"] if "database_file" in config else "database.json"))
-else:
-	database = Database(database_file="database.json")
+redis = Redis(host=config["redis_hostname"] if "redis_hostname" in config else "localhost", port=config["redis_port"] if "redis_port" in config else 6379, db=(config["redis_db"] if "redis_db" in config else 0), decode_responses=True)
 
+session = Session()
 
 def usage(usage: str) -> NoReturn:
 	"""
@@ -68,9 +60,9 @@ def api_get(uri: str, params: Optional[dict[str, Any]] = {}) -> dict:
 	"""
 	while True:
 		try:
-			r = requests.get(uri, params=params)
+			r = session.get(uri, params=params)
 		except ConnectionError:
-			data = database.hget("cache", hash(uri))
+			data = redis.hget("cache", hash(uri))
 			if data:
 				return json.loads(data)
 			else:
@@ -78,10 +70,10 @@ def api_get(uri: str, params: Optional[dict[str, Any]] = {}) -> dict:
 		else:
 			if r.ok:
 				data = r.json()
-				database.hset("cache", hash(uri), r.text)
+				redis.hset("cache", hash(uri), r.text)
 				return data
 			if r.status_code == RATE_LIMIT:
-				data = database.hget("cache", hash(uri))
+				data = redis.hget("cache", hash(uri))
 				if data:
 					return json.loads(data)
 				else:

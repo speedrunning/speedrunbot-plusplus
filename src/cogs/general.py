@@ -216,10 +216,9 @@ class General(commands.Cog):
 			res = await r.json()
 			src_id = cryptocode.encrypt(res["data"]["id"], str(ctx.author.id))
 
-			self.bot.database.hset("users", key=f"{user}.{SRC_NAMESPACE}", value=src_id)
-			self.bot.database.hset("users", key=f"{user}.{SRC_NAMESPACE}.hide", value=0)
+			self.bot.redis.hset("users", key=f"{user}.{SRC_NAMESPACE}", value=src_id)
 
-			await ctx.reply(
+			await ctx.send(
 				f"Linked {ctx.author.mention} to {res['data']['names']['international']}"
 			)
 
@@ -238,20 +237,6 @@ class General(commands.Cog):
 		else:
 			user = ctx.author
 		await run_and_output(ctx, f"{SRC_PREFIX}/whois", user, title=f"Info about {user}")
-
-	@commands.group()
-	async def hide(self, ctx):
-		if ctx.invoked_subcommand is None:
-			await ctx.send("Invalid git command passed...")
-
-	@hide.command(name="sr.c", aliases=["src"])
-	async def hide_src(self, ctx):
-		hide_val = int(
-			self.bot.database.hget("users", key=f"{hash(ctx.author)}.{SRC_NAMESPACE}.hide")
-		)
-		self.bot.database.hset("users", key=f"{hash(ctx.author)}.{SRC_NAMESPACE}.hide", value=0 if hide_val else 1)
-		await ctx.reply(f"User {'unhidden' if hide_val else 'hidden'}")
-
 
 def setup(bot: SRBpp) -> None:
 	bot.add_cog(General(bot))

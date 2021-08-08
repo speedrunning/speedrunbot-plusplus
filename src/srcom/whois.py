@@ -5,7 +5,7 @@ This program gets information for a given user (argv[1])
 """
 
 from argparse import ArgumentParser
-from datetime import datetime, datetime
+from datetime import datetime
 from sys import exit, stderr
 from typing import Literal, Optional
 
