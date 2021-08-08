@@ -29,7 +29,7 @@ try:
 	with open(f"config.json", encoding="utf-8") as f:
 		config = json.load(f)
 except IOError:
-	config = False
+	config = {}
 
 redis = Redis(host=config["redis_hostname"] if "redis_hostname" in config else "localhost", port=config["redis_port"] if "redis_port" in config else 6379, db=(config["redis_db"] if "redis_db" in config else 0), decode_responses=True)
 
