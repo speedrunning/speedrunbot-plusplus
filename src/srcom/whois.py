@@ -35,7 +35,7 @@ def main() -> int:
 	uid = None
 	for o, a in opts:
 		if o in ("-u", "--uid"):
-			r = api_get(f"{API}/users/{uid}")
+			r = api_get(f"{API}/users/{a}")
 			break
 	if not uid:
 		try:
