@@ -221,7 +221,7 @@ class General(commands.Cog):
 				f"Linked {ctx.author.mention} to {res['data']['names']['international']}"
 			)
 
-	@commands.group()
+	@commands.group(aliases=("profile",))
 	async def whois(self, ctx):
 		if ctx.invoked_subcommand is None:
 			await ctx.send("Invalid service passed")

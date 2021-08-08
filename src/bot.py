@@ -87,7 +87,7 @@ async def run_and_output(
 					args.insert(
 						arg, user_prog_id
 					)
-					args.insert(arg, "--uid")
+					args.insert(arg, "-u")
 			else:
 				args[arg] = args[arg].name
 	is_slash_called = isinstance(ctx, SlashContext)
