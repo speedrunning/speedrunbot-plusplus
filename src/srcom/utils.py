@@ -25,14 +25,11 @@ EXIT_FAILURE = 1
 
 CACHEDIR = f"{dirname(__file__)}/../../../cache/srcom"
 
-config = False
 try:
-	f = open(f"config.json", encoding="utf-8")
-	config = json.load(f)
+	with open(f"config.json", encoding="utf-8") as f:
+		config = json.load(f)
 except IOError:
-	pass
-else:
-	f.close()
+	config = False
 
 redis = Redis(host=config["redis_hostname"] if "redis_hostname" in config else "localhost", port=config["redis_port"] if "redis_port" in config else 6379, db=(config["redis_db"] if "redis_db" in config else 0), decode_responses=True)
 
@@ -95,7 +92,7 @@ def getuid(user: str) -> str:
 	'7j477kvj'
 	>>> getuid("abc")
 	Traceback (most recent call last):
-	...
+		...
 	SystemExit: 1
 	"""
 
@@ -116,7 +113,7 @@ def username(uid: str) -> str:
 	'AnInternetTroll'
 	>>> username("Sesame Street")
 	Traceback (most recent call last):
-	...
+		...
 	SystemExit: 1
 	"""
 	r = api_get(f"{API}/users/{uid}")
@@ -133,7 +130,7 @@ def getgame(abbrev: str) -> tuple[str, str]:
 	('CELESTE Classic', '4d7e7z67')
 	>>> getgame("Fake Game")
 	Traceback (most recent call last):
-	...
+		...
 	SystemExit: 1
 	"""
 	r = api_get(f"{API}/games", params={"abbreviation": abbrev})
@@ -159,7 +156,7 @@ def subcatid(cid: str, subcat: str, lflag: bool = False) -> tuple[str, str]:
 	('ylqmdmvn', '810enwwq')
 	>>> subcatid("mkeoz98d", "Gem Skips")
 	Traceback (most recent call last):
-	...
+		...
 	SystemExit: 1
 	"""
 	r = api_get(f"{API}/{'levels' if lflag else 'categories'}/{cid}/variables")

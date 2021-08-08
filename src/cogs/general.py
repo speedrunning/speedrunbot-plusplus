@@ -4,15 +4,14 @@ from math import floor, trunc
 from typing import Literal, Optional, Union
 
 import cryptocode
+from bot import SRBpp, run_and_output
+from cogs.src import PREFIX as SRC_PREFIX
 from discord import Embed, Forbidden, Message, User
 from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.utils import oauth_url
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
-
-from bot import SRBpp, run_and_output
-from cogs.src import PREFIX as SRC_PREFIX
 
 SRC_NAMESPACE = SRC_PREFIX.split("/")[0]
 PREFIX: Literal["general/bin"] = "general/bin"
@@ -237,6 +236,7 @@ class General(commands.Cog):
 		else:
 			user = ctx.author
 		await run_and_output(ctx, f"{SRC_PREFIX}/whois", user, title=f"Info about {user}")
+
 
 def setup(bot: SRBpp) -> None:
 	bot.add_cog(General(bot))

@@ -174,7 +174,7 @@ class SRBpp(commands.Bot):
 				self.load_extension(extension)
 			except Exception as e:
 				print(e, file=stderr)
-		
+
 		config = {}
 		try:
 			f = open(f"{ROOT_DIR}/config.json", encoding="utf-8")
