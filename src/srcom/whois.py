@@ -35,9 +35,12 @@ def main() -> int:
 	uid = None
 	for o, a in opts:
 		if o in ("-u", "--uid"):
-			r = api_get(f"{API}/users/{a}")
+			uid = a
 			break
-	if not uid:
+
+	if uid:
+		r = api_get(f"{API}/users/{uid}")
+	else:
 		try:
 			r = api_get(f"{API}/users?lookup={args[0]}")
 			# When getting a user with the `lookup` parameter, the `data` field returns
