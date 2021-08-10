@@ -50,7 +50,8 @@ def main() -> int:
 			usage(USAGE)
 
 	print(
-		f"**Username**: "
+		f"PROFILE PICTURE: https://www.speedrun.com/themes/user/{r['data']['names']['international']}/image.png\n"
+		+ f"**Username**: "
 		+ f"[{r['data']['names']['international']}]({r['data']['weblink']})"
 		+ (f' ({r["data"]["names"]["japanese"]})' if r["data"]["names"]["japanese"] else "")
 		+ (f"\n**Pronouns**: {r['data']['pronouns']}" if r["data"]["pronouns"] else "")
