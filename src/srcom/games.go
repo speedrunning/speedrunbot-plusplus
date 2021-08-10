@@ -11,7 +11,11 @@ var count uint
 type JsonData struct {
 	Data []struct {
 		Run struct {
-			Game string `json:"game"`
+#ifdef CATEGORIES
+			ID string `json:"category"`
+#else
+			ID string `json:"game"`
+#endif
 		} `json:"run"`
 	} `json:"data"`
 }
@@ -57,7 +61,11 @@ func (n *BinaryNode) insert(data string) {
 
 func main() {
 	if len(os.Args) != 2 {
+#ifdef CATEGORIES
+		Usage("categories", "[PLAYER NAME]", "StarBoi")
+#else
 		Usage("games", "[PLAYER NAME]", "Merl_")
+#endif
 	}
 
 	uid, err := UserID(os.Args[1])
@@ -71,7 +79,11 @@ func main() {
 
 	tree := &BinaryTree{}
 	for _, run := range runs.Data {
-		tree.insert(run.Run.Game)
+		tree.insert(run.Run.ID)
 	}
+#ifdef CATEGORIES
+	fmt.Printf("Categories Played: `%s`\n%d\n", os.Args[1], count)
+#else
 	fmt.Printf("Games Played: `%s`\n%d\n", os.Args[1], count)
+#endif
 }

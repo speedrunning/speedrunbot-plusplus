@@ -7,7 +7,7 @@ CURL	= $$(curl-config --libs) -Wl,-rpath $$(curl-config --prefix)/lib
 PY	= python3.9
 
 cprogs	= bin/categories bin/runs
-goprogs	= bin/games bin/modcount bin/runqueue bin/podiums bin/worldrecords
+goprogs	= bin/categoriesplayed bin/games bin/modcount bin/runqueue bin/podiums bin/worldrecords
 pyprogs	= bin/leaderboard bin/pending bin/verified bin/verifierleaderboard bin/worldrecord bin/whois \
 	  bin/utils.py
 shprogs	= bin/posts
@@ -21,8 +21,14 @@ bin/categories: categories.c utils.c
 
 
 ##### GOLANG #####
+bin/categoriesplayed: games.go utils.go
+	cpp -undef -DCATEGORIES $< | grep -v '^#' >tmp.go
+	go build -o $@ tmp.go utils.go
+	rm tmp.go
 bin/games: games.go utils.go
-	go build -o $@ $< utils.go
+	cpp -undef $< | grep -v '^#' >tmp.go
+	go build -o $@ tmp.go utils.go
+	rm tmp.go
 bin/modcount: modcount.go utils.go
 	go build -o $@ $< utils.go
 bin/runqueue: runqueue.go utils.go
