@@ -49,7 +49,7 @@ class Src(commands.Cog):
 			title=f"Categories Played: {player}",
 		)
 
-	async def games(_, ctx: SlashContext, player: Optional[str] = None) -> None:
+	async def games(_, ctx: Union[Context, SlashContext], player: Optional[str] = None) -> None:
 		"""
 		Get the number of unique games a player has submit runs to.
 		"""
@@ -57,7 +57,7 @@ class Src(commands.Cog):
 
 	async def leaderboard(
 		_,
-		ctx: SlashContext,
+		ctx: Union[Context, SlashContext],
 		game: Optional[str] = None,
 		category: Optional[str] = None,
 		subcategory: Optional[str] = None,
