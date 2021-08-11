@@ -49,7 +49,7 @@ for FILE in "$SCR_PATH"/**/*; do
 		echo Formatting "$FILE"
 		isort "$FILE" >/dev/null
 		python3.9 -m black -l 100 "$FILE" 2>/dev/null
-		unexpand -t 4 "$FILE" >temp
+		unexpand -t 4 --first-only "$FILE" >temp
 		test -x "$FILE" && chmod +x temp
 		mv temp "$FILE"
 		sed -i '/^\t*\.\.\.$/s/^\t//' "$FILE"
