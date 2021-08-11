@@ -1,20 +1,27 @@
-PY := python3.9
+.POSIX:
+.SUFFIXES:
+PY	= python3.9
 
-pyprogs := bin/recent bin/utils.py
+pyprogs	= bin/recent bin/utils.py
 
-all: $(pyprogs)
-$(shell mkdir -p bin/)
+all: bin/ ${pyprogs}
 
-# Python programs
 
-# This needs to retain the file extension for importability
+##### PYTHON #####
 bin/utils.py: utils.py
-	chmod +x $< && ln -b $< $@
+	cp $< $@
+	chmod +x $@
+bin/recent: recent.py
+	cp $< $@
+	chmod +x $@
 
-bin/%: %.py
-	chmod +x $< && ln -b $< $@
 
-# Phony targets
-.PHONY: clean test
+##### OTHER #####
+bin/:
+	mkdir -p $@
+
+
+##### PHONY ####
 clean:
 	rm -rf bin/ __pycache__/ ../__pycache__/
+.PHONY: clean

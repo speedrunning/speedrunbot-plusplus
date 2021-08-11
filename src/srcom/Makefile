@@ -46,34 +46,34 @@ bin/utils.py: utils.py.m4
 	m4 $< >$@
 	chmod +x $@
 bin/leaderboard: leaderboard.py
-	chmod +x $<
-	[ -e $@ ] || ln $< $@
+	cp $< $@
+	chmod +x $@
 bin/pending: pending.py
-	chmod +x $<
-	[ -e $@ ] || ln $< $@
+	cp $< $@
+	chmod +x $@
 bin/verified: verified.py
-	chmod +x $<
-	[ -e $@ ] || ln $< $@
+	cp $< $@
+	chmod +x $@
 bin/verifierleaderboard: verifierleaderboard.py
-	chmod +x $<
-	[ -e $@ ] || ln $< $@
+	cp $< $@
+	chmod +x $@
 bin/worldrecord: worldrecord.py
-	chmod +x $<
-	[ -e $@ ] || ln $< $@
+	cp $< $@
+	chmod +x $@
 bin/whois: whois.py
-	chmod +x $<
-	[ -e $@ ] || ln $< $@
+	cp $< $@
+	chmod +x $@
 
 
 ##### SHELL #####
 bin/posts: posts.sh
-	chmod +x $<
-	[ -e $@ ] || ln $< $@
+	cp $< $@
+	chmod +x $@
 
 
 ##### OTHER #####
 bin/:
-	mkdir -p bin/
+	mkdir -p $@
 
 
 ##### PHONY #####

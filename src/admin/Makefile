@@ -1,23 +1,22 @@
 .POSIX:
 .SUFFIXES:
-CC	= cc
-
 shprogs	= bin/compile
 
 all: bin/ ${shprogs}
 
 
-#### SHELL ####
+##### SHELL #####
 bin/compile: compile.sh
-	chmod +x $<
-	[ -e $@ ] || ln $< $@
+	cp $< $@
+	chmod +x $@
 
 
-#### OTHER ####
+##### OTHER #####
 bin/:
-	mkdir -p bin/
+	mkdir -p $@
 
 
+##### PHONY #####
 clean:
 	rm -rf bin/
 .PHONY: clean

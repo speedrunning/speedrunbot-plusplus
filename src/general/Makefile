@@ -1,19 +1,25 @@
-PY := python3.9
+.POSIX:
+.SUFFIXES:
+PY	= python3.9
 
-pyprogs := bin/retime
+pyprogs	= bin/retime
 
-all: $(pyprogs)
-$(shell mkdir -p bin/)
+all: bin/ ${pyprogs}
 
-# Python programs
 
-bin/%: %.py
-	chmod +x $< && ln -b $< $@
+##### PYTHON #####
+bin/retime: retime.py
+	cp $< $@
+	chmod +x $@
 
-# Phony targets
-.PHONY: clean test
+
+##### OTHER #####
+bin/:
+	mkdir -p $@
+
+##### PHONY #####
 clean:
 	rm -rf bin/ __pycache__/ ../__pycache__/
-
 test:
-	$(PY) -m doctest retime.py
+	${PY} -m doctest retime.py
+.PHONY: clean test
