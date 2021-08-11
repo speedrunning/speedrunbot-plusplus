@@ -49,6 +49,9 @@ def main() -> int:
 		except IndexError:
 			usage(USAGE)
 
+	# TODO: Remove this
+	print ("*NOTE: This command is still in development*")
+
 	print(
 		f"PROFILE PICTURE: https://www.speedrun.com/themes/user/{r['data']['names']['international']}/image.png\n"
 		+ f"**Username**: "
