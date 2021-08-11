@@ -21,12 +21,12 @@ bin/categories: categories.c utils.c
 
 
 ##### GOLANG #####
-bin/categoriesplayed: games.go utils.go
-	cpp -undef -DCATEGORIES $< | grep -v '^#' >tmp.go
+bin/categoriesplayed: games.go.m4 utils.go
+	m4 $< >tmp.go
 	go build -o $@ tmp.go utils.go
 	rm tmp.go
-bin/games: games.go utils.go
-	cpp -undef $< | grep -v '^#' >tmp.go
+bin/games: games.go.m4 utils.go
+	m4 -DGAMES $< >tmp.go
 	go build -o $@ tmp.go utils.go
 	rm tmp.go
 bin/modcount: modcount.go utils.go
