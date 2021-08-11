@@ -42,9 +42,9 @@ bin/worldrecords: worldrecords.go utils.go
 
 
 ##### PYTHON #####
-bin/utils.py: utils.py
-	chmod +x $<
-	cp $< $@
+bin/utils.py: utils.py.m4
+	m4 $< >$@
+	chmod +x $@
 bin/leaderboard: leaderboard.py
 	chmod +x $<
 	[ -e $@ ] || ln $< $@
