@@ -38,6 +38,9 @@ shopt -s globstar nullglob
 SCR_PATH=$(cd "$(dirname "$0")" && pwd)
 
 for FILE in "$SCR_PATH"/**/*; do
+	# Ignore git ignored files
+	>/dev/null git check-ignore "$FILE" && continue
+
 	case $FILE in
 	*.[ch])
 		clang-format -i --verbose --sort-includes -style=file "$FILE"
@@ -46,7 +49,7 @@ for FILE in "$SCR_PATH"/**/*; do
 		echo Formatting "$FILE"
 		isort "$FILE" >/dev/null
 		python3.9 -m black -l 100 "$FILE" 2>/dev/null
-		unexpand -t 4 --first-only "$FILE" >temp
+		unexpand -t 4 "$FILE" >temp
 		test -x "$FILE" && chmod +x temp
 		mv temp "$FILE"
 		sed -i '/^\t*\.\.\.$/s/^\t//' "$FILE"
