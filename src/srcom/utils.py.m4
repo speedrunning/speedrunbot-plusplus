@@ -1,4 +1,5 @@
 #!/usr/bin/env python3.9
+undefine(len, format, `__file__')
 
 """
 This file contains all sorts of variables and utilities used in the sr.c related programs.
@@ -32,7 +33,8 @@ try:
 except IOError:
 	config = {}
 
-redis = Redis(host=config["redis_hostname"] if "redis_hostname" in config else "localhost", port=config["redis_port"] if "redis_port" in config else 6379, db=(config["redis_db"] if "redis_db" in config else 0), decode_responses=True)
+define(`search', `config[$1] if $1 in config else $2')
+redis = Redis(host=search("redis_hostname", "localhost"), port=search("redis_port", 6379), db=(search("redis_db", 0)), decode_responses=True)
 
 session = Session()
 

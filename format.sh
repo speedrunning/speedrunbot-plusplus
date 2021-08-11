@@ -38,6 +38,9 @@ shopt -s globstar nullglob
 SCR_PATH=$(cd "$(dirname "$0")" && pwd)
 
 for FILE in "$SCR_PATH"/**/*; do
+	# Ignore git ignored files
+	>/dev/null git check-ignore "$FILE" && continue
+
 	case $FILE in
 	*.[ch])
 		clang-format -i --verbose --sort-includes -style=file "$FILE"

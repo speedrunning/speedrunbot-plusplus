@@ -5,16 +5,17 @@ from math import trunc
 from subprocess import CompletedProcess, run
 from sys import stderr
 from traceback import format_exception, print_exception
-from typing import Literal, Union, Optional
+from typing import Literal, Optional, Union
 
 import discord
-from bot import SRBpp, run_and_output
-from cogs.src import RATE
 from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.ext.commands.errors import CommandError
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
+
+from bot import SRBpp, run_and_output
+from cogs.src import RATE
 
 PREFIX: Literal["admin/bin"] = "admin/bin"
 
@@ -82,7 +83,7 @@ class Admin(commands.Cog):
 				option_type=5,
 				required=True,
 			)
-		]
+		],
 	)
 	async def compile_slash(self, ctx: SlashContext, clean: bool) -> None:
 		await self.compile(ctx, "clean" if clean else "")

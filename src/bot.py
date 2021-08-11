@@ -22,6 +22,7 @@ EXTENSIONS: Generator[str, None, None] = (
 	f"cogs.{f[:-3]}" for f in os.listdir(f"{PREFIX}/cogs") if f.endswith(".py")
 )
 
+
 class Executed:
 	def __init__(self, returncode: int, stdout: bytes, stderr: bytes) -> None:
 		self.returncode = returncode
@@ -84,9 +85,7 @@ async def run_and_output(
 				user_prog_id = cryptocode.decrypt(user_prog_id_hashed, str(ctx.author.id))
 				if user_prog_id:
 					args.pop(arg)
-					args.insert(
-						arg, user_prog_id
-					)
+					args.insert(arg, user_prog_id)
 					args.insert(arg, "-u")
 			else:
 				args[arg] = args[arg].name
@@ -116,8 +115,8 @@ async def run_and_output(
 					return
 				except discord.HTTPException:
 					await ctx.reply(
-					"The contents of this message are too long and as such they will be sent in DMs"
-				)
+						"The contents of this message are too long and as such they will be sent in DMs"
+					)
 			else:
 				await ctx.reply(
 					"The contents of this message are too long and as such they will be sent in DMs"
@@ -195,7 +194,12 @@ class SRBpp(commands.Bot):
 			print("Please create a config.json file.")
 			exit(1)
 
-		self.redis = Redis(host=config["redis_hostname"] if "redis_hostname" in config else "localhost", port=config["redis_port"] if "redis_port" in config else 6379, db=(config["redis_db"] if "redis_db" in config else 0), decode_responses=True)
+		self.redis = Redis(
+			host=config["redis_hostname"] if "redis_hostname" in config else "localhost",
+			port=config["redis_port"] if "redis_port" in config else 6379,
+			db=(config["redis_db"] if "redis_db" in config else 0),
+			decode_responses=True,
+		)
 
 	async def on_ready(self) -> None:
 		"""

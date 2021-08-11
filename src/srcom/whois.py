@@ -50,7 +50,7 @@ def main() -> int:
 			usage(USAGE)
 
 	# TODO: Remove this
-	print ("*NOTE: This command is still in development*")
+	print("*NOTE: This command is still in development*")
 
 	print(
 		f"PROFILE PICTURE: https://www.speedrun.com/themes/user/{r['data']['names']['international']}/image.png\n"
