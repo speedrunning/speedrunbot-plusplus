@@ -14,8 +14,9 @@ from time import sleep
 from typing import Any, Literal, NoReturn, Optional, Union
 
 from redis import Redis
+from redis.exceptions import ConnectionError as RedisConnectionError
 from requests import Session
-from requests.exceptions import ConnectionError
+from requests.exceptions import ConnectionError as RequestsConnectionError
 
 API = "https://www.speedrun.com/api/v1"
 RATE_LIMIT = 420
@@ -58,19 +59,29 @@ def api_get(uri: str, params: Optional[dict[str, Any]] = {}) -> dict:
 	while True:
 		try:
 			r = session.get(uri, params=params)
-		except ConnectionError:
-			data = redis.hget("cache", hash(uri))
-			if data:
-				return json.loads(data)
+		except RequestsConnectionError:
+			try:
+				data = redis.hget("cache", hash(uri))
+			except RedisConnectionError as e:
+				error_and_die(e)
 			else:
-				sleep(2)
+				if data:
+					return json.loads(data)
+				else:
+					sleep(2)
 		else:
 			if r.ok:
 				data = r.json()
-				redis.hset("cache", hash(uri), r.text)
+				try:
+					redis.hset("cache", hash(uri), r.text)
+				except RedisConnectionError as e:
+					error_and_die(e)
 				return data
 			if r.status_code == RATE_LIMIT:
-				data = redis.hget("cache", hash(uri))
+				try:
+					data = redis.hget("cache", hash(uri))
+				except RedisConnectionError:
+					error_and_die(e)
 				if data:
 					return json.loads(data)
 				else:
