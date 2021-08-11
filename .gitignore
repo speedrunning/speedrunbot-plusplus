@@ -3,13 +3,13 @@ __pycache__/
 bin/
 cache/
 objs/
-database.json
-
-token
-config.json
-tags
-test.json
-__mbuild.sh
-.editorconfig
 
 *.spec
+
+.editorconfig
+tags
+token
+config.json
+database.json
+test.json
+__mbuild.sh
