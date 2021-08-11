@@ -1,11 +1,12 @@
 from typing import Literal, Optional, Union
 
-from bot import SRBpp, run_and_output
 from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.ext.commands.cooldowns import Cooldown
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
+
+from bot import SRBpp, run_and_output
 
 PREFIX = "srcom/bin"
 RATE = 5
