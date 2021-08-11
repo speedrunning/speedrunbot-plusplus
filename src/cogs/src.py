@@ -1,15 +1,15 @@
 from typing import Literal, Optional, Union
 
+from bot import SRBpp, run_and_output
 from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.ext.commands.cooldowns import Cooldown
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
 
-from bot import SRBpp, run_and_output
-
 PREFIX = "srcom/bin"
 RATE = 5
+
 
 class Src(commands.Cog):
 	def __init__(self, bot: SRBpp) -> None:
@@ -49,7 +49,7 @@ class Src(commands.Cog):
 			title=f"Categories Played: {player}",
 		)
 
-	async def games(_, ctx: SlashContext, player: Optional[str] = None) -> None:
+	async def games(_, ctx: Union[Context, SlashContext], player: Optional[str] = None) -> None:
 		"""
 		Get the number of unique games a player has submit runs to.
 		"""
@@ -57,7 +57,7 @@ class Src(commands.Cog):
 
 	async def leaderboard(
 		_,
-		ctx: SlashContext,
+		ctx: Union[Context, SlashContext],
 		game: Optional[str] = None,
 		category: Optional[str] = None,
 		subcategory: Optional[str] = None,
@@ -298,12 +298,15 @@ class Src(commands.Cog):
 				name="player", description="The username of a player.", option_type=3, required=True
 			),
 			create_option(
-				name="verbose", description="Show extended information.", option_type=5, required=True
-			)
-		]
+				name="verbose",
+				description="Show extended information.",
+				option_type=5,
+				required=True,
+			),
+		],
 	)
 	async def posts_slash(self, ctx: SlashContext, player: str, verbose: bool) -> None:
-		await self.posts(ctx, ["-v" , player] if verbose else [player])
+		await self.posts(ctx, ["-v", player] if verbose else [player])
 
 	@commands.command(name="posts", aliases=("p",))
 	async def posts_bot(self, ctx: Context, *, args: Optional[str] = "") -> None:

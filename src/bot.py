@@ -1,4 +1,5 @@
 import asyncio
+import json
 import os
 import shlex
 from datetime import datetime
@@ -6,18 +7,20 @@ from pathlib import Path
 from sys import stderr
 from typing import Generator, Literal, Optional, Union
 
+import cryptocode
 import discord
+from aiohttp import ClientSession
 from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.message import Message
 from discord_slash import SlashCommand, SlashContext
+from redis import Redis
 
 PREFIX: Path = Path(__file__).parent
 ROOT_DIR: str = f"{PREFIX}/.."
 EXTENSIONS: Generator[str, None, None] = (
 	f"cogs.{f[:-3]}" for f in os.listdir(f"{PREFIX}/cogs") if f.endswith(".py")
 )
-
 
 class Executed:
 	def __init__(self, returncode: int, stdout: bytes, stderr: bytes) -> None:
@@ -63,7 +66,7 @@ async def execv(prog: str, *argv: tuple[str, ...]) -> Executed:
 async def run_and_output(
 	ctx: Union[SlashContext, Context],
 	prog: str,
-	*argv: tuple[str, ...],
+	*argv: list[str, discord.User, ...],
 	title: Optional[str] = None,
 ) -> None:
 	"""
@@ -72,16 +75,30 @@ async def run_and_output(
 	embed that is sent to discord. If `title` is not supplied, then the first line of output
 	from `prog` will be used.
 	"""
-	print(argv)
-	is_slash_called = (type(ctx) == SlashContext)
+	prog_namespace = prog.split("/")[0]
+	args = list(argv)
+	for arg in range(len(args)):
+		if isinstance(args[arg], discord.User) or isinstance(args[arg], discord.Member):
+			user_prog_id_hashed = ctx.bot.redis.hget("users", f"{hash(args[arg])}.{prog_namespace}")
+			if user_prog_id_hashed:
+				user_prog_id = cryptocode.decrypt(user_prog_id_hashed, str(ctx.author.id))
+				if user_prog_id:
+					args.pop(arg)
+					args.insert(
+						arg, user_prog_id
+					)
+					args.insert(arg, "-u")
+			else:
+				args[arg] = args[arg].name
+	is_slash_called = isinstance(ctx, SlashContext)
 	if is_slash_called:
 		await ctx.defer()
 	else:
 		await ctx.trigger_typing()
 
-	process = await execv(prog, *argv)
+	process = await execv(prog, *args)
 	if process.returncode != 0:
-		await ctx.send(process.stderr)
+		await ctx.reply(process.stderr)
 		return
 
 	title, desc = process.stdout.split("\n", 1) if not title else [title, process.stdout]
@@ -90,10 +107,17 @@ async def run_and_output(
 		lines_length = len(lines)
 		try:
 			if is_slash_called:
-				await ctx.send(
-					"The contents of this message are too long, and as such they cannot be sent through a slash command. Please try again using a regular command."
+				try:
+					await ctx.author.send("")
+				except discord.Forbidden:
+					await ctx.send(
+						"The contents of this message are too long, and as such they cannot be sent through a slash command. Please try again using a regular command."
+					)
+					return
+				except discord.HTTPException:
+					await ctx.reply(
+					"The contents of this message are too long and as such they will be sent in DMs"
 				)
-				return
 			else:
 				await ctx.reply(
 					"The contents of this message are too long and as such they will be sent in DMs"
@@ -151,14 +175,34 @@ class SRBpp(commands.Bot):
 			except Exception as e:
 				print(e, file=stderr)
 
-		with open(f"{ROOT_DIR}/token", "r", encoding="utf-8") as f:
-			self.token = f.read().strip()
+		config = {}
+		try:
+			f = open(f"{ROOT_DIR}/config.json", encoding="utf-8")
+			config = json.load(f)
+			self.token = config["token"]
+		except IOError:
+			print("No config file found, trying backwards compatible method.")
+			try:
+				f = open(f"{ROOT_DIR}/token", "r", encoding="utf-8")
+				self.token = f.read().strip()
+			except IOError:
+				print("No bot token found. ")
+				exit(1)
+		finally:
+			f.close()
+
+		if not config:
+			print("Please create a config.json file.")
+			exit(1)
+
+		self.redis = Redis(host=config["redis_hostname"] if "redis_hostname" in config else "localhost", port=config["redis_port"] if "redis_port" in config else 6379, db=(config["redis_db"] if "redis_db" in config else 0), decode_responses=True)
 
 	async def on_ready(self) -> None:
 		"""
 		Code to run when the bot starts up.
 		"""
 		self.uptime = datetime.utcnow()
+		self.session = ClientSession()
 
 		print(
 			f"Bot Name\t\t{self.user.name}\n"
@@ -171,6 +215,7 @@ class SRBpp(commands.Bot):
 		"""
 		Cleanup before the bot exits.
 		"""
+		await self.session.close()
 		for extension in EXTENSIONS:
 			try:
 				self.unload_extension(extension)

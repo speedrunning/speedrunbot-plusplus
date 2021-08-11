@@ -1,20 +1,20 @@
+import asyncio
 import os
 import sys
 from math import trunc
 from subprocess import CompletedProcess, run
 from sys import stderr
 from traceback import format_exception, print_exception
-from typing import Literal, Union
+from typing import Literal, Union, Optional
 
 import discord
+from bot import SRBpp, run_and_output
+from cogs.src import RATE
 from discord.ext import commands
 from discord.ext.commands.context import Context
 from discord.ext.commands.errors import CommandError
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option
-
-from bot import SRBpp, run_and_output
-from cogs.src import RATE
 
 PREFIX: Literal["admin/bin"] = "admin/bin"
 
@@ -57,27 +57,35 @@ class Admin(commands.Cog):
 			# error printing.
 			# print_exception(type(err), err, err.__traceback__, file=stderr)
 
-	async def compile(_, ctx: Union[Context, SlashContext]) -> None:
+	async def compile(_, ctx: Union[Context, SlashContext], clean: Optional[str]) -> None:
 		"""
 		Run the bots Makefiles to update all the code.
 		"""
-		await run_and_output(ctx, f"{PREFIX}/compile", title="Compile")
+		await run_and_output(ctx, f"{PREFIX}/compile", clean, title="Compile")
 
 	@commands.is_owner()
 	@commands.command(name="compile", aliases=("make", "comp"))
-	async def compile_bot(self, ctx: Context):
+	async def compile_bot(self, ctx: Context, clean: Optional[str]) -> None:
 		"""
 		Run the bots Makefiles to update all the code.
 		"""
-		await self.compile(ctx)
+		await self.compile(ctx, clean)
 
 	@commands.is_owner()
 	@cog_ext.cog_slash(
 		name="compile",
 		description="Run the bots Makefiles to update all the code.",
+		options=[
+			create_option(
+				name="clean",
+				description="Perform a `make clean` before `make`",
+				option_type=5,
+				required=True,
+			)
+		]
 	)
-	async def compile_slash(self, ctx: SlashContext):
-		await self.compile(ctx)
+	async def compile_slash(self, ctx: SlashContext, clean: bool) -> None:
+		await self.compile(ctx, "clean" if clean else "")
 
 	@commands.is_owner()
 	@commands.command(name="pull")
@@ -232,6 +240,21 @@ class Admin(commands.Cog):
 	)
 	async def unload_slash(self, ctx: SlashContext, ext: str):
 		await self.unload(ctx, ext)
+
+	@commands.is_owner()
+	@commands.command(name="announce", aliases=["announcement"])
+	async def announce(self, ctx, *, message):
+		channels = []
+		messages = []
+		for guild in self.bot.guilds:
+			channels = guild.text_channels.sort(key=lambda channel: channel.position)
+			for channel in channels:
+				try:
+					messages.append(channel.send(f"**Public announcement:**\n{message}"))
+					break
+				except discord.errors.Forbidden:
+					continue
+		await asyncio.gather(*messages)
 
 
 def setup(bot: SRBpp) -> None:

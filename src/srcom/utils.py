@@ -5,6 +5,7 @@ This file contains all sorts of variables and utilities used in the sr.c related
 """
 
 import asyncio
+import json
 import shlex
 from json.decoder import JSONDecodeError
 from os.path import dirname
@@ -12,17 +13,28 @@ from sys import exit, stderr
 from time import sleep
 from typing import Any, Literal, NoReturn, Optional, Union
 
-import requests
-from requests.exceptions import ConnectionError
+from redis import Redis
+from redis.exceptions import ConnectionError as RedisConnectionError
+from requests import Session
+from requests.exceptions import ConnectionError as RequestsConnectionError
 
-API: Literal["https://www.speedrun.com/api/v1"] = "https://www.speedrun.com/api/v1"
-RATE_LIMIT: Literal[420] = 420
+API = "https://www.speedrun.com/api/v1"
+RATE_LIMIT = 420
 
-EXIT_SUCCESS: Literal[0] = 0
-EXIT_FAILURE: Literal[1] = 1
+EXIT_SUCCESS = 0
+EXIT_FAILURE = 1
 
-CACHEDIR: str = f"{dirname(__file__)}/../../../cache/srcom"
+CACHEDIR = f"{dirname(__file__)}/../../../cache/srcom"
 
+try:
+	with open(f"config.json", encoding="utf-8") as f:
+		config = json.load(f)
+except IOError:
+	config = {}
+
+redis = Redis(host=config["redis_hostname"] if "redis_hostname" in config else "localhost", port=config["redis_port"] if "redis_port" in config else 6379, db=(config["redis_db"] if "redis_db" in config else 0), decode_responses=True)
+
+session = Session()
 
 def usage(usage: str) -> NoReturn:
 	"""
@@ -46,14 +58,34 @@ def api_get(uri: str, params: Optional[dict[str, Any]] = {}) -> dict:
 	"""
 	while True:
 		try:
-			r = requests.get(uri, params=params)
-		except ConnectionError:
-			sleep(2)
+			r = session.get(uri, params=params)
+		except RequestsConnectionError:
+			try:
+				data = redis.hget("cache", hash(uri))
+			except RedisConnectionError as e:
+				error_and_die(e)
+			else:
+				if data:
+					return json.loads(data)
+				else:
+					sleep(2)
 		else:
 			if r.ok:
-				return r.json()
+				data = r.json()
+				try:
+					redis.hset("cache", hash(uri), r.text)
+				except RedisConnectionError as e:
+					error_and_die(e)
+				return data
 			if r.status_code == RATE_LIMIT:
-				sleep(5)
+				try:
+					data = redis.hget("cache", hash(uri))
+				except RedisConnectionError:
+					error_and_die(e)
+				if data:
+					return json.loads(data)
+				else:
+					sleep(5)
 			else:
 				try:
 					error_and_die(r.json()["message"])
@@ -71,7 +103,7 @@ def getuid(user: str) -> str:
 	'7j477kvj'
 	>>> getuid("abc")
 	Traceback (most recent call last):
-...
+		...
 	SystemExit: 1
 	"""
 
@@ -92,7 +124,7 @@ def username(uid: str) -> str:
 	'AnInternetTroll'
 	>>> username("Sesame Street")
 	Traceback (most recent call last):
-...
+		...
 	SystemExit: 1
 	"""
 	r = api_get(f"{API}/users/{uid}")
@@ -109,7 +141,7 @@ def getgame(abbrev: str) -> tuple[str, str]:
 	('CELESTE Classic', '4d7e7z67')
 	>>> getgame("Fake Game")
 	Traceback (most recent call last):
-...
+		...
 	SystemExit: 1
 	"""
 	r = api_get(f"{API}/games", params={"abbreviation": abbrev})
@@ -135,7 +167,7 @@ def subcatid(cid: str, subcat: str, lflag: bool = False) -> tuple[str, str]:
 	('ylqmdmvn', '810enwwq')
 	>>> subcatid("mkeoz98d", "Gem Skips")
 	Traceback (most recent call last):
-...
+		...
 	SystemExit: 1
 	"""
 	r = api_get(f"{API}/{'levels' if lflag else 'categories'}/{cid}/variables")

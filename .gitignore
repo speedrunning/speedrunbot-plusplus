@@ -3,8 +3,10 @@ __pycache__/
 bin/
 cache/
 objs/
+database.json
 
 token
+config.json
 tags
 test.json
 __mbuild.sh
