@@ -51,9 +51,9 @@ def main() -> int:
 
 	print(
 		f"__THUMBNAIL__: {r['assets']['image']['uri']}\n"
-		+ f"**Username**: "
-		+ f"[{r['names']['international']}]({r['weblink']})"
+		+ f"**Username**: [{r['names']['international']}]({r['weblink']})"
 		+ (f' ({r["names"]["japanese"]})' if r["names"]["japanese"] else "")
+		+ f"User ID: {r['id']}\n"
 		+ (f"\n**Pronouns**: {r['pronouns']}" if r["pronouns"] else "")
 		+ (f"\n**Role**: {r['role'].capitalize()}" if r["role"] != "user" else "")
 		+ f"\n**Signed up**: {date_format(datetime.strptime(r['signup'], '%Y-%m-%dT%H:%M:%S%z'))}"
