@@ -14,14 +14,13 @@ from itertools import count
 from os.path import exists
 from sys import argv, exit
 from time import sleep
-from typing import Literal
 
 import requests
 from requests import Session
 from utils import *
 
-TWO_HOURS: Literal[7200] = 7200
-USAGE: str = (
+TWO_HOURS = 7200
+USAGE = (
 	"Usage: `+verified [PLAYER NAME] [GAME (Optional)] [GAME (Optional)]`\n"
 	+ "Example: `+verified AnInternetTroll mkw mkwextracategories`"
 )

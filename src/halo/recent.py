@@ -18,8 +18,7 @@ def usage() -> NoReturn:
 	are given.
 	"""
 	print(
-		"Usage: `+halo recent [AMOUNT (Optional)]`\n" + "Example: `+halo recent 5`",
-		file=stderr,
+		"Usage: `+halo recent [AMOUNT (Optional)]`\n" + "Example: `+halo recent 5`", file=stderr,
 	)
 	exit(EXIT_FAILURE)
 
@@ -37,7 +36,8 @@ def main() -> int:
 
 	print(
 		"\n".join(
-			f"`{run.game_name}, {run.level_name}` [{run.time}]({run.vid}) by {', '.join([player for player in run.runners])}"
+			f"`{run.game_name}, {run.level_name}` [{run.time}]({run.vid}) by"
+			f" {', '.join([player for player in run.runners])}"
 			for run in runs
 		)
 	)

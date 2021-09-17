@@ -16,11 +16,9 @@ from discord.message import Message
 from discord_slash import SlashCommand, SlashContext
 from redis import Redis
 
-PREFIX: Path = Path(__file__).parent
-ROOT_DIR: str = f"{PREFIX}/.."
-EXTENSIONS: Generator[str, None, None] = (
-	f"cogs.{f[:-3]}" for f in os.listdir(f"{PREFIX}/cogs") if f.endswith(".py")
-)
+PREFIX = Path(__file__).parent
+ROOT_DIR = f"{PREFIX}/.."
+EXTENSIONS = (f"cogs.{f[:-3]}" for f in os.listdir(f"{PREFIX}/cogs") if f.endswith(".py"))
 
 
 class Executed:
@@ -56,9 +54,7 @@ async def execv(prog: str, *argv: tuple[str, ...]) -> Executed:
 	args = " ".join(shlex.quote(arg) for arg in tuple(filter(lambda x: x, argv)))
 
 	ret = await asyncio.create_subprocess_shell(
-		f"{PREFIX}/{prog} {args}",
-		stdout=asyncio.subprocess.PIPE,
-		stderr=asyncio.subprocess.PIPE,
+		f"{PREFIX}/{prog} {args}", stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
 	)
 	stdout, stderr = await ret.communicate()
 	return Executed(ret.returncode, stdout, stderr)
@@ -119,12 +115,14 @@ async def run_and_output(
 					await ctx.author.send("")
 				except discord.Forbidden:
 					await ctx.send(
-						"The contents of this message are too long, and as such they cannot be sent through a slash command. Please try again using a regular command."
+						"The contents of this message are too long, and as such they cannot be sent"
+						" through a slash command. Please try again using a regular command."
 					)
 					return
 				except discord.HTTPException:
 					await ctx.reply(
-						"The contents of this message are too long and as such they will be sent in DMs"
+						"The contents of this message are too long and as such they will be sent"
+						" in DMs"
 					)
 			else:
 				await ctx.reply(
@@ -141,7 +139,8 @@ async def run_and_output(
 					await ctx.author.send(embed=embed)
 		except discord.Forbidden:
 			await ctx.reply(
-				"You have blocked the bot and the message is too long to be sent in this channel. Please unblock me and try again."
+				"You have blocked the bot and the message is too long to be sent in this channel."
+				" Please unblock me and try again."
 			)
 	else:
 		embed = discord.Embed(title=title, description=desc)

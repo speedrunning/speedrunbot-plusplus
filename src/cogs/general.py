@@ -29,8 +29,7 @@ class General(commands.Cog):
 		await ctx.send("https://www.github.com/Mango0x45/speedrunbot-plusplus")
 
 	@cog_ext.cog_slash(
-		name="source",
-		description="Link the bots GitHub repository.",
+		name="source", description="Link the bots GitHub repository.",
 	)
 	async def source_slash(self, ctx: SlashContext) -> None:
 		await self.source(ctx)
@@ -46,14 +45,13 @@ class General(commands.Cog):
 		await ctx.send(f"Pong! {round(self.bot.latency * 1000)}ms")
 
 	@cog_ext.cog_slash(
-		name="ping",
-		description="Ping the bot, because why not?",
+		name="ping", description="Ping the bot, because why not?",
 	)
-	async def ping_slash(self, ctx: SlashContext):
+	async def ping_slash(self, ctx: SlashContext) -> None:
 		await self.ping(ctx)
 
 	@commands.command(name="ping")
-	async def ping_bot(self, ctx: Context):
+	async def ping_bot(self, ctx: Context) -> None:
 		"""
 		Ping the bot, because why not?
 		"""
@@ -66,7 +64,10 @@ class General(commands.Cog):
 		embed = Embed(title="Invite this bot to your server!")
 		embed.add_field(
 			name="As a bot with slash commands",
-			value=f"[Click here]({oauth_url(self.bot.user.id, scopes=('bot', 'applications.commands'))})",
+			value=(
+				"[Click here]"
+				f"({oauth_url(self.bot.user.id, scopes=('bot', 'applications.commands'))})"
+			),
 		)
 		embed.add_field(
 			name="As a bot **without** slash commands",
@@ -79,8 +80,7 @@ class General(commands.Cog):
 		await ctx.send(embed=embed)
 
 	@cog_ext.cog_slash(
-		name="invite",
-		description="Get the bots discord invite link.",
+		name="invite", description="Get the bots discord invite link.",
 	)
 	async def invite_slash(self, ctx: SlashContext) -> None:
 		await self.invite(ctx)
@@ -94,11 +94,7 @@ class General(commands.Cog):
 
 	@commands.command(name="retime")
 	async def retime_bot(
-		self,
-		ctx: Context,
-		framerate: int = 30,
-		data1: str = None,
-		data2: str = None,
+		self, ctx: Context, framerate: int = 30, data1: str = None, data2: str = None,
 	) -> None:
 		"""
 		**UNSTABLE**
@@ -156,12 +152,7 @@ class General(commands.Cog):
 			return await ctx.send("Waited for too long. Aborting...")
 
 		await run_and_output(
-			ctx,
-			f"{PREFIX}/retime",
-			str(framerate),
-			data1,
-			data2,
-			title="Retimed!",
+			ctx, f"{PREFIX}/retime", str(framerate), data1, data2, title="Retimed!",
 		)
 
 	@commands.command(name="prefix", aliases=("prefixes",))
@@ -179,7 +170,7 @@ class General(commands.Cog):
 		await ctx.send(f"My prefixes are: {message[:len(message) - 2]}")
 
 	@commands.group(name="link")
-	async def link(self, ctx: Context):
+	async def link(self, ctx: Context) -> None:
 		"""
 		Link an external account to your discord account via this bot.
 		"""
@@ -187,7 +178,14 @@ class General(commands.Cog):
 			await ctx.send("Invalid service passed.")
 
 	@link.command(name="sr.c", aliases=["src"])
-	async def link_src(self, ctx, apikey: str):
+	async def link_src(self, ctx: Context, apikey: str = "") -> None:
+		if not apikey:
+			await ctx.reply(
+				"Please try this command again by getting an api key from"
+				" <https://www.speedrun.com/api/auth> then do `+link src [API KEY]` in my DMs or"
+				" anywhere in this server. Be careful who you share this key with. To learn more"
+				" check out <https://github.com/speedruncomorg/api/blob/master/authentication.md>"
+			)
 
 		try:
 			await ctx.message.delete()
@@ -199,10 +197,7 @@ class General(commands.Cog):
 		user = str(hash(ctx.author))
 
 		async with self.bot.session.get(
-			"https://www.speedrun.com/api/v1/profile",
-			headers={
-				"X-API-Key": apikey,
-			},
+			"https://www.speedrun.com/api/v1/profile", headers={"X-API-Key": apikey,},
 		) as r:
 
 			# As soon as we're done with the api key
@@ -223,12 +218,12 @@ class General(commands.Cog):
 			)
 
 	@commands.group(aliases=("profile",))
-	async def whois(self, ctx):
+	async def whois(self, ctx: Context) -> None:
 		if ctx.invoked_subcommand is None:
 			await ctx.send("Invalid service passed")
 
 	@whois.command(name="src")
-	async def whois_src(self, ctx, user: Optional[str] = None):
+	async def whois_src(self, ctx, user: Optional[str] = None) -> None:
 		if user:
 			try:
 				user = await commands.UserConverter().convert(ctx, user)

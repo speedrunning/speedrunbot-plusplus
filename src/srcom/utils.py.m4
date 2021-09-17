@@ -1,4 +1,6 @@
 #!/usr/bin/env python3.9
+# vi: ft=python
+
 undefine(len, format, `__file__')
 
 """
@@ -13,6 +15,7 @@ from os.path import dirname
 from sys import exit, stderr
 from time import sleep
 from typing import Any, Literal, NoReturn, Optional, Union
+from dataclasses import dataclass
 
 from redis import Redis
 from redis.exceptions import ConnectionError as RedisConnectionError
@@ -37,6 +40,35 @@ define(`search', `config[$1] if $1 in config else $2')
 redis = Redis(host=search("redis_hostname", "localhost"), port=search("redis_port", 6379), db=(search("redis_db", 0)), decode_responses=True)
 
 session = Session()
+
+class User:
+	"""
+	A super basic class representing a user. If any field of the user is unset (for example
+	someone without a profile picture) that field will be set to an empty string.
+
+	Make sure to not be stupid and call the contructor without a name or UID.
+	"""
+	def __init__(self, name: str = "", uid: str = "") -> None:
+		if name:
+			data = api_get(f"{API}/users?lookup={name}")["data"][0]
+		else:
+			data = api_get(f"{API}/users/{uid}")["data"]
+
+		_construct_class(self, data)
+
+def _construct_class(obj: object, data: dict) -> None:
+	"""
+	Create the class `obj` as described by the dictionary `dict`.
+	"""
+	for key in data:
+		if type(data[key]) == dict:
+			setattr(obj, key, type(key, (object,), {}))
+			try:
+				_construct_class(obj.__getattribute__(key), data[key])
+			except TypeError:
+				_construct_class(obj.__getattribute__(obj, key), data[key])
+		else:
+			setattr(obj, key, data[key] if data[key] else "")
 
 def usage(usage: str) -> NoReturn:
 	"""

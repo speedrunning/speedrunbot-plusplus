@@ -11,7 +11,7 @@ from typing import Literal, Optional
 
 from utils import *
 
-USAGE: str = (
+USAGE = (
 	"Usage: `+worldrecord [GAME] [CATEGORY (Optional)] [SUBCATEGORY (Optional)]`\n"
 	+ 'Example: `+worldrecord mkw "Nitro Tracks"`'
 )
@@ -59,13 +59,11 @@ def main() -> int:
 		r = api_get(f"{API}/levels/{cid}/categories")
 		ilcid: str = r["data"][0]["id"]
 		r = api_get(
-			f"{API}/leaderboards/{gid}/level/{cid}/{ilcid}",
-			params={"top": 1, f"var-{vid}": vval},
+			f"{API}/leaderboards/{gid}/level/{cid}/{ilcid}", params={"top": 1, f"var-{vid}": vval},
 		)
 	else:
 		r = api_get(
-			f"{API}/leaderboards/{gid}/category/{cid}",
-			params={"top": 1, f"var-{vid}": vval},
+			f"{API}/leaderboards/{gid}/category/{cid}", params={"top": 1, f"var-{vid}": vval},
 		)
 
 	title = f"World Record: {game} - {cat}" + (f" - {argv[3]}\n" if vid else "\n")
