@@ -5,8 +5,8 @@ from math import floor, trunc
 from sys import argv, exit, stderr
 from typing import Literal, NoReturn
 
-EXIT_SUCCESS: Literal[0] = 0
-EXIT_FAILURE: Literal[1] = 1
+EXIT_SUCCESS = 0
+EXIT_FAILURE = 1
 
 
 def usage() -> NoReturn:
@@ -85,7 +85,10 @@ def _retime(start_time: float, end_time: float, framerate: int) -> str:
 
 	time = ptime(seconds)
 
-	return f"Mod Note: Retimed (Start Frame: {start_frame}, End Frame: {end_frame}, FPS: {framerate}, Total Time: {time})"
+	return (
+		f"Mod Note: Retimed (Start Frame: {start_frame}, End Frame: {end_frame}, FPS: {framerate},"
+		f" Total Time: {time})"
+	)
 
 
 def main() -> int:

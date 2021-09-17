@@ -25,10 +25,7 @@ class Halo(commands.Cog):
 		Get a list of recent runs.
 		"""
 		await run_and_output(
-			ctx,
-			f"{PREFIX}/recent",
-			count,
-			title="Recent World Records",
+			ctx, f"{PREFIX}/recent", count, title="Recent World Records",
 		)
 
 

@@ -12,10 +12,19 @@ from typing import Literal, Optional
 
 from utils import *
 
-USAGE = "Usage: `+whois [USERNAME]`\n" + "Example: `+whois 1`"
+USAGE = "Usage: `+whois src [USERNAME]`\n" + "Example: `+whois src 1`"
 
 
-def date_format(date: datetime) -> str:
+def contains(obj: object, attribute: str) -> bool:
+	try:
+		obj.__getattribute__(obj, attribute)
+		return True
+	except AttributeError:
+		return False
+
+
+def date_format(date: str) -> str:
+	date = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S%z")
 	last = date.day % 10
 	if last == 1:
 		return date.strftime("%-dst %B, %Y")
@@ -39,59 +48,54 @@ def main() -> int:
 			break
 
 	if uid:
-		r = api_get(f"{API}/users/{uid}")["data"]
+		user = User(id=uid)
 	else:
 		try:
-			r = api_get(f"{API}/users?lookup={args[0]}")
-			# When getting a user with the `lookup` parameter, the `data` field returns
-			# an array of length 1 instead of just the data directly.
-			r = r["data"][0]
+			user = User(name=args[0])
 		except IndexError:
 			usage(USAGE)
 
 	print(
-		(f"__THUMBNAIL__: {r['assets']['image']['uri']}\n" if r["assets"]["image"]["uri"] else "")
-		+ f"**Username**: [{r['names']['international']}]({r['weblink']})\n"
-		+ (f' ({r["names"]["japanese"]})' if r["names"]["japanese"] else "")
-		+ f"**User ID**: {r['id']}"
-		+ (f"\n**Pronouns**: {r['pronouns']}" if r["pronouns"] else "")
-		+ (f"\n**Role**: {r['role'].capitalize()}" if r["role"] != "user" else "")
-		+ f"\n**Signed up**: {date_format(datetime.strptime(r['signup'], '%Y-%m-%dT%H:%M:%S%z'))}"
+		(f"__THUMBNAIL__: {user.assets.image.uri}\n" if user.assets.image.uri else "")
+		+ f"**Username**: [{user.names.international}]({user.weblink})\n"
+		+ (f" ({user.names.japanese})" if user.names.japanese else "")
+		+ f"**User ID**: {user.id}"
+		+ (f"\n**Pronouns**: {user.pronouns}" if user.pronouns else "")
+		+ (f"\n**Role**: {user.role.capitalize()}" if user.role != "user" else "")
+		+ f"\n**Signed up**: {date_format(user.signup)}"
 		+ f"\n**Socials**: "
-		+ (f"[Twitch]({r['twitch']['uri']}) " if r["twitch"] else "")
-		+ (f"[Hitbox]({r['hitbox']['uri']}) " if r["hitbox"] else "")
-		+ (f"[Youtube]({r['youtube']['uri']}) " if r["youtube"] else "")
-		+ (f"[Twitter]({r['twitter']['uri']}) " if r["twitter"] else "")
-		+ (f"[SpeedRunsLive]({r['speedrunslive']['uri']}) " if r["speedrunslive"] else "")
+		+ (f"[Twitch]({user.twitch.uri}) " if user.twitch else "")
+		+ (f"[Hitbox]({user.hitbox.uri}) " if user.hitbox else "")
+		+ (f"[Youtube]({user.youtube.uri}) " if user.youtube else "")
+		+ (f"[Twitter]({user.twitter.uri}) " if user.twitter else "")
+		+ (f"[SpeedRunsLive]({user.speedrunslive.uri}) " if user.speedrunslive else "")
 		+ (
 			(
 				(
 					"\n**Region**: "
 					+ (
-						r["location"]["region"]["names"]["international"]
+						user.location.region.names.international
 						+ " "
-						+ f'({r["location"]["region"]["code"].upper()})'
+						+ f"({user.location.region.code.upper()})"
 						+ (
-							f"({r['location']['region']['names']['japanese']})"
-							if r["location"]["region"]["names"]["japanese"]
+							f"({user.location.region.names.japanese})"
+							if user.location.region.names.japanese
 							else ""
 						)
 					)
 				)
-				if "region" in r["location"]
+				if contains(user.location, "region")
 				else (
-					"\n**Country**: "
-					+ r["location"]["country"]["names"]["international"]
-					+ " "
-					+ f'({r["location"]["country"]["code"].upper()})'
+					f"\n**Country**: {user.location.country.names.international} "
+					+ f"({user.location.country.code.upper()})"
 					+ (
-						f"({r['location']['country']['names']['japanese']})"
-						if r["location"]["country"]["names"]["japanese"]
+						f"({user.location.country.names.japanese})"
+						if user.location.country.names.japanese
 						else ""
 					)
 				)
 			)
-			if r["location"]
+			if user.location
 			else ""
 		)
 	)

@@ -13,7 +13,7 @@ prompt_user() {
 }
 
 if ! command -v black >/dev/null; then
-	prompt_user black python && python3 -m pip install black
+	prompt_user black python && python3 -m pip install black-with-tabs
 fi
 if ! command -v isort >/dev/null; then
 	prompt_user isort python && python3 -m pip install isort
@@ -47,18 +47,15 @@ for FILE in "$SCR_PATH"/**/*; do
 		;;
 	*.py)
 		echo Formatting "$FILE"
-		isort "$FILE" >/dev/null
-		python3.9 -m black -l 100 "$FILE" 2>/dev/null
-		unexpand -t 4 --first-only "$FILE" >temp
-		test -x "$FILE" && chmod +x temp
-		mv temp "$FILE"
-		sed -i '/^\t*\.\.\.$/s/^\t//' "$FILE"
+		>/dev/null isort "$FILE"
+		2>/dev/null python3.9 -m black -q -l 100 "$FILE"
 		;;
 	*.sh)
 		echo Formatting "$FILE"
+		[ -x "$FILE" ] && FLAGS=+x || FLAGS=-x
 		unexpand -t 8 --first-only "$FILE" >temp
 		mv temp "$FILE"
-		chmod +x "$FILE"
+		chmod "$FLAGS" "$FILE"
 		;;
 	esac
 done

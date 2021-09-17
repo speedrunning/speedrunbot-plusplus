@@ -29,16 +29,14 @@ class Admin(commands.Cog):
 		"""
 		A simple error handler to avoid spamming my console with errors I do not care about.
 		"""
-		if type(err) in (
-			commands.errors.CommandNotFound,
-			commands.errors.CheckFailure,
-		):
+		if type(err) in (commands.errors.CommandNotFound, commands.errors.CheckFailure,):
 			pass
 		elif type(err) == commands.errors.NotOwner:
 			await ctx.send("You do not have permission to execute this command.")
 		elif type(err) == commands.CommandOnCooldown:
 			await ctx.send(
-				f"You can only run {RATE} speedrun.com related commands per minute. Please wait {trunc(err.retry_after)} seconds."
+				f"You can only run {RATE} speedrun.com related commands per minute. Please wait"
+				f" {trunc(err.retry_after)} seconds."
 			)
 		elif type(err) == commands.errors.BadArgument:
 			await ctx.send("Invalid argument, please check your input and try again.")
@@ -49,7 +47,9 @@ class Admin(commands.Cog):
 
 			embed = discord.Embed(
 				title=str(err),
-				description=f"```py\n{''.join(format_exception(type(err), err, err.__traceback__))}```",
+				description=(
+					f"```py\n{''.join(format_exception(type(err), err, err.__traceback__))}```"
+				),
 			)
 			embed.add_field(name="Command invoked: ", value=ctx.invoked_with)
 			await ctx.author.send(f"{type(err)}", embed=embed)

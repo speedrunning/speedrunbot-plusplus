@@ -44,10 +44,7 @@ class Src(commands.Cog):
 		Get the number of unique categories a player has submit runs to.
 		"""
 		await run_and_output(
-			ctx,
-			f"{PREFIX}/categoriesplayed",
-			player,
-			title=f"Categories Played: {player}",
+			ctx, f"{PREFIX}/categoriesplayed", player, title=f"Categories Played: {player}",
 		)
 
 	async def games(_, ctx: Union[Context, SlashContext], player: Optional[str] = None) -> None:
@@ -73,9 +70,7 @@ class Src(commands.Cog):
 		Get the number of games and series a player moderates.
 		"""
 		await run_and_output(
-			ctx,
-			f"{PREFIX}/modcount",
-			player,
+			ctx, f"{PREFIX}/modcount", player,
 		)
 
 	async def posts(_, ctx: Union[Context, SlashContext], args: Optional[list[str]]) -> None:
@@ -99,12 +94,7 @@ class Src(commands.Cog):
 		Get the amount of runs a player has verified or rejected. Optionally 1 or 2 games can be specified.
 		"""
 		await run_and_output(
-			ctx,
-			f"{PREFIX}/verified",
-			player,
-			game1,
-			game2,
-			title=f"Runs Verified: {player}",
+			ctx, f"{PREFIX}/verified", player, game1, game2, title=f"Runs Verified: {player}",
 		)
 
 	async def worldrecords(
@@ -133,7 +123,9 @@ class Src(commands.Cog):
 			f"{PREFIX}/verifierleaderboard",
 			game1,
 			game2,
-			title=f"Verifier Leaderboard for {game1 if not game2 else ' and '.join((game1, game2))}",
+			title=(
+				f"Verifier Leaderboard for {game1 if not game2 else ' and '.join((game1, game2))}"
+			),
 		)
 
 	async def pending(
@@ -165,11 +157,7 @@ class Src(commands.Cog):
 		"""
 		await run_and_output(ctx, f"{PREFIX}/worldrecord", game, category, subcategory)
 
-	async def podiums(
-		_,
-		ctx: Union[Context, SlashContext],
-		player: Optional[str] = None,
-	) -> None:
+	async def podiums(_, ctx: Union[Context, SlashContext], player: Optional[str] = None) -> None:
 		"""
 		Get the number of top 3 runs a player has.
 		"""
@@ -431,10 +419,7 @@ class Src(commands.Cog):
 
 	@commands.command(name="verifierleaderboard", aliases=("vlb",))
 	async def verifierleaderboard_bot(
-		self,
-		ctx: Context,
-		game1: Optional[str] = None,
-		game2: Optional[str] = None,
+		self, ctx: Context, game1: Optional[str] = None, game2: Optional[str] = None,
 	) -> None:
 		"""
 		Get a leaderboard of a games verifiers and how many runs each has examined.
@@ -470,10 +455,7 @@ class Src(commands.Cog):
 
 	@commands.command(name="worldrecords", aliases=("wrs",))
 	async def worldrecords_bot(
-		self,
-		ctx: Context,
-		player: Optional[str] = None,
-		game: Optional[str] = None,
+		self, ctx: Context, player: Optional[str] = None, game: Optional[str] = None,
 	) -> None:
 		"""
 		Get the number of world records a player currently holds.
@@ -482,10 +464,7 @@ class Src(commands.Cog):
 
 	@commands.command(name="pending")
 	async def pending_bot(
-		self,
-		ctx: Context,
-		game1: Optional[str] = None,
-		game2: Optional[str] = None,
+		self, ctx: Context, game1: Optional[str] = None, game2: Optional[str] = None,
 	) -> None:
 		"""
 		Get all pending runs for a game. Optionally 2 games can be given.
@@ -493,11 +472,7 @@ class Src(commands.Cog):
 		await self.pending(ctx, game1, game2)
 
 	@commands.command(name="podiums")
-	async def podiums_bot(
-		self,
-		ctx: Context,
-		player: Optional[str] = None,
-	) -> None:
+	async def podiums_bot(self, ctx: Context, player: Optional[str] = None) -> None:
 		"""
 		Get the number of top 3 runs a player has.
 		"""
@@ -546,10 +521,7 @@ class Src(commands.Cog):
 		],
 	)
 	async def worldrecords_slash(
-		self,
-		ctx: SlashContext,
-		player: str,
-		game: Optional[str] = None,
+		self, ctx: SlashContext, player: str, game: Optional[str] = None,
 	) -> None:
 		await self.worldrecords(ctx, player, game)
 
@@ -572,10 +544,7 @@ class Src(commands.Cog):
 		],
 	)
 	async def pending_slash(
-		self,
-		ctx: SlashContext,
-		game1: str,
-		game2: Optional[str] = None,
+		self, ctx: SlashContext, game1: str, game2: Optional[str] = None,
 	) -> None:
 		await self.pending(ctx, game1, game2)
 
@@ -598,10 +567,7 @@ class Src(commands.Cog):
 		],
 	)
 	async def verifierleaderboard_slash(
-		self,
-		ctx: SlashContext,
-		game1: str,
-		game2: Optional[str] = None,
+		self, ctx: SlashContext, game1: str, game2: Optional[str] = None,
 	) -> None:
 		await self.verifierleaderboard(ctx, game1, game2)
 
@@ -614,11 +580,7 @@ class Src(commands.Cog):
 			),
 		],
 	)
-	async def podiums_slash(
-		self,
-		ctx: SlashContext,
-		player: str,
-	) -> None:
+	async def podiums_slash(self, ctx: SlashContext, player: str) -> None:
 		await self.podiums(ctx, player)
 
 

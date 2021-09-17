@@ -1,11 +1,10 @@
 #!/usr/bin/env python3.9
 
 from os.path import isfile
-from typing import Literal
 
 from bot import ROOT_DIR, SRBpp
 
-TOKEN_FILE: Literal[str] = f"{ROOT_DIR}/token"
+TOKEN_FILE = f"{ROOT_DIR}/token"
 
 
 def check_files() -> None:

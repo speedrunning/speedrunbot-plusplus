@@ -16,7 +16,7 @@ from typing import Literal
 
 from utils import *
 
-USAGE: str = (
+USAGE = (
 	"Usage: `+verifierleaderboard [GAME] [GAME (Optional)]`\n"
 	+ "Example: `+verifierleaderboard mkw mkwextracategories`"
 )
@@ -62,10 +62,7 @@ def get_mods() -> set[str]:
 	"""
 	mods: set[Moderator] = set()
 	for abbrev in argv[1:]:
-		r = api_get(
-			f"{API}/games",
-			params={"abbreviation": abbrev, "embed": "moderators"},
-		)
+		r = api_get(f"{API}/games", params={"abbreviation": abbrev, "embed": "moderators"},)
 		try:
 			mods.update(
 				Moderator(mod["names"]["international"])
@@ -89,7 +86,6 @@ def check_args() -> None:
 
 	if argc == 3 and argv[1] == argv[2]:
 		error_and_die("The same game cannot be provided twice.")
-		exit(EXIT_FAILURE)
 
 
 def main() -> int:

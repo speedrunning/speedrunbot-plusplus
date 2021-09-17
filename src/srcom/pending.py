@@ -12,7 +12,7 @@ from typing import Literal
 
 from utils import *
 
-USAGE: str = (
+USAGE = (
 	"Usage: `+pending [GAME] [GAME (Optional)]`\n" + "Example: `+pending mkw mkwextracategories`"
 )
 
@@ -37,9 +37,7 @@ def get_pending(game: str) -> list[dict]:
 		if "pagination" not in r or r["pagination"]["size"] < 200:
 			break
 
-		r = api_get(
-			{item["rel"]: item["uri"] for item in r["pagination"]["links"]}["next"],
-		)
+		r = api_get({item["rel"]: item["uri"] for item in r["pagination"]["links"]}["next"],)
 
 	return runs
 
@@ -58,7 +56,9 @@ def main() -> int:
 
 	print(
 		"\n".join(
-			f"[{run['level']['data']['name'] + ': ' + run['category']['data']['name'] if run['level']['data'] else run['category']['data']['name']}]({run['weblink']}) in `{str(timedelta(seconds=run['times']['primary_t'])).replace('000','')}` by {' and '.join([ player['name'] if player['rel'] == 'guest' else player['names']['international'] for player in run['players']['data']])}"
+			f"[{run['level']['data']['name'] + ': ' + run['category']['data']['name'] if run['level']['data'] else run['category']['data']['name']}]({run['weblink']})"
+			f" in `{str(timedelta(seconds=run['times']['primary_t'])).replace('000','')}` by"
+			f" {' and '.join([ player['name'] if player['rel'] == 'guest' else player['names']['international'] for player in run['players']['data']])}"
 			for run in runs
 		)
 	)
