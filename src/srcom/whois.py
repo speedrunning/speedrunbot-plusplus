@@ -50,7 +50,7 @@ def main() -> int:
 			usage(USAGE)
 
 	print(
-		f"__THUMBNAIL__: {r['assets']['image']['uri']}\n"
+		(f"__THUMBNAIL__: {r['assets']['image']['uri']}\n" if r["assets"]["image"]["uri"] else "")
 		+ f"**Username**: [{r['names']['international']}]({r['weblink']})\n"
 		+ (f' ({r["names"]["japanese"]})' if r["names"]["japanese"] else "")
 		+ f"**User ID**: {r['id']}"
