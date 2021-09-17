@@ -17,7 +17,7 @@ from discord_slash.utils.manage_commands import create_option
 from bot import SRBpp, run_and_output
 from cogs.src import RATE
 
-PREFIX: Literal["admin/bin"] = "admin/bin"
+PREFIX = "admin/bin"
 
 
 class Admin(commands.Cog):
@@ -145,12 +145,12 @@ class Admin(commands.Cog):
 			),
 		],
 	)
-	async def reload_slash(self, ctx: SlashContext, ext):
+	async def reload_slash(self, ctx: SlashContext, ext) -> None:
 		await self.reload(ctx, ext)
 
 	@commands.is_owner()
 	@commands.command(name="reload")
-	async def reload_bot(self, ctx: Context, ext: str):
+	async def reload_bot(self, ctx: Context, ext: str) -> None:
 		"""
 		Reloads an extension.
 		"""
@@ -177,7 +177,7 @@ class Admin(commands.Cog):
 
 	@commands.is_owner()
 	@commands.command(name="load")
-	async def load_bot(self, ctx: Context, ext: str):
+	async def load_bot(self, ctx: Context, ext: str) -> None:
 		"""
 		Loads an extension.
 		"""
@@ -196,7 +196,7 @@ class Admin(commands.Cog):
 			),
 		],
 	)
-	async def load_slash(self, ctx: SlashContext, ext: str):
+	async def load_slash(self, ctx: SlashContext, ext: str) -> None:
 		await self.load(ctx, ext)
 
 	async def unload(self, ctx: Context, ext: str) -> None:
@@ -220,7 +220,7 @@ class Admin(commands.Cog):
 
 	@commands.is_owner()
 	@commands.command(name="unload")
-	async def unload_bot(self, ctx: Context, ext: str):
+	async def unload_bot(self, ctx: Context, ext: str) -> None:
 		"""
 		Unloads an extension.
 		"""
@@ -239,12 +239,12 @@ class Admin(commands.Cog):
 			),
 		],
 	)
-	async def unload_slash(self, ctx: SlashContext, ext: str):
+	async def unload_slash(self, ctx: SlashContext, ext: str) -> None:
 		await self.unload(ctx, ext)
 
 	@commands.is_owner()
 	@commands.command(name="announce", aliases=["announcement"])
-	async def announce(self, ctx, *, message):
+	async def announce(self, ctx, *, message) -> None:
 		channels = []
 		messages = []
 		for guild in self.bot.guilds:

@@ -39,66 +39,59 @@ def main() -> int:
 			break
 
 	if uid:
-		r = api_get(f"{API}/users/{uid}")
+		r = api_get(f"{API}/users/{uid}")["data"]
 	else:
 		try:
 			r = api_get(f"{API}/users?lookup={args[0]}")
 			# When getting a user with the `lookup` parameter, the `data` field returns
 			# an array of length 1 instead of just the data directly.
-			r["data"] = r["data"][0]
+			r = r["data"][0]
 		except IndexError:
 			usage(USAGE)
 
-	# TODO: Remove this
-	print("*NOTE: This command is still in development*")
-
 	print(
-		f"PROFILE PICTURE: https://www.speedrun.com/themes/user/{r['data']['names']['international']}/image.png\n"
+		f"__THUMBNAIL__: {r['assets']['image']['uri']}\n"
 		+ f"**Username**: "
-		+ f"[{r['data']['names']['international']}]({r['data']['weblink']})"
-		+ (f' ({r["data"]["names"]["japanese"]})' if r["data"]["names"]["japanese"] else "")
-		+ (f"\n**Pronouns**: {r['data']['pronouns']}" if r["data"]["pronouns"] else "")
-		+ (f"\n**Role**: {r['data']['role'].capitalize()}" if r["data"]["role"] != "user" else "")
-		+ f"\n**Signed up**: {date_format(datetime.strptime(r['data']['signup'], '%Y-%m-%dT%H:%M:%S%z'))}"
+		+ f"[{r['names']['international']}]({r['weblink']})"
+		+ (f' ({r["names"]["japanese"]})' if r["names"]["japanese"] else "")
+		+ (f"\n**Pronouns**: {r['pronouns']}" if r["pronouns"] else "")
+		+ (f"\n**Role**: {r['role'].capitalize()}" if r["role"] != "user" else "")
+		+ f"\n**Signed up**: {date_format(datetime.strptime(r['signup'], '%Y-%m-%dT%H:%M:%S%z'))}"
 		+ f"\n**Socials**: "
-		+ (f"[Twitch]({r['data']['twitch']['uri']}) " if r["data"]["twitch"] else "")
-		+ (f"[Hitbox]({r['data']['hitbox']['uri']}) " if r["data"]["hitbox"] else "")
-		+ (f"[Youtube]({r['data']['youtube']['uri']}) " if r["data"]["youtube"] else "")
-		+ (f"[Twitter]({r['data']['twitter']['uri']}) " if r["data"]["twitter"] else "")
-		+ (
-			f"[SpeedRunsLive]({r['data']['speedrunslive']['uri']}) "
-			if r["data"]["speedrunslive"]
-			else ""
-		)
+		+ (f"[Twitch]({r['twitch']['uri']}) " if r["twitch"] else "")
+		+ (f"[Hitbox]({r['hitbox']['uri']}) " if r["hitbox"] else "")
+		+ (f"[Youtube]({r['youtube']['uri']}) " if r["youtube"] else "")
+		+ (f"[Twitter]({r['twitter']['uri']}) " if r["twitter"] else "")
+		+ (f"[SpeedRunsLive]({r['speedrunslive']['uri']}) " if r["speedrunslive"] else "")
 		+ (
 			(
 				(
 					"\n**Region**: "
 					+ (
-						r["data"]["location"]["region"]["names"]["international"]
+						r["location"]["region"]["names"]["international"]
 						+ " "
-						+ f'({r["data"]["location"]["region"]["code"].upper()})'
+						+ f'({r["location"]["region"]["code"].upper()})'
 						+ (
-							f"({r['data']['location']['region']['names']['japanese']})"
-							if r["data"]["location"]["region"]["names"]["japanese"]
+							f"({r['location']['region']['names']['japanese']})"
+							if r["location"]["region"]["names"]["japanese"]
 							else ""
 						)
 					)
 				)
-				if "region" in r["data"]["location"]
+				if "region" in r["location"]
 				else (
 					"\n**Country**: "
-					+ r["data"]["location"]["country"]["names"]["international"]
+					+ r["location"]["country"]["names"]["international"]
 					+ " "
-					+ f'({r["data"]["location"]["country"]["code"].upper()})'
+					+ f'({r["location"]["country"]["code"].upper()})'
 					+ (
-						f"({r['data']['location']['country']['names']['japanese']})"
-						if r["data"]["location"]["country"]["names"]["japanese"]
+						f"({r['location']['country']['names']['japanese']})"
+						if r["location"]["country"]["names"]["japanese"]
 						else ""
 					)
 				)
 			)
-			if r["data"]["location"]
+			if r["location"]
 			else ""
 		)
 	)

@@ -67,7 +67,7 @@ async def execv(prog: str, *argv: tuple[str, ...]) -> Executed:
 async def run_and_output(
 	ctx: Union[SlashContext, Context],
 	prog: str,
-	*argv: list[str, discord.User, ...],
+	*argv: tuple[str, discord.User, ...],
 	title: Optional[str] = None,
 ) -> None:
 	"""
@@ -101,6 +101,15 @@ async def run_and_output(
 		return
 
 	title, desc = process.stdout.split("\n", 1) if not title else [title, process.stdout]
+
+	# If the first line of the description begins with the string "__THUMBNAIL__: " then we take
+	# the following link and make that the embed thumbnail
+	if desc.startswith("__THUMBNAIL__: "):
+		thumbnail, desc = desc.split("\n", 1)
+		thumbnail = thumbnail.replace("__THUMBNAIL__: ", "", 1)
+	else:
+		thumbnail = None
+
 	if len(desc) > 2000:
 		lines = list(divide_chunks(desc.split("\n"), 15))
 		lines_length = len(lines)
@@ -123,18 +132,21 @@ async def run_and_output(
 				)
 			async with ctx.author.typing():
 				for line in range(lines_length):
-					await ctx.author.send(
-						embed=discord.Embed(
-							title=f"{title} Page: {line + 1}/{lines_length}",
-							description="\n".join(lines[line]),
-						)
+					embed = discord.Embed(
+						title=f"{title} Page: {line + 1}/{lines_length}",
+						description="\n".join(lines[line]),
 					)
+					if thumbnail:
+						embed.set_thumbnail(url=thumbnail)
+					await ctx.author.send(embed=embed)
 		except discord.Forbidden:
 			await ctx.reply(
-				"You have blocked the bot and the message is too long to be sent in this channel. Please unblock me and try again. "
+				"You have blocked the bot and the message is too long to be sent in this channel. Please unblock me and try again."
 			)
 	else:
 		embed = discord.Embed(title=title, description=desc)
+		if thumbnail:
+			embed.set_thumbnail(url=thumbnail)
 		if is_slash_called:
 			await ctx.send(embed=embed)
 		# If the original message is replying to another message then try to reply to that message
