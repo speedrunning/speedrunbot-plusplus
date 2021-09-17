@@ -186,6 +186,7 @@ class General(commands.Cog):
 				" anywhere in this server. Be careful who you share this key with. To learn more"
 				" check out <https://github.com/speedruncomorg/api/blob/master/authentication.md>"
 			)
+			return
 
 		try:
 			await ctx.message.delete()
