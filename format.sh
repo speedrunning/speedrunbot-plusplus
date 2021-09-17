@@ -52,8 +52,10 @@ for FILE in "$SCR_PATH"/**/*; do
 		;;
 	*.sh)
 		echo Formatting "$FILE"
+		[ -x "$FILE" ] && FLAGS=+x || FLAGS=-x
 		unexpand -t 8 --first-only "$FILE" >temp
 		mv temp "$FILE"
+		chmod "$FLAGS" "$FILE"
 		;;
 	esac
 done
