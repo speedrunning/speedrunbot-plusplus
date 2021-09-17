@@ -54,7 +54,6 @@ for FILE in "$SCR_PATH"/**/*; do
 		echo Formatting "$FILE"
 		unexpand -t 8 --first-only "$FILE" >temp
 		mv temp "$FILE"
-		chmod +x "$FILE"
 		;;
 	esac
 done
