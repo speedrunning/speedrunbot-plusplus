@@ -67,7 +67,7 @@ async def execv(prog: str, *argv: tuple[str, ...]) -> Executed:
 async def run_and_output(
 	ctx: Union[SlashContext, Context],
 	prog: str,
-	*argv: list[str, discord.User, ...],
+	*argv: tuple[str, discord.User, ...],
 	title: Optional[str] = None,
 ) -> None:
 	"""
