@@ -65,6 +65,14 @@ func UserID(name string) (string, error) {
 
 func GameData(abbreviation string) (Game, error) {
 	json := string(Request("/games?abbreviation=" + abbreviation))
+	/*
+	 * The `Request()` function should probably return an error that we can handle, but I am
+	 * going to rewrite this crap in the next version of the bot anyways so who cares.
+	 */
+	if json == "" {
+		return Game{"", ""}, errors.New("Invalid game abbreviation given. Did you give a" +
+						"games name instead?")
+	}
 	id := json[ID_START:ID_END]
 
 	if id == `nation":` {
