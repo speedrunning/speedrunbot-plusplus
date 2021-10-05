@@ -71,7 +71,7 @@ func GameData(abbreviation string) (Game, error) {
 	 */
 	if json == "" {
 		return Game{"", ""}, errors.New("Invalid game abbreviation given. Did you give a" +
-						"games name instead?")
+						" games name instead?")
 	}
 	id := json[ID_START:ID_END]
 
